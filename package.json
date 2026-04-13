@@ -1,0 +1,21 @@
+{
+  "name": "pathfinder",
+  "version": "1.0.0",
+  "description": "A knowledge base container for immigration information and resources",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^15.0.0"
+  }
+}
