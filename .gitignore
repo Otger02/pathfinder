@@ -12,3 +12,6 @@ dist/
 .DS_Store
 next-env.d.ts
 package-lock.json
+
+# External documents and reference materials
+knowledge/Documentos tramit/
