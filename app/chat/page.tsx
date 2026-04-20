@@ -1,0 +1,771 @@
+"use client";
+
+import { useState, useRef, useEffect, useCallback, FormEvent, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import type { Lang, I18nText } from "@/lib/i18n";
+import { t, labels } from "@/lib/i18n";
+import type { PersonalData, PersonalDataField } from "@/lib/types/personal-data";
+import { EMPTY_PERSONAL_DATA } from "@/lib/types/personal-data";
+import { getFormsForAuth } from "@/lib/form-config";
+import type {
+  ChatMessage,
+  ChatSubPhase,
+  SummaryCardData,
+  DocumentCardData,
+  EmailDraftCardData,
+} from "@/lib/types/chat-flow";
+import LanguageSelector from "./components/LanguageSelector";
+import TreePhase from "./components/TreePhase";
+import ChatPhase from "./components/ChatPhase";
+import FormPhase from "./components/FormPhase";
+import ConsentModal from "./components/ConsentModal";
+import SosOverlay from "./components/SosOverlay";
+import { RecordingEngine } from "@/lib/recording-engine";
+import type { TreeNode, TreeOption, TreeRoot, RecursUrgent } from "./components/TreePhase";
+
+// ── Types ─────────────────────────────────────────────────────────
+
+interface Source {
+  id: string;
+  source_file: string | null;
+  llei_referencia: string | null;
+  similarity: number;
+}
+
+const SITUACIO_MAP: Record<string, string> = {
+  "sense-autoritzacio": "sense_autoritzacio",
+  "amb-autoritzacio": "amb_autoritzacio",
+  "ciutada-ue": "ue",
+  asil: "asil",
+};
+
+// ── Component ─────────────────────────────────────────────────────
+
+export default function ChatPage() {
+  return (
+    <Suspense>
+      <ChatPageInner />
+    </Suspense>
+  );
+}
+
+function ChatPageInner() {
+  const searchParams = useSearchParams();
+  const initialLang = (searchParams.get("lang") as Lang) || "es";
+
+  const [lang, setLang] = useState<Lang>(initialLang);
+  const [tree, setTree] = useState<TreeRoot | null>(null);
+  const [phase, setPhase] = useState<"tree" | "chat" | "form">("tree");
+  const [transitioning, setTransitioning] = useState(false);
+
+  // Tree state
+  const [currentNode, setCurrentNode] = useState<TreeNode | null>(null);
+  const [path, setPath] = useState<string[]>([]);
+  const [situacioLegal, setSituacioLegal] = useState<string | null>(null);
+  const [authSlugs, setAuthSlugs] = useState<string[]>([]);
+
+  // Chat state
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [sources, setSources] = useState<Source[]>([]);
+  const abortRef = useRef<AbortController | null>(null);
+
+  // Collection state
+  const [mode, setMode] = useState<"info" | "collection">("info");
+  const [chatSubPhase, setChatSubPhase] = useState<ChatSubPhase>("conversa");
+  const [collectedData, setCollectedData] = useState<Record<string, string>>({});
+  const [completionPct, setCompletionPct] = useState(0);
+  const collectedDataRef = useRef<Record<string, string>>({});
+  const [generatedDocs, setGeneratedDocs] = useState<Array<{ name: string; url: string }>>([]);
+
+  // SOS state
+  const [sosActive, setSosActive] = useState(false);
+  const [sosCategories, setSosCategories] = useState<string[]>([]);
+  const [sosView, setSosView] = useState<"emergency" | "rights" | "police">("emergency");
+  const [treeRecursosUrgents, setTreeRecursosUrgents] = useState<RecursUrgent[]>([]);
+  const sosButtonRef = useRef<HTMLButtonElement>(null);
+
+  // SOS Recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingChunks, setRecordingChunks] = useState(0);
+  const [recordingAudioOnly, setRecordingAudioOnly] = useState(false);
+  const [recordingElapsed, setRecordingElapsed] = useState(0);
+  const recordingEngineRef = useRef<RecordingEngine | null>(null);
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Form / PDF state (info-mode backward compat)
+  const [personalData, setPersonalData] = useState<PersonalData>({ ...EMPTY_PERSONAL_DATA });
+  const [consentGiven, setConsentGiven] = useState(false);
+  const [showConsent, setShowConsent] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    collectedDataRef.current = collectedData;
+  }, [collectedData]);
+
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      generatedDocs.forEach((doc) => URL.revokeObjectURL(doc.url));
+    };
+  }, [generatedDocs]);
+
+  // Cleanup recording on unmount
+  useEffect(() => {
+    return () => {
+      if (recordingEngineRef.current) {
+        recordingEngineRef.current.stop();
+      }
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Recording handlers
+  const handleStartRecording = useCallback(async (sosEventId?: string) => {
+    if (recordingEngineRef.current?.getSession()?.status === "recording") return;
+
+    const engine = new RecordingEngine();
+    recordingEngineRef.current = engine;
+
+    engine.setOnStateChange((state) => {
+      setIsRecording(state.status === "recording");
+      setRecordingAudioOnly(state.audioOnly);
+      setRecordingChunks(state.chunksUploaded);
+    });
+
+    engine.setOnChunkUploaded((_idx, total) => {
+      setRecordingChunks(total);
+    });
+
+    const started = await engine.start(sosEventId);
+    if (started) {
+      setIsRecording(true);
+      setRecordingElapsed(0);
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingElapsed((prev) => prev + 1);
+      }, 1000);
+    }
+  }, []);
+
+  const handleStopRecording = useCallback(async () => {
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+    if (recordingEngineRef.current) {
+      await recordingEngineRef.current.stop();
+    }
+    setIsRecording(false);
+  }, []);
+
+  // Load decision tree
+  useEffect(() => {
+    fetch("/api/tree")
+      .then((r) => r.json())
+      .then((data: TreeRoot) => {
+        setTree(data);
+        setCurrentNode({
+          id: data.id,
+          tipus: "questio",
+          pregunta: data.pregunta,
+          opcions: data.opcions,
+        });
+      })
+      .catch(() => setPhase("chat"));
+  }, []);
+
+  function handleOptionClick(option: TreeOption, parentNode: TreeNode) {
+    const label = t(option.text as I18nText, lang);
+    setPath((prev) => [...prev, label]);
+
+    if (parentNode.id === tree?.id) {
+      setSituacioLegal(SITUACIO_MAP[option.id] || null);
+    }
+
+    setCurrentNode(option.node);
+  }
+
+  function startChat() {
+    setTransitioning(true);
+    const resultNode = currentNode;
+
+    // Capture authorization slugs
+    if (resultNode?.autoritzacions) {
+      const slugs = resultNode.autoritzacions.map((a) => a.slug);
+      setAuthSlugs(slugs);
+      if (slugs.length > 0) {
+        setMode("collection");
+      }
+    }
+
+    setTimeout(() => {
+      setPhase("chat");
+      setTransitioning(false);
+
+      // Carry SOS resources from tree
+      if (resultNode?.recursos_urgents && resultNode.recursos_urgents.length > 0) {
+        setTreeRecursosUrgents(resultNode.recursos_urgents);
+        setSosActive(true);
+        setSosCategories(["trafficking", "distress"]);
+        setSosView("emergency");
+      }
+
+      // Welcome message
+      if (resultNode?.missatge) {
+        const welcomeText = t(resultNode.missatge as I18nText, lang);
+        const auths = resultNode.autoritzacions || [];
+        let fullWelcome = welcomeText;
+        if (auths.length > 0) {
+          fullWelcome +=
+            "\n\n" +
+            auths
+              .sort((a, b) => a.prioritat - b.prioritat)
+              .map((a) => `• **${a.slug}**: ${t(a.nota, lang)}`)
+              .join("\n");
+        }
+        if (resultNode.nota_legal) {
+          fullWelcome += `\n\n${t(resultNode.nota_legal as I18nText, lang)}`;
+        }
+        // Collection mode: proactive intro instead of "ask anything"
+        if (auths.length > 0) {
+          fullWelcome += "\n\n" + t(labels.collectIntro, lang);
+        } else {
+          fullWelcome += "\n\n" + t(labels.askAnything, lang);
+        }
+        setMessages([{ role: "assistant", content: fullWelcome }]);
+      }
+    }, 300);
+  }
+
+  function handleReset() {
+    if (tree) {
+      setPath([]);
+      setSituacioLegal(null);
+      setCurrentNode({
+        id: tree.id,
+        tipus: "questio",
+        pregunta: tree.pregunta,
+        opcions: tree.opcions,
+      });
+    }
+  }
+
+  // ── Chat submit ──────────────────────────────────────────────────
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || loading) return;
+
+    setInput("");
+    setLoading(true);
+    setSources([]);
+
+    setMessages((prev) => [...prev, { role: "user", content: text }]);
+    setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
+
+    try {
+      abortRef.current = new AbortController();
+      const resp = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          conversation_id: conversationId,
+          situacio_legal: situacioLegal,
+          idioma: lang,
+          auth_slugs: authSlugs.length > 0 ? authSlugs : undefined,
+          mode: mode,
+        }),
+        signal: abortRef.current.signal,
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json();
+        throw new Error(err.error || `HTTP ${resp.status}`);
+      }
+
+      const reader = resp.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const event = JSON.parse(line.slice(6));
+
+            if (event.type === "conversation_id") {
+              setConversationId(event.conversation_id);
+            } else if (event.type === "sources") {
+              setSources(event.sources);
+            } else if (event.type === "sos") {
+              setSosActive(true);
+              setSosCategories(event.categories);
+              setSosView("emergency");
+              // Auto-start recording on SOS
+              handleStartRecording(event.sosEventId);
+            } else if (event.type === "text") {
+              setMessages((prev) => {
+                const updated = [...prev];
+                const last = updated[updated.length - 1];
+                updated[updated.length - 1] = {
+                  ...last,
+                  content: last.content + event.text,
+                };
+                return updated;
+              });
+            } else if (event.type === "consent_request") {
+              // Inject consent card (guard: no duplicates)
+              setMessages((prev) => {
+                if (prev.some((m) => m.cardType === "consent")) return prev;
+                // Replace the empty assistant placeholder with consent card
+                const updated = [...prev];
+                updated[updated.length - 1] = {
+                  role: "assistant",
+                  content: "",
+                  cardType: "consent",
+                  cardData: { accepted: false },
+                };
+                return updated;
+              });
+            } else if (event.type === "data_update") {
+              setCollectedData(event.collected);
+              setCompletionPct(event.completionPct);
+              collectedDataRef.current = event.collected;
+            } else if (event.type === "phase_change") {
+              setChatSubPhase(event.phase);
+              if (event.phase === "resum") {
+                // Inject summary card
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    role: "assistant",
+                    content: "",
+                    cardType: "summary",
+                    cardData: {
+                      collected: { ...collectedDataRef.current },
+                      authSlugs: authSlugs,
+                      confirmed: false,
+                    } as SummaryCardData,
+                  },
+                ]);
+              }
+            }
+          } catch {
+            // skip malformed SSE
+          }
+        }
+      }
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Error";
+      if (errMsg !== "The user aborted a request.") {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            role: "assistant",
+            content: `Error: ${errMsg}`,
+          };
+          return updated;
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ── Collection mode handlers ─────────────────────────────────────
+
+  const handleConsentAcceptInline = useCallback(() => {
+    // Mark consent card as accepted
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.cardType === "consent"
+          ? { ...m, cardData: { ...m.cardData, accepted: true } }
+          : m
+      )
+    );
+
+    // Record consent server-side
+    if (conversationId) {
+      fetch("/api/chat/consent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversation_id: conversationId }),
+      }).catch(() => {});
+    }
+  }, [conversationId]);
+
+  const handleConsentDeclineInline = useCallback(() => {
+    // Remove consent card and reset to info mode
+    setMessages((prev) => prev.filter((m) => m.cardType !== "consent"));
+    setMode("info");
+  }, []);
+
+  const handleSummaryConfirm = useCallback(async () => {
+    // Mark summary as confirmed
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.cardType === "summary"
+          ? { ...m, cardData: { ...(m.cardData as SummaryCardData), confirmed: true } }
+          : m
+      )
+    );
+
+    setChatSubPhase("document");
+
+    // Tell server about the confirmation (fire and forget)
+    if (conversationId) {
+      fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: "__CONFIRM_SUMMARY__",
+          conversation_id: conversationId,
+        }),
+      }).catch(() => {});
+    }
+
+    // Auto-generate PDFs
+    await handleAutoGeneratePdfs();
+  }, [conversationId, authSlugs, lang]);
+
+  const handleSummaryCorrect = useCallback(() => {
+    setChatSubPhase("conversa");
+    // Inject a system message directing the bot to ask what to correct
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: t(labels.correctData, lang) },
+    ]);
+  }, [lang]);
+
+  async function handleAutoGeneratePdfs() {
+    // Inject loading document card
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content: "",
+        cardType: "document",
+        cardData: { documents: [], loading: true } as DocumentCardData,
+      },
+    ]);
+
+    try {
+      const docs: Array<{ name: string; url: string }> = [];
+
+      // Generate PDFs for each auth slug in parallel
+      const results = await Promise.all(
+        authSlugs.map(async (slug) => {
+          const resp = await fetch("/api/pdf/summary", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              personalData: collectedDataRef.current,
+              authorizationSlug: slug,
+              lang,
+            }),
+          });
+
+          if (!resp.ok) return null;
+          const blob = await resp.blob();
+          const url = URL.createObjectURL(blob);
+          return { name: `pathfinder-${slug}.pdf`, url };
+        })
+      );
+
+      for (const result of results) {
+        if (result) docs.push(result);
+      }
+
+      // Generate filled EX forms for each auth slug
+      for (const slug of authSlugs) {
+        const exForms = getFormsForAuth(slug);
+        for (const exForm of exForms) {
+          try {
+            const formResp = await fetch("/api/pdf/form", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                personalData: collectedDataRef.current,
+                exFormId: exForm.id,
+                authSlug: slug,
+              }),
+            });
+            if (formResp.ok) {
+              const blob = await formResp.blob();
+              const url = URL.createObjectURL(blob);
+              docs.push({ name: `${exForm.id}-${slug}.pdf`, url });
+            }
+          } catch {
+            // EX form fill failed — still show summary
+          }
+        }
+      }
+
+      setGeneratedDocs(docs);
+
+      // Update the document card
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.cardType === "document"
+            ? { ...m, cardData: { documents: docs, loading: false } as DocumentCardData }
+            : m
+        )
+      );
+
+      // Transition to enviament
+      await handleTransitionToEnviament();
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.cardType === "document"
+            ? { ...m, cardData: { documents: [], loading: false } as DocumentCardData }
+            : m
+        )
+      );
+    }
+  }
+
+  async function handleTransitionToEnviament() {
+    try {
+      const provincia = collectedDataRef.current.provincia;
+      if (!provincia || !authSlugs[0]) return;
+
+      const resp = await fetch("/api/email/draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          personalData: collectedDataRef.current,
+          authSlug: authSlugs[0],
+          provincia,
+          lang,
+        }),
+      });
+
+      if (!resp.ok) return;
+      const emailData = (await resp.json()) as EmailDraftCardData;
+
+      setChatSubPhase("enviament");
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "",
+          cardType: "email_draft",
+          cardData: emailData,
+        },
+      ]);
+    } catch (err) {
+      console.error("Email draft generation failed:", err);
+      // Still move to enviament even if email fails
+      setChatSubPhase("enviament");
+    }
+  }
+
+  // ── Form / PDF handlers (info-mode backward compat) ──────────────
+
+  function handlePrepareDocuments() {
+    if (consentGiven) {
+      setPhase("form");
+    } else {
+      setShowConsent(true);
+    }
+  }
+
+  function handleConsentAccept() {
+    setConsentGiven(true);
+    setShowConsent(false);
+    setPhase("form");
+  }
+
+  function handleConsentDecline() {
+    setShowConsent(false);
+  }
+
+  function handleDataChange(field: PersonalDataField, value: string) {
+    setPersonalData((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handleClearData() {
+    setPersonalData({ ...EMPTY_PERSONAL_DATA });
+  }
+
+  async function handleGeneratePdf() {
+    if (!authSlugs.length) return;
+    setPdfLoading(true);
+    try {
+      const resp = await fetch("/api/pdf/summary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          personalData,
+          authorizationSlug: authSlugs[0],
+          lang,
+        }),
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json();
+        throw new Error(err.error || `HTTP ${resp.status}`);
+      }
+
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `pathfinder-${authSlugs[0]}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+    } finally {
+      setPdfLoading(false);
+    }
+  }
+
+  // ── Render ────────────────────────────────────────────────────────
+
+  return (
+    <div
+      dir={lang === "ar" ? "rtl" : "ltr"}
+      className={`mx-auto max-w-2xl px-4 sm:px-6 py-5 min-h-screen ${lang === "ar" ? "font-arabic" : "font-sans"}`}
+    >
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+            </svg>
+          </div>
+          <h1 className="text-lg font-bold text-text">Pathfinder</h1>
+        </div>
+        <LanguageSelector lang={lang} onLangChange={setLang} />
+      </div>
+
+      <hr className="my-3 border-border-light" />
+
+      {/* ── PHASE 1: Decision Tree ─────────────────────────── */}
+      {phase === "tree" && currentNode && (
+        <TreePhase
+          currentNode={currentNode}
+          lang={lang}
+          path={path}
+          tree={tree!}
+          transitioning={transitioning}
+          onOptionClick={handleOptionClick}
+          onStartChat={startChat}
+          onReset={handleReset}
+        />
+      )}
+
+      {/* ── PHASE 2: Chat ──────────────────────────────────── */}
+      {phase === "chat" && (
+        <ChatPhase
+          messages={messages}
+          sources={sources}
+          input={input}
+          loading={loading}
+          lang={lang}
+          path={path}
+          mode={mode}
+          chatSubPhase={chatSubPhase}
+          completionPct={completionPct}
+          onSubmit={handleSubmit}
+          onInputChange={setInput}
+          onPrepareDocuments={
+            mode === "info" && authSlugs.length > 0
+              ? handlePrepareDocuments
+              : undefined
+          }
+          onConsentAccept={handleConsentAcceptInline}
+          onConsentDecline={handleConsentDeclineInline}
+          onSummaryConfirm={handleSummaryConfirm}
+          onSummaryCorrect={handleSummaryCorrect}
+        />
+      )}
+
+      {/* ── PHASE 3: Form (info-mode backward compat) ──────── */}
+      {phase === "form" && (
+        <FormPhase
+          lang={lang}
+          data={personalData}
+          authSlugs={authSlugs}
+          onDataChange={handleDataChange}
+          onGeneratePdf={handleGeneratePdf}
+          onClear={handleClearData}
+          onBack={() => setPhase("chat")}
+          pdfLoading={pdfLoading}
+        />
+      )}
+
+      {/* Consent modal (info-mode only) */}
+      {showConsent && mode === "info" && (
+        <ConsentModal
+          lang={lang}
+          onAccept={handleConsentAccept}
+          onDecline={handleConsentDecline}
+        />
+      )}
+
+      {/* Loading tree */}
+      {phase === "tree" && !currentNode && (
+        <p className="text-text-muted text-center py-8">
+          {t(labels.loading, lang)}
+        </p>
+      )}
+
+      {/* ── SOS Overlay ────────────────────────────────────── */}
+      <SosOverlay
+        active={sosActive}
+        categories={sosCategories}
+        view={sosView}
+        lang={lang}
+        treeRecursosUrgents={treeRecursosUrgents}
+        recording={isRecording}
+        chunksUploaded={recordingChunks}
+        elapsedSeconds={recordingElapsed}
+        audioOnly={recordingAudioOnly}
+        onClose={() => {
+          setSosActive(false);
+          sosButtonRef.current?.focus();
+        }}
+        onViewChange={setSosView}
+        onStartRecording={() => handleStartRecording()}
+        onStopRecording={handleStopRecording}
+      />
+
+      {/* ── SOS Persistent Button ──────────────────────────── */}
+      {phase === "chat" &&
+        (sosCategories.length > 0 || treeRecursosUrgents.length > 0) &&
+        !sosActive && (
+          <button
+            ref={sosButtonRef}
+            onClick={() => {
+              setSosActive(true);
+              setSosView("emergency");
+            }}
+            aria-label="Emergency help"
+            className="fixed bottom-5 ltr:right-5 rtl:left-5 w-14 h-14 rounded-full bg-danger text-white border-none text-base font-bold cursor-pointer shadow-lg z-[100] hover:bg-danger-dark transition-colors"
+          >
+            SOS
+          </button>
+        )}
+    </div>
+  );
+}
