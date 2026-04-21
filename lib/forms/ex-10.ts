@@ -1,180 +1,295 @@
-/**
- * EX-10 — Autorización de residencia por circunstancias excepcionales
- * 5 pages, 157 fields. Clean Texto1..Texto156 + Casilla de verificación96..148.
- */
+import type { FieldMap } from "@/lib/pdf/field-maps";
 import type { PersonalDataField } from "@/lib/types/personal-data";
 
+/**
+ * EX-10 — Arraigo / Circunstancias excepcionales
+ *
+ * IMPORTANT:
+ * - Aquest fitxer deixa els TEXT_FIELDS i DATE_FIELDS coherents amb el mapping
+ *   revisat manualment.
+ * - Les CHECKBOXES queden buides de moment perquè per omplir-les bé cal tenir
+ *   els noms reals dels camps checkbox del PDF, no només la lògica semàntica.
+ * - Un cop tinguem els field names reals del PDF, omplirem:
+ *   - EX_10_SEXO_CHECKBOXES
+ *   - EX_10_ESTADO_CIVIL_CHECKBOXES
+ *   - EX_10_TIPO_DOC_CHECKBOXES
+ *   - EX_10_CIRCUNSTANCIA_CHECKBOXES
+ *   - EX_10_TIPO_AUTORIZACION_CHECKBOXES
+ *   - EX_10_HIJOS_ESCOLARIZACION_CHECKBOXES
+ *   - EX_10_CONSENTIMIENTO_CHECKBOX
+ *   - EX_10_FAMILIAR_SEXO_CHECKBOXES
+ *   - EX_10_FAMILIAR_ESTADO_CIVIL_CHECKBOXES
+ *   - EX_10_FORMACIO_TIPUS_CHECKBOXES
+ *   - EX_10_FORMACIO_MODALITAT_CHECKBOXES
+ */
+
+/* =========================================================
+ * 1) TEXT FIELDS
+ * ======================================================= */
+
 export const EX_10_TEXT_FIELDS: Record<string, PersonalDataField | null> = {
-  // ── Apartado 1: Solicitante ─────────────────────────────
-  Texto1:  "primerApellido",
-  Texto2:  null,                   // NIE letra
-  Texto3:  "nie",
-  Texto4:  null,                   // NIE control
-  Texto5:  "nombre",
-  Texto6:  "segundoApellido",       // campo largo — also "nacionalidad" on other forms
-  Texto7:  "nacionalidad",
-  // Sexo: Casilla de verificación96/97/98
-  Texto8:  null,                   // DD
-  Texto9:  null,                   // MM
-  Texto10: null,                   // YYYY
+  // ======================================================
+  // PÀGINA 1 — APARTAT 1: DADES DE LA PERSONA ESTRANGERA
+  // ======================================================
+
+  Texto1: "pasaporte",
+  Texto2: null, // NIE lletra
+  Texto3: "nie",
+  Texto4: null, // NIE control
+
+  Texto5: "primerApellido",
+  Texto6: "segundoApellido",
+  Texto7: "nombre",
+
+  // Fecha nacimiento → es resol via DATE_FIELDS
+  Texto8: null,
+  Texto9: null,
+  Texto10: null,
+
   Texto11: "lugarNacimiento",
   Texto12: "paisNacimiento",
-  Texto13: "numeroDocumento",
-  // TipoDoc: Casilla de verificación99..103
-  Texto14: "telefono",
-  Texto15: "email",
-  Texto16: "domicilio",            // dirección país origen
-  Texto17: null,                   // número (país origen)
-  Texto18: null,                   // piso (país origen)
-  Texto19: "localidad",            // localidad país origen
-  Texto20: "codigoPostal",         // CP país origen
-  Texto21: "provincia",            // provincia país origen
-  Texto22: "nombrePadre",
-  Texto23: null,                   // nombreMadre — mapped from field position
-  // EstadoCivil: Casilla de verificación104..111
+  Texto13: "nacionalidad",
+  Texto14: "nombrePadre",
+  Texto15: "nombreMadre",
+
+  Texto16: "domicilio",
+  Texto17: "numeroDomicilio",
+  Texto18: "pisoDomicilio",
+  Texto19: "localidad",
+  Texto20: "codigoPostal",
+  Texto21: "provincia",
+  Texto22: "telefono",
+  Texto23: "email",
+
   Texto24: "representanteLegal",
-  Texto25: null,                   // representante NIE letra
-  Texto26: null,                   // representante NIE control
+  Texto25: "representanteDniNiePas",
+  Texto26: "representanteTitulo",
 
-  // ── Apartado 2: Representante legal ─────────────────────
-  Texto27: null,                   // rep_primerApellido (mapped from representanteLegal)
-  Texto28: null,                   // rep_NIE letra
-  Texto29: null,                   // rep_nie
-  Texto30: null,                   // rep_NIE control
-  Texto31: null,                   // rep_nombre (mapped from representanteLegal)
-  Texto32: null,                   // rep_nacionalidad
-  Texto33: "representanteDniNiePas",
-  // rep sexo, estadoCivil checkboxes
-  Texto34: null,                   // rep_DD
-  Texto35: null,                   // rep_MM
-  Texto36: null,                   // rep_YYYY
-  Texto37: null,                   // rep_lugarNacimiento
-  Texto38: null,                   // rep_paisNacimiento
-  Texto39: null,                   // rep_telefono
-  Texto40: null,                   // rep_email
-  Texto41: null,                   // rep_domicilio
-  Texto42: null,                   // rep_numero
-  Texto43: null,                   // rep_piso
-  Texto44: null,                   // rep_localidad
-  Texto45: null,                   // rep_cp
-  Texto46: null,                   // rep_provincia
-  Texto47: "representanteTitulo",
+  // ======================================================
+  // PÀGINA 1 — APARTAT 2: FAMILIAR CIUTADÀ UE / FAMILIAR
+  // ======================================================
 
-  // ── Apartado 3: Domicilio en España / Notificaciones ────
-  Texto48: "nie",                  // NIE del solicitante (domicilio section)
-  Texto49: null,                   // delegación
-  Texto50: "domicilio",            // domicilio España
-  Texto51: "numeroDomicilio",
-  Texto52: "pisoDomicilio",
-  Texto53: "localidad",
-  Texto54: "codigoPostal",
-  Texto55: "provincia",
-  Texto56: "telefono",
-  Texto57: "email",
-  Texto58: null,                   // representante dir
+  Texto27: "familiar_pasaporte",
+  Texto28: null, // familiar NIE lletra
+  Texto29: "familiar_nie",
+  Texto30: null, // familiar NIE control
 
-  // ── Page 2: Domicilio representante (cont.) ──────────────
-  Texto59: null,                   // rep_domicilio_cont
-  Texto60: null,                   // rep_numero_cont
-  Texto61: null,                   // rep_piso_cont
-  Texto62: null,                   // rep_localidad_cont
-  Texto63: null,                   // rep_cp_cont
-  Texto64: null,                   // rep_provincia_cont
-  Texto65: null,                   // rep_telefono_cont
-  Texto66: null,                   // rep_email_cont
+  Texto31: "familiar_primerApellido",
+  Texto32: "familiar_segundoApellido",
+  Texto33: "familiar_nombre",
 
-  // ── Apartado 3b: Notificaciones ─────────────────────────
-  Texto67: "notifNombre",
-  Texto68: "notifDniNiePas",
-  Texto69: "notifDomicilio",
-  Texto70: "notifNumero",
-  Texto71: "notifNombre",          // duplicate? — page 2 notif nombre
-  Texto72: null,                   // notif extra
-  Texto73: "notifDomicilio",
-  Texto74: "notifProvincia",
-  Texto75: "notifLocalidad",
-  Texto76: "notifDomicilio",       // address cont
-  Texto77: "notifNumero",
-  Texto78: "notifPiso",
-  Texto79: "notifLocalidad",
-  Texto80: "notifCodigoPostal",
-  Texto81: "notifProvincia",
-  Texto82: "notifTelefono",
-  Texto83: "notifEmail",
+  // Fecha nacimiento familiar → DATE_FIELDS
+  Texto34: null,
+  Texto35: null,
+  Texto36: null,
 
-  // ── Page 2 lower: Representante presentación? ────────────
-  Texto84: "repPresentacionNombre",
-  Texto85: "repPresentacionDniNiePas",
-  Texto86: "repPresentacionRepTitulo",
+  Texto37: "familiar_paisNacimiento",
+  Texto38: "familiar_lugarNacimiento",
+  Texto39: "familiar_nombrePadre",
+  Texto40: "familiar_nombreMadre",
+  Texto41: "familiar_domicilio",
+  Texto42: "familiar_numeroDomicilio",
+  Texto43: "familiar_pisoDomicilio",
+  Texto44: "familiar_localidad",
+  Texto45: "familiar_codigoPostal",
+  Texto46: "familiar_provincia",
+  Texto47: "familiar_vinculo",
 
-  // ── Page 2 lower: additional text fields ─────────────────
-  Texto87: null,                   // circunstancia text
-  Texto88: null,
-  Texto89: null,
-  Texto90: null,
-  Texto91: null,
-  Texto92: null,
-  Texto93: null,
+  // ======================================================
+  // PÀGINA 1 — APARTAT 3: REPRESENTANT PRESENTACIÓ
+  // ======================================================
+
+  Texto48: "repPresentacion_nombre",
+  Texto49: "repPresentacion_dniNiePas",
+  Texto50: "repPresentacion_domicilio",
+  Texto51: "repPresentacion_numero",
+  Texto52: "repPresentacion_piso",
+  Texto53: "repPresentacion_localidad",
+  Texto54: "repPresentacion_codigoPostal",
+  Texto55: "repPresentacion_provincia",
+  Texto56: "repPresentacion_telefono",
+  Texto57: "repPresentacion_email",
+  Texto58: "repPresentacion_repLegal",
+  Texto59: "repPresentacion_repDniNiePas",
+  Texto60: "repPresentacion_repTitulo",
+
+  // ======================================================
+  // PÀGINA 1 — APARTAT 4: DOMICILI NOTIFICACIONS
+  // ======================================================
+
+  Texto61: "notif_nombre",
+  Texto62: "notif_dniNiePas",
+  Texto63: "notif_domicilio",
+  Texto64: "notif_numero",
+  Texto65: "notif_piso",
+  Texto66: "notif_localidad",
+  Texto67: "notif_codigoPostal",
+  Texto68: "notif_provincia",
+  Texto69: "notif_telefono",
+  Texto70: "notif_email",
+
+  // ======================================================
+  // PÀGINA 2 — APARTAT 5: EMPLEADOR (ARRAIGO SOCIOLABORAL)
+  // ======================================================
+
+  Texto71: "empleador_nombre",
+  Texto72: "empleador_nifNie",
+  Texto73: "empleador_actividad",
+  Texto74: "empleador_cnae",
+  Texto75: "empleador_cnoSpe",
+  Texto76: "empleador_domicilio",
+  Texto77: "empleador_numero",
+  Texto78: "empleador_piso",
+  Texto79: "empleador_localidad",
+  Texto80: "empleador_codigoPostal",
+  Texto81: "empleador_provincia",
+  Texto82: "empleador_telefono",
+  Texto83: "empleador_email",
+  Texto84: "empleador_repNombre",
+  Texto85: "empleador_repDniNie",
+  Texto86: "empleador_repTitulo",
+
+  // ======================================================
+  // PÀGINA 2 — APARTAT 6: CENTRE DE FORMACIÓ
+  // ======================================================
+
+  Texto87: "formacio_entitat",
+  Texto88: "formacio_nom",
+  Texto89: "formacio_codigoCurs",
+  Texto90: "formacio_nifCif",
+  Texto91: "formacio_direccio",
+  Texto92: "formacio_provincia",
+  Texto93: "formacio_duracio",
+
+  // Dates formació → DATE_FIELDS
   Texto94: null,
   Texto95: null,
-
-  // ── Page 3 lower: firma fields ──────────────────────────
-  Texto149: null,                  // localidad firma
-  Texto150: null,                  // día firma
-  Texto151: null,                  // mes firma
-  Texto152: null,                  // año firma
-  Texto153: null,                  // firma text
-  Texto154: null,                  // delegación
-  Texto155: null,
-  Texto156: null,
 };
 
-export const EX_10_SEXO_CHECKBOXES: Record<string, string> = {
-  "Casilla de verificación96": "H",
-  "Casilla de verificación97": "M",
-  "Casilla de verificación98": "X",
+/* =========================================================
+ * 2) DATE FIELDS
+ * ======================================================= */
+
+export const EX_10_DATE_FIELDS: Record<
+  string,
+  { dd: string; mm: string; yyyy: string }
+> = {
+  fechaNacimiento: {
+    dd: "Texto8",
+    mm: "Texto9",
+    yyyy: "Texto10",
+  },
+  familiar_fechaNacimiento: {
+    dd: "Texto34",
+    mm: "Texto35",
+    yyyy: "Texto36",
+  },
+  formacio_fechaInici: {
+    dd: "Texto94",
+    mm: "Texto95",
+    yyyy: "", // pendent de confirmar si l’any va en un altre field
+  },
+  formacio_fechaFi: {
+    dd: "",
+    mm: "",
+    yyyy: "", // pendent de confirmar amb el PDF real
+  },
 };
 
-export const EX_10_TIPO_DOC_CHECKBOXES: Record<string, string> = {
-  "Casilla de verificación99":  "pasaporte",
-  "Casilla de verificación100": "titulo_viaje",
-  "Casilla de verificación101": "cedula",
-  "Casilla de verificación102": "documento_identidad",
-  "Casilla de verificación103": "nie",
+// ==============================
+// EX-10 — CHECKBOX MAPPING
+// ==============================
+
+// ------------------------------
+// 1. SEXE (persona estrangera)
+// ------------------------------
+export const EX_10_SEXO_CHECKBOXES: Record<
+  string,
+  "H" | "M" | "X"
+> = {
+  "Casilla de verificación96": "X",
+  "Casilla de verificación97": "H",
+  "Casilla de verificación98": "M",
 };
 
-export const EX_10_ESTADO_CIVIL_CHECKBOXES: Record<string, string> = {
-  "Casilla de verificación104": "soltero",
-  "Casilla de verificación105": "casado",
-  "Casilla de verificación106": "viudo",
-  "Casilla de verificación107": "separado",
-  "Casilla de verificación108": "divorciado",
-  "Casilla de verificación109": "pareja_hecho",
+// ------------------------------
+// 2. ESTAT CIVIL (persona estrangera)
+// ------------------------------
+export const EX_10_ESTADO_CIVIL_CHECKBOXES: Record<
+  string,
+  "soltero" | "casado" | "viudo" | "divorciado" | "separado"
+> = {
+  "Casilla de verificación99": "soltero",
+  "Casilla de verificación100": "casado",
+  "Casilla de verificación101": "viudo",
+  "Casilla de verificación102": "divorciado",
+  // ⚠️ pendent identificar:
+  // "Casilla de verificaciónXXX": "separado",
 };
 
-export const EX_10_CIRCUNSTANCIA_CHECKBOXES: Record<string, string> = {
-  "Casilla de verificación119": "arraigo_familiar",
-  "Casilla de verificación120": "arraigo_social",
-  "Casilla de verificación121": "arraigo_sociolaboral",
-  "Casilla de verificación122": "arraigo_socioformatiu",
-  "Casilla de verificación123": "arraigo_segona_oportunitat",
-  "Casilla de verificación124": "residencia_humanitaria",
-  "Casilla de verificación125": "victima_violencia_genere",
-  "Casilla de verificación126": "victima_violencia_sexual",
-  "Casilla de verificación127": "victima_trata",
-  "Casilla de verificación128": "colaboracio_autoritats_policials",
-  "Casilla de verificación129": "colaboracio_interes_public",
-  "Casilla de verificación130": "colaboracio_contra_xarxes_admin",
-  "Casilla de verificación131": "colaboracio_contra_xarxes_policial",
-  "Casilla de verificación132": "residencia_retorn_voluntari",
+// ------------------------------
+// 3. SEXE (familiar UE)
+// ------------------------------
+export const EX_10_FAMILIAR_SEXO_CHECKBOXES: Record<
+  string,
+  "H" | "M" | "X"
+> = {
+  "Casilla de verificación103": "X",
+  "Casilla de verificación104": "H",
+  "Casilla de verificación105": "M",
 };
 
-export const EX_10_HIJOS_CHECKBOXES: Record<string, boolean> = {
-  // EX-10 does not have hijosEscolarizacion checkboxes
+// ------------------------------
+// 4. ESTRUCTURA UNIFICADA (helper)
+// ------------------------------
+export const EX_10_CHECKBOXES = {
+  sexo: EX_10_SEXO_CHECKBOXES,
+  estadoCivil: EX_10_ESTADO_CIVIL_CHECKBOXES,
+  familiarSexo: EX_10_FAMILIAR_SEXO_CHECKBOXES,
 };
 
-export const EX_10_CONSENTIMIENTO_CHECKBOX = "Casilla de verificación112";
+// ------------------------------
+// 5. FUNCIONS D’UTILITAT
+// ------------------------------
+export function getCheckboxKeyByValue(
+  map: Record<string, string>,
+  value: string
+): string | undefined {
+  return Object.entries(map).find(([, v]) => v === value)?.[0];
+}
 
-export const EX_10_DATE_FIELDS = {
-  fechaNacimiento: { dd: "Texto8", mm: "Texto9", yyyy: "Texto10" },
-} as const;
+// Exemple d’ús:
+// getCheckboxKeyByValue(EX_10_SEXO_CHECKBOXES, "H")
+// → "Casilla de verificación97"
+
+/* =========================================================
+ * 4) FIELD MAP EXPORT
+ * ======================================================= */
+
+// Stubs — pending identification of real PDF field names
+export const EX_10_TIPO_DOC_CHECKBOXES: Record<string, string> = {};
+export const EX_10_CIRCUNSTANCIA_CHECKBOXES: Record<string, string> = {};
+export const EX_10_TIPO_AUTORIZACION_CHECKBOXES: Record<string, string> = {};
+export const EX_10_HIJOS_ESCOLARIZACION_CHECKBOXES: Record<string, boolean> = {};
+export const EX_10_CONSENTIMIENTO_CHECKBOX = "";
+export const EX_10_FAMILIAR_ESTADO_CIVIL_CHECKBOXES: Record<string, string> = {};
+export const EX_10_FORMACIO_TIPUS_CHECKBOXES: Record<string, string> = {};
+export const EX_10_FORMACIO_MODALITAT_CHECKBOXES: Record<string, string> = {};
+
+export const EX_10_FIELD_MAP: FieldMap = {
+  textFields: EX_10_TEXT_FIELDS,
+  sexoCheckboxes: EX_10_SEXO_CHECKBOXES,
+  tipoDocCheckboxes: EX_10_TIPO_DOC_CHECKBOXES,
+  estadoCivilCheckboxes: EX_10_ESTADO_CIVIL_CHECKBOXES,
+  circunstanciaCheckboxes: EX_10_CIRCUNSTANCIA_CHECKBOXES,
+  tipoAutorizacionCheckboxes: EX_10_TIPO_AUTORIZACION_CHECKBOXES,
+  hijosEscolarizacionCheckboxes: EX_10_HIJOS_ESCOLARIZACION_CHECKBOXES,
+  consentimientoCheckbox: EX_10_CONSENTIMIENTO_CHECKBOX,
+  dateFields: EX_10_DATE_FIELDS,
+
+  // específics del formulari
+  familiarSexoCheckboxes: EX_10_FAMILIAR_SEXO_CHECKBOXES,
+  familiarEstadoCivilCheckboxes: EX_10_FAMILIAR_ESTADO_CIVIL_CHECKBOXES,
+  formacioTipusCheckboxes: EX_10_FORMACIO_TIPUS_CHECKBOXES,
+  formacioModalitatCheckboxes: EX_10_FORMACIO_MODALITAT_CHECKBOXES,
+};
