@@ -1,0 +1,2162 @@
+{
+  "es": {
+    "b1-p0": {
+      "id": "b1-p0",
+      "text": "¿Tienes pasaporte accesible ahora mismo?",
+      "note": "Sin pasaporte en vigor no se puede tramitar ninguna autorización de residencia. Es la primera bifurcación crítica.",
+      "opts": [
+        "Sí, lo tengo",
+        "Retenido por la Brigada de Extranjería",
+        "Lo he perdido o destruido",
+        "Nunca he tenido",
+        "Tengo DNI del país pero no pasaporte"
+      ]
+    },
+    "b1-block-a": {
+      "id": "b1-block-a",
+      "text": "Pasaporte retenido por la Brigada Provincial de Extranjería y Fronteras",
+      "note": "La Brigada retiene el pasaporte cuando hay dudas sobre la edad declarada en la entrada. Puede tardar 6-7 meses. Puedes pedir un certificado que acredite que el documento está retenido. La entidad tutora puede hacer seguimiento.",
+      "opts": [
+        "¿Hay causa penal abierta en fiscalía?",
+        "No, es retención administrativa → esperar"
+      ]
+    },
+    "b1-p0b": {
+      "id": "b1-p0b",
+      "text": "¿La Brigada te ha dicho que hay una causa penal abierta en fiscalía?",
+      "note": "La retención administrativa del pasaporte es habitual y temporal. Si además hay causa penal por presunta falsificación documental, la situación es diferente y requiere abogado urgente.",
+      "opts": [
+        "Sí, hay causa penal",
+        "No, solo retención administrativa"
+      ]
+    },
+    "b1-sos1-doc": {
+      "id": "b1-sos1-doc",
+      "text": "Causa penal abierta por tu documentación de entrada",
+      "note": "Necesitas abogado especializado en derecho penal y extranjería. No intentes resolverlo solo. El turno de oficio puede asignarte un abogado gratuitamente si no tienes recursos.",
+      "opts": [
+        "Contactar CEAR / SJM / turno de oficio",
+        "Buscar abogado especializado urgente"
+      ]
+    },
+    "b1-block-a-wait": {
+      "id": "b1-block-a-wait",
+      "text": "Retención administrativa — esperar resolución (6-7 meses)",
+      "note": "Recoge mientras esperas: padrón, tarjeta sanitaria, informes escolares o laborales, certificados de la entidad tutora. Cuando recuperes el pasaporte, vuelve aquí y continúa.",
+      "opts": [
+        "✓ Tengo el pasaporte de nuevo → continúa por P1",
+        "Pedir certificado de retención a la Brigada"
+      ]
+    },
+    "b1-block-b": {
+      "id": "b1-block-b",
+      "text": "Pasaporte perdido o destruido — renovar en el consulado del país de origen",
+      "note": "Lleva el DNI del país de origen. Senegal, Guinea, Gambia y Benín suelen aceptar renovación con DNI nacional. Tiempo estimado: 1-3 meses. La entidad puede acompañar al consulado.",
+      "opts": [
+        "✓ Tengo el pasaporte nuevo → continúa por P1",
+        "Contactar entidad para acompañamiento al consulado"
+      ]
+    },
+    "b1-block-c": {
+      "id": "b1-block-c",
+      "text": "Sin ningún documento de viaje — solicitar pasaporte en el consulado",
+      "note": "Lleva cualquier documento de identidad que tengas. ATENCIÓN: si hay riesgo de persecución en el país de origen, consulta sobre protección internacional ANTES de ir al consulado — ir puede ser peligroso.",
+      "opts": [
+        "⚠ Hay riesgo → deriva a Rama Asilo (B4)",
+        "✓ Tengo el pasaporte nuevo → continúa por P1",
+        "Contactar entidad para acompañamiento"
+      ]
+    },
+    "b1-block-d": {
+      "id": "b1-block-d",
+      "text": "Tienes DNI del país de origen pero no pasaporte",
+      "note": "El DNI del país de origen no tiene validez en España como documento de viaje. Con él puedes: empadronarte, acceder a sanidad y educación. NO puedes tramitar ninguna autorización de residencia hasta tener pasaporte.",
+      "opts": [
+        "Solicitar pasaporte en el consulado con el DNI",
+        "Contactar entidad de referencia"
+      ]
+    },
+    "b1-p1": {
+      "id": "b1-p1",
+      "text": "¿Eres menor de edad o has cumplido los 18 años hace menos de 3 meses?",
+      "note": "Vía del menor no acompañado (art. 174 RD 1155/2024): para quien estaba tutelado por un servicio de protección de menores y llega a la mayoría de edad sin autorización de residencia. Ventana: 2 meses ANTES hasta 3 meses POSTERIORES a los 18 años. Vía excepcional: hasta los 20 años si hay causas ajenas debidamente acreditadas + informe de la CA.",
+      "opts": [
+        "Sí, soy menor de edad (< 18 años)",
+        "Tenía tutela y he cumplido 18 años hace < 3 meses",
+        "He cumplido 18 años hace entre 3 meses y 2 años (vía excepcional hasta 20a)",
+        "No, soy mayor de edad sin tutela"
+      ]
+    },
+    "b1-r-menor": {
+      "id": "b1-r-menor",
+      "text": "Vía del menor no acompañado — solicita AHORA (art. 174 RD 1155/2024)",
+      "note": "Requisitos: estar bajo tutela, custodia o guarda de un servicio de protección de menores + haber participado en acciones formativas programadas por la entidad (o acreditar integración) + medios económicos suficientes (IMV o programa público/privado). Plazo: 2 meses ANTES hasta 3 meses POSTERIORES a los 18 años. Formulario EX-25. Habilita para trabajar por cuenta ajena y propia. Silencio administrativo: DESFAVORABLE (3 meses sin respuesta = denegado).",
+      "opts": [
+        "Formulario: EX-25",
+        "Contactar servicio de protección de menores de la CA"
+      ]
+    },
+    "b1-p2": {
+      "id": "b1-p2",
+      "text": "Regularización extraordinaria — ¿cumples los requisitos?",
+      "note": "Plazo: 16 abril – 30 junio 2026 (ACTIVA AHORA). Requisitos: (1) Estar en España antes del 1 de enero de 2026. (2) Permanencia ininterrumpida mínima de 5 meses. (3) Sin antecedentes penales. NO necesita pasaporte — acepta cédula de inscripción o título de viaje. NO puede tener ninguna solicitud en trámite.",
+      "opts": [
+        "Sí, cumplo todos los requisitos",
+        "No / no lo sé"
+      ]
+    },
+    "b1-r-reg": {
+      "id": "b1-r-reg",
+      "text": "Regularización extraordinaria — SOLICITA AHORA (hasta 30/06/2026)",
+      "note": "Documentación: copia pasaporte/cédula de inscripción/título de viaje + prueba de estar en España antes 01/01/2026 + prueba de los 5 meses de permanencia + certificado antecedentes penales (España + país de origen). Vía telemática: disponible 24h. Vía presencial: cita previa obligatoria. Tel. 060 (9:30-14h y 16:30-19:30h). Con la admisión a trámite ya se puede trabajar. Autorización resultante: 1 año.",
+      "opts": [
+        "Vía telemática (24h, sin cita)",
+        "Vía presencial — pedir cita previa",
+        "Tel. 060 para dudas y cita"
+      ]
+    },
+    "b1-p3": {
+      "id": "b1-p3",
+      "text": "¿Cuánto tiempo llevas viviendo en España de forma continuada?",
+      "note": "Hay que poder acreditar la residencia continuada: padrón, facturas, informes escolares, tarjeta sanitaria, certificados de servicios sociales. Si llevas menos de 5 meses o llegaste después del 1/1/2026, la regularización extraordinaria tampoco aplica.",
+      "opts": [
+        "Menos de 1 año",
+        "Entre 1 y 2 años",
+        "Más de 2 años"
+      ]
+    },
+    "b1-r-aviat": {
+      "id": "b1-r-aviat",
+      "text": "Demasiado pronto — recoge documentación para el futuro",
+      "note": "Recoge desde ahora: padrón, facturas con dirección, fotos fechadas, informes escolares o de servicios sociales. Cuando llegues a los 2 años vuelve al árbol.",
+      "opts": [
+        "Derivación: CEAR / SJM / entidad local"
+      ]
+    },
+    "b1-r-gairebe": {
+      "id": "b1-r-gairebe",
+      "text": "Casi — empieza a preparar el arraigo social ya",
+      "note": "Solicita ahora el informe de integración a la Comunidad Autónoma (puede tardar meses). Recoge pruebas de residencia continuada. Busca precontrato laboral si es posible.",
+      "opts": [
+        "Solicitar informe integración CA ahora"
+      ]
+    },
+    "b1-p4": {
+      "id": "b1-p4",
+      "text": "¿Tienes un empresario dispuesto a hacerte contrato de trabajo?",
+      "note": "El contrato debe ser mínimo 90 días y mínimo 20h/semana. El salario debe ser como mínimo el SMI proporcional a la jornada. Se acepta cualquier modalidad de contrato. La empresa debe estar al corriente de la Seguridad Social.",
+      "opts": [
+        "Sí, tengo contrato o precontrato",
+        "No"
+      ]
+    },
+    "b1-r-laboral": {
+      "id": "b1-r-laboral",
+      "text": "Arraigo sociolaboral",
+      "note": "Requisitos: 2 años residencia continuada + contrato en vigor mínimo 90 días (3 meses) y mínimo 20h/semana + salario mínimo SMI proporcional. Se acepta cualquier modalidad: indefinido, temporal, fijo discontinuo, sustitución. Desde la admisión a trámite ya se puede trabajar. Autorización: 1 año. Formulario EX-10.",
+      "opts": [
+        "Formulario: EX-10 arraigo sociolaboral",
+        "Desde la admisión a trámite → ya puedes trabajar"
+      ]
+    },
+    "b1-p5": {
+      "id": "b1-p5",
+      "text": "¿Estás matriculado o puedes matricularte en formación oficial en España?",
+      "note": "Formación válida para el arraigo socioformativo: FP grado medio o superior, certificados de profesionalidad (niveles 1, 2 o 3), ESO/educación adultos, formación SEPE orientada a empleo. NO cuentan cursos no oficiales ni academias no acreditadas. Máximo 50% en línea. Se puede trabajar 30h/semana mientras se estudia.",
+      "opts": [
+        "Sí, estoy matriculado o lo puedo hacer",
+        "No"
+      ]
+    },
+    "b1-r-formatiu": {
+      "id": "b1-r-formatiu",
+      "text": "Arraigo socioformativo",
+      "note": "Requisitos: 2 años residencia continuada + matrícula en formación oficial válida (FP, certificado profesionalidad, ESO adultos, formación SEPE) + informe de integración social de la CA. Se puede trabajar 30h/semana mientras se estudia (cuenta propia o ajena). Al completar la formación → modificación a permiso de trabajo. Formulario EX-10.",
+      "opts": [
+        "Formulario: EX-10 arraigo socioformativo",
+        "Se puede trabajar 30h/semana mientras se estudia"
+      ]
+    },
+    "b1-p6": {
+      "id": "b1-p6",
+      "text": "¿Tienes familiares directos con residencia legal o nacionalidad española?",
+      "note": "ATENCIÓN: El arraigo familiar clásico ahora es para padres de menores ciudadanos UE (no españoles). Si el familiar es ESPAÑOL, el trámite es diferente: es una \"autorización de residencia de familiar de persona con nacionalidad española\" (EX-24), no arraigo. Familiares de residentes legales (cónyuge/pareja o familiar 1º grado en línea directa) van por arraigo social con medios económicos.",
+      "opts": [
+        "Sí, hijo/a o progenitor de español/a",
+        "Sí, cónyuge o pareja de residente legal",
+        "Sí, padre/madre de menor ciudadano UE (no español)",
+        "No"
+      ]
+    },
+    "b1-r-familiar": {
+      "id": "b1-r-familiar",
+      "text": "Arraigo social por vínculos familiares (cónyuge/pareja de residente legal)",
+      "note": "Requisitos: 2 años residencia continuada + vínculo familiar acreditado (cónyuge o pareja de hecho registrada, o familiar en 1º grado en línea directa, con residencia legal) + medios económicos 200% IPREM (~1.200€/mes). Formulario EX-10. Nota: si el familiar es ESPAÑOL, ver opción EX-24.",
+      "opts": [
+        "Formulario: EX-10 arraigo social"
+      ]
+    },
+    "b1-p7": {
+      "id": "b1-p7",
+      "text": "¿Tienes o puedes obtener informe de integración social de la Comunidad Autónoma?",
+      "note": "El informe de integración lo solicitas en la CA donde resides (servicios sociales u órgano equivalente). En Cataluña: Departament de Drets Socials. En Madrid: Comunidad de Madrid. Puede tardar 2-6 meses. Hay que pedirlo con antelación. Acredita: tiempo de permanencia, conocimiento de la lengua, participación en actividades sociales.",
+      "opts": [
+        "Sí, lo tengo o lo puedo solicitar",
+        "No / en trámite"
+      ]
+    },
+    "b1-r-social": {
+      "id": "b1-r-social",
+      "text": "Arraigo social",
+      "note": "Requisitos: 2 años residencia continuada + informe integración CA (o vínculos familiares con residentes legales) + medios económicos propios o familiares equivalentes al 100% IPREM. Permite trabajar por cuenta propia o ajena. Formulario EX-10.",
+      "opts": [
+        "Formulario: EX-10 arraigo social",
+        "Solicitar informe integración CA ya (tarda meses)"
+      ]
+    },
+    "b1-p8": {
+      "id": "b1-p8",
+      "text": "¿Tu situación implica riesgo inmediato? (detención, expulsión, policía)",
+      "note": "Si te están reteniendo ahora mismo o tienes una notificación de expulsión inminente, activa el modo SOS. Si la situación es estable pero no tienes ninguna vía, contacta con una entidad.",
+      "opts": [
+        "Sí, riesgo inmediato ahora",
+        "No, la situación es estable"
+      ]
+    },
+    "b1-sos2": {
+      "id": "b1-sos2",
+      "text": "MODO SOS — Riesgo inmediato",
+      "note": "Tienes derecho a asistencia jurídica gratuita. Tienes derecho a intérprete. No debes firmar ningún documento sin leerlo y entenderlo. Puedes pedir que se contacte con tu abogado o entidad de referencia.",
+      "opts": [
+        "Llamar CEAR: 91 598 05 35",
+        "Llamar SJM: 91 445 90 85",
+        "Muestra esta pantalla a la policía"
+      ]
+    },
+    "b1-r-sense": {
+      "id": "b1-r-sense",
+      "text": "Sin vía activa ahora — acompañamiento y preparación",
+      "note": "Ninguna vía activa ahora mismo para tu perfil. Contacta con una entidad de referencia: CEAR, SJM, Cruz Roja o entidad local. Recoge documentación de residencia. Si la situación cambia (trabajo, formación, familiar), vuelve al árbol. El arraigo de 2ª oportunidad NO aplica si nunca has tenido autorización de residencia.",
+      "opts": [
+        "Derivación: entidad local cercana"
+      ]
+    },
+    "b1-r-familiar-espanyol": {
+      "id": "b1-r-familiar-espanyol",
+      "text": "Autorización residencia familiar de persona con nacionalidad española",
+      "note": "Hijo/a de padre/madre español/a de origen (sin límite de edad), cónyuge o pareja de español/a, ascendiente/descendiente a cargo. NO requiere tiempo mínimo de residencia en España. Autorización inicial 5 años. Formulario EX-24.",
+      "opts": [
+        "Formulario: EX-24",
+        "No hace falta tiempo mínimo de residencia"
+      ]
+    },
+    "b1-r-familiar-ue": {
+      "id": "b1-r-familiar-ue",
+      "text": "Arraigo familiar — padre/madre de menor ciudadano UE no español",
+      "note": "Para padres/madres de hijo/a menor de nacionalidad UE/EEE/Suiza (no española). Hay que tener al menor a cargo y convivir con él/ella. Formulario EX-10.",
+      "opts": [
+        "Formulario: EX-10 arraigo familiar"
+      ]
+    },
+    "b1-r-menor-excepcional": {
+      "id": "b1-r-menor-excepcional",
+      "text": "Vía excepcional menor — hasta los 20 años",
+      "note": "Si el plazo ordinario (3 meses posteriores a los 18 años) ha pasado pero todavía no has cumplido 20 años, puedes solicitar excepcionalmente si acreditas causas ajenas debidamente documentadas + informe de la comunidad autónoma o ayuntamiento. Contacta URGENTEMENTE con la entidad que te ha tutelado o con un abogado especializado en menores.",
+      "opts": [
+        "Contactar servicio de protección de menores URGENTE",
+        "Abogado especializado en menores extranjeros",
+        "CEAR / SJM: asesoramiento gratuito"
+      ]
+    },
+    "b2-p0": {
+      "id": "b2-p0",
+      "text": "¿Qué tipo de autorización tienes o tenías?",
+      "note": "Mira tu tarjeta (TIE) o la resolución. El tipo consta en el documento.",
+      "opts": [
+        "Residencia temporal (1-2 años, en vigor)",
+        "Residencia larga duración (5+ años, en vigor)",
+        "Tengo autorización pero ha caducado",
+        "Tuve autorización pero la perdí (irregular ahora)",
+        "No sé qué tipo tengo"
+      ]
+    },
+    "b2-r-identificar": {
+      "id": "b2-r-identificar",
+      "text": "Identifica tu documento — llévalo a una entidad",
+      "note": "Lleva tu documento físico (TIE o resolución) a una entidad de referencia u oficina de extranjería. Podrán decirte exactamente qué tipo de autorización tienes y qué opciones tienes.",
+      "opts": [
+        "Derivación: oficina extranjería o entidad"
+      ]
+    },
+    "b2-p1": {
+      "id": "b2-p1",
+      "text": "¿Cuándo caduca tu autorización de residencia temporal?",
+      "note": "Plazo oficial: desde 60 días ANTES hasta 90 días DESPUÉS de la caducidad. Con la solicitud presentada en plazo, la validez se alarga hasta la resolución (máx. 3 meses). Silencio administrativo es FAVORABLE en renovación.",
+      "opts": [
+        "Más de 2 meses (60 días)",
+        "Menos de 2 meses",
+        "Ya ha caducado (menos de 90 días)"
+      ]
+    },
+    "b2-r-ok": {
+      "id": "b2-r-ok",
+      "text": "Tienes tiempo — prepara la renovación ahora",
+      "note": "Presenta entre 60 días antes y la fecha de caducidad. La renovación aprobada dura 2 años. Documentación base: formulario EX correspondiente, pasaporte en vigor, padrón, antecedentes penales + documentación específica de tu tipo de permiso. Vía telemática (Mercurio) o presencial con cita previa.",
+      "opts": [
+        "Cuenta ajena → EX-13 + contrato + vida laboral",
+        "Cuenta propia → EX-15 + actividad + cotizaciones SS",
+        "No lucrativa → EX-07 + medios económicos + seguro"
+      ]
+    },
+    "b2-r-urgent": {
+      "id": "b2-r-urgent",
+      "text": "URGENTE — menos de 2 meses para caducar",
+      "note": "Presenta la solicitud ESTA SEMANA. Con la solicitud presentada, la validez se alarga hasta la resolución. Silencio administrativo FAVORABLE: si no hay respuesta en 3 meses, se entiende aprobada.",
+      "opts": [
+        "Vía Mercurio (telemática) o cita presencial urgente",
+        "Consultar entidad de apoyo"
+      ]
+    },
+    "b2-r-critic": {
+      "id": "b2-r-critic",
+      "text": "CRÍTICO — caduca en menos de 1 mes",
+      "note": "Situación muy urgente. Presenta la solicitud hoy si es posible. Con la solicitud presentada, incluso fuera de plazo, la resolución positiva regularizará tu situación. Busca ayuda de un abogado o entidad especializada.",
+      "opts": [
+        "CEAR: 91 598 05 35",
+        "SJM: 91 445 90 85",
+        "Presentar solicitud hoy"
+      ]
+    },
+    "b2-r-ld": {
+      "id": "b2-r-ld",
+      "text": "Residencia de larga duración — situación estable",
+      "note": "La larga duración es indefinida. La TIE se debe renovar cada 5 años (trámite sencillo, no implica revisar el fondo). Tienes derechos laborales plenos, puedes reagrupar familia y computa tiempo para la nacionalidad.",
+      "opts": [
+        "TIE caducada → renovar (EX-17, trámite sencillo)",
+        "Próxima meta → solicitud de nacionalidad"
+      ]
+    },
+    "b2-p2": {
+      "id": "b2-p2",
+      "text": "¿Cuánto tiempo hace que caducó tu autorización?",
+      "note": "Pasados 90 días de la caducidad sin presentar solicitud, la renovación ordinaria ya no es posible.",
+      "opts": [
+        "Menos de 90 días → todavía puedes renovar",
+        "Entre 90 días y 1 año",
+        "Más de 1 año"
+      ]
+    },
+    "b2-r-caducada-recent": {
+      "id": "b2-r-caducada-recent",
+      "text": "Caducada hace menos de 90 días — todavía puedes renovar",
+      "note": "Legalmente puedes presentar hasta 90 días DESPUÉS de la caducidad. Atención: estás en situación irregular (infracción leve si <3 meses, grave si >3 meses). Presenta hoy. Se puede abrir expediente sancionador, pero la renovación aprobada regulariza la situación.",
+      "opts": [
+        "Presentar solicitud de renovación hoy",
+        "Buscar apoyo de entidad o abogado"
+      ]
+    },
+    "b2-r-caducada-mitja": {
+      "id": "b2-r-caducada-mitja",
+      "text": "Caducada hace entre 90 días y 1 año — irregular grave",
+      "note": "Renovación ordinaria ya no posible. Situación irregular grave (multa o expediente de expulsión posible). Opciones: (1) Llevas 2 años en España → arraigo Rama 1. (2) Autorización en últimos 2 años → arraigo 2ª oportunidad. (3) Regularización extraordinaria hasta 30/06/2026 si cumples requisitos.",
+      "opts": [
+        "Llevas 2 años en España → Rama 1 arraigo",
+        "Arraigo 2ª oportunidad",
+        "Regularización extraordinaria hasta 30/06/2026",
+        "Consultar abogado o CEAR/SJM urgente"
+      ]
+    },
+    "b2-r-caducada-llarga": {
+      "id": "b2-r-caducada-llarga",
+      "text": "Caducada hace más de 1 año — situación compleja",
+      "note": "La renovación ordinaria probablemente no es viable. Las opciones dependen de la situación concreta: si llevas 2+ años en España puedes optar a arraigo (ver Rama 1). Si tuviste autorización en los últimos 2 años, puedes optar a arraigo de 2ª oportunidad.",
+      "opts": [
+        "¿Llevas 2 años en España? → Rama 1 arraigo",
+        "Autorización en últimos 2 años → arraigo 2ª oportunidad",
+        "Consultar abogado urgente"
+      ]
+    },
+    "b2-p3": {
+      "id": "b2-p3",
+      "text": "¿Cuándo perdiste o dejaste de tener la autorización?",
+      "note": "El arraigo de 2ª oportunidad requiere haber tenido autorización en los 2 años inmediatamente anteriores a la solicitud.",
+      "opts": [
+        "Hace menos de 2 años",
+        "Hace más de 2 años"
+      ]
+    },
+    "b2-r-2a-op": {
+      "id": "b2-r-2a-op",
+      "text": "Arraigo de 2ª oportunidad",
+      "note": "Para quien tuvo autorización de residencia (NO por circunstancias excepcionales, es decir no un arraigo anterior) en los últimos 2 años y no pudo renovar por motivos que NO sean orden público ni seguridad. Requisitos: 2 años residencia continuada + sin antecedentes penales. EXCLUYE solicitantes de asilo activos y quien viene de un arraigo anterior. Autorización: 1 año + trabajo. Formulario EX-10.",
+      "opts": [
+        "Formulario: EX-10 arraigo 2ª oportunidad",
+        "¿La autorización anterior era un arraigo? → no aplica"
+      ]
+    },
+    "b2-r-antiga": {
+      "id": "b2-r-antiga",
+      "text": "Autorización hace más de 2 años — arraigo 2ª oportunidad no disponible",
+      "note": "El arraigo de 2ª oportunidad requiere que la autorización fuera en los últimos 2 años. Si hace más tiempo, esta vía no es accesible. Opciones: si llevas 2+ años en España, mira las vías de arraigo de la Rama 1 (sociolaboral, socioformativo, social).",
+      "opts": [
+        "¿Llevas 2 años en España? → Rama 1",
+        "Consultar abogado o entidad"
+      ]
+    },
+    "b3-p0": {
+      "id": "b3-p0",
+      "text": "¿Eres ciudadano/a de la UE, el EEE o Suiza?",
+      "note": "UE: Alemania, Austria, Bélgica, Bulgaria, Croacia, Dinamarca, Eslovaquia, Eslovenia, España, Estonia, Finlandia, Francia, Grecia, Hungría, Irlanda, Italia, Letonia, Lituania, Luxemburgo, Malta, Países Bajos, Polonia, Portugal, Rumanía, Suecia, Chequia, Chipre. EEE además: Islandia, Liechtenstein, Noruega. Suiza por acuerdo bilateral.",
+      "opts": [
+        "Sí, soy ciudadano/a UE/EEE/Suiza",
+        "No, soy familiar no comunitario de un/a ciudadano/a UE",
+        "Soy familiar de un/a español/a"
+      ]
+    },
+    "b3-p1": {
+      "id": "b3-p1",
+      "text": "¿Cuánto tiempo llevas en España o tienes previsto quedarte?",
+      "note": "La libertad de circulación UE permite estar hasta 90 días sin ningún trámite. A partir del día 91, hay que registrarse obligatoriamente.",
+      "opts": [
+        "Menos de 3 meses (90 días)",
+        "Más de 3 meses"
+      ]
+    },
+    "b3-r-curta": {
+      "id": "b3-r-curta",
+      "text": "Estancia corta — no hace falta ningún trámite",
+      "note": "Hasta 90 días puedes estar en España libremente con tu pasaporte o DNI nacional. No necesitas registrarte ni obtener ningún documento. Si quieres trabajar, necesitas el NIE para gestiones fiscales, pero no es obligatorio para la estancia.",
+      "opts": [
+        "Si trabajarás → solicita NIE en la oficina de extranjería"
+      ]
+    },
+    "b3-p2": {
+      "id": "b3-p2",
+      "text": "¿Te has registrado en el Registro Central de Extranjeros (certificado verde)?",
+      "note": "El certificado verde (NIE verde / CUE) es obligatorio si resides más de 3 meses. Hay que pedirlo en los primeros 3 meses desde la entrada. Se obtiene en la oficina de extranjería o comisaría de policía de tu provincia. Formulario EX-18. Se expide inmediatamente el mismo día.",
+      "opts": [
+        "No, no me lo he hecho",
+        "Sí, ya lo tengo"
+      ]
+    },
+    "b3-r-registre": {
+      "id": "b3-r-registre",
+      "text": "Hay que registrarse — obtener el certificado verde (NIE verde)",
+      "note": "Obligatorio si llevas o llevarás más de 3 meses. Plazo: primeros 3 meses desde la entrada. Dónde: oficina de extranjería o comisaría de policía de tu provincia. Hace falta cita previa (alta demanda, reserva con tiempo). Documentos: formulario EX-18 + pasaporte/DNI en vigor + documentación que justifique el motivo de residencia (contrato, matrícula, medios económicos + seguro médico). Tasa: 790 código 012. El certificado se expide el mismo día. No caduca pero la residencia debe mantenerse.",
+      "opts": [
+        "Trabajador/a cuenta ajena → contrato laboral o declaración empresa",
+        "Trabajador/a cuenta propia → alta censal o SS",
+        "Estudiante → matrícula + medios económicos + seguro médico",
+        "Sin actividad → medios económicos suficientes + seguro médico"
+      ]
+    },
+    "b3-p3": {
+      "id": "b3-p3",
+      "text": "¿Cuánto tiempo llevas residiendo legalmente en España?",
+      "note": "La residencia permanente se adquiere con 5 años de residencia legal continuada. Interrupciones de menos de 2 años consecutivos no afectan al cómputo.",
+      "opts": [
+        "Menos de 5 años",
+        "5 años o más"
+      ]
+    },
+    "b3-r-permanent": {
+      "id": "b3-r-permanent",
+      "text": "Residencia permanente UE — derechos plenos",
+      "note": "Con 5 años de residencia legal continuada tienes derecho a la residencia permanente. El certificado de residencia permanente UE se obtiene en la oficina de extranjería o comisaría. Formulario EX-18. Validez: 10 años, renovable automáticamente. Derechos: trabajo, servicios sociales, sanidad, reagrupación familiar, opción a nacionalidad (10 años de residencia legal total, reducidos a 2 años para iberoamericanos y otros países con convenio).",
+      "opts": [
+        "Solicitar certificado de residencia permanente (EX-18)",
+        "Iniciar proceso de nacionalidad si tienes 10 años"
+      ]
+    },
+    "b3-p4": {
+      "id": "b3-p4",
+      "text": "¿Cuál es tu objetivo principal ahora mismo?",
+      "note": "",
+      "opts": [
+        "Trabajar en España",
+        "Traer familia de fuera de la UE",
+        "Estudiar",
+        "Acceder a sanidad o servicios sociales"
+      ]
+    },
+    "b3-r-treball": {
+      "id": "b3-r-treball",
+      "text": "Trabajar en España como ciudadano/a UE",
+      "note": "Tienes libre acceso al mercado laboral español. Con el certificado verde (NIE verde) puedes trabajar sin ningún permiso adicional. Para gestiones fiscales y laborales necesitas el NIE. La empresa tiene que darte de alta en la Seguridad Social. Si eres autónomo/a: alta en Hacienda (modelo 036/037) + alta SS.",
+      "opts": [
+        "¿Tienes el certificado verde? → ya puedes trabajar",
+        "No lo tienes → registrarse primero (EX-18)"
+      ]
+    },
+    "b3-r-familia": {
+      "id": "b3-r-familia",
+      "text": "Traer familia de fuera de la UE — régimen comunitario",
+      "note": "Los familiares no comunitarios (cónyuge, hijos <21 años o a cargo, ascendientes a cargo, pareja registrada) tienen derecho a acompañarte o reagruparse. El régimen comunitario es más favorable que el régimen general. Tienen que solicitar la Tarjeta de residencia de familiar de ciudadano UE. Formulario EX-19. Validez: 5 años. Plazo solicitud: 90 días desde la entrada a España. Coste: tasa 790 código 012 (equivalente al DNI español).",
+      "opts": [
+        "Familiar solicita EX-19 dentro de los 90 días de entrada",
+        "¿Cónyuge español? → EX-19 si ha ejercido libre circulación, EX-24 si no"
+      ]
+    },
+    "b3-r-estudis": {
+      "id": "b3-r-estudis",
+      "text": "Estudiar en España como ciudadano/a UE",
+      "note": "Tienes derecho a estudiar en igualdad de condiciones que los españoles (precios, becas, acceso). Necesitas el certificado verde si la estancia es superior a 3 meses. Documentos para el registro: formulario EX-18 + matrícula del centro educativo + medios económicos suficientes (demostrar que no serás una carga para el estado) + seguro médico público o privado con cobertura adecuada.",
+      "opts": [
+        "Registrarse (EX-18) + matrícula + medios + seguro"
+      ]
+    },
+    "b3-r-serveis": {
+      "id": "b3-r-serveis",
+      "text": "Acceso a sanidad y servicios sociales como ciudadano/a UE",
+      "note": "Con el certificado verde y cotizando a la Seguridad Social tienes acceso pleno a la sanidad pública. Si no trabajas, tienes que acreditar medios económicos y seguro médico. El empadronamiento te da acceso a servicios municipales y autonómicos. Tarjeta sanitaria individual: solicítala en el CAP o centro de salud de tu zona.",
+      "opts": [
+        "Empadronamiento + certificado verde → acceso servicios"
+      ]
+    },
+    "b3-p-familiar": {
+      "id": "b3-p-familiar",
+      "text": "¿Cuál es tu vínculo con el/la ciudadano/a UE?",
+      "note": "El régimen comunitario es muy favorable para los familiares. La solicitud hay que hacerla en los 90 días desde la entrada a España. Formulario EX-19.",
+      "opts": [
+        "Cónyuge o pareja registrada",
+        "Hijo/a menor de 21 años o a cargo",
+        "Ascendiente a cargo (padre, madre...)",
+        "Otro familiar (hermanos, tíos...)"
+      ]
+    },
+    "b3-r-familiar-ue": {
+      "id": "b3-r-familiar-ue",
+      "text": "Tarjeta de residencia de familiar de ciudadano/a UE",
+      "note": "Solicitar en los 90 días desde la entrada. Documentos: formulario EX-19 + pasaporte válido + documentación del vínculo familiar (acta matrimonio/nacimiento apostillada y traducida) + NIE verde del familiar UE. Coste: tasa 790 código 012 (precio DNI). Validez inicial: 5 años. Después de 5 años → residencia permanente (10 años, renovable automáticamente). Formulario EX-19.",
+      "opts": [
+        "Formulario: EX-19 (dentro de 90 días de entrada)",
+        "5 años → residencia permanente automática"
+      ]
+    },
+    "b3-r-familiar-altres": {
+      "id": "b3-r-familiar-altres",
+      "text": "Familiar extenso — situación a valorar caso por caso",
+      "note": "Otros familiares (hermanos, cuñados, sobrinos...) no tienen derecho automático al régimen comunitario. Hay que acreditar dependencia económica o convivencia de 24 meses en el país de origen. La decisión es discrecional de la oficina de extranjería. Recomendamos asesoramiento de abogado especializado.",
+      "opts": [
+        "Consultar abogado especializado en derecho UE"
+      ]
+    },
+    "b3-r-familiar-espanyol": {
+      "id": "b3-r-familiar-espanyol",
+      "text": "Familiar de español/a — dos vías posibles",
+      "note": "Si tu familiar español/a ha ejercido el derecho a la libre circulación (ha vivido en otro país UE), puedes ir por EX-19 (régimen comunitario, muy favorable). Si no ha ejercido libre circulación, tienes que ir por EX-24 (régimen general de familiar de español). En caso de duda, consulta con abogado — la vía EX-19 es mucho más favorable y vale la pena explorarla.",
+      "opts": [
+        "Ha vivido en otro país UE → EX-19 (régimen comunitario)",
+        "Nunca ha vivido fuera de España → EX-24 (régimen general)",
+        "Consultar abogado para determinar la mejor vía"
+      ]
+    },
+    "b4-p0": {
+      "id": "b4-p0",
+      "text": "¿Dónde estás ahora mismo?",
+      "note": "El lugar donde te encuentras determina cómo tienes que proceder. Tienes derecho a solicitar protección internacional independientemente de dónde estés.",
+      "opts": [
+        "En España, en territorio nacional",
+        "En la frontera, puerto o aeropuerto español",
+        "En un CIE (Centro de Internamiento)"
+      ]
+    },
+    "b4-r-frontera": {
+      "id": "b4-r-frontera",
+      "text": "DERECHO A SOLICITAR ASILO EN LA FRONTERA — Muestra esta pantalla",
+      "note": "Tienes derecho a solicitar protección internacional en cualquier punto de entrada. Di claramente: 'Solicito protección internacional'. No te pueden expulsar hasta que se tramite la solicitud. Tienes derecho a intérprete gratuito. Tienes derecho a abogado gratuito. La solicitud es CONFIDENCIAL — no se comunica a tu país de origen. Si te inadmiten a trámite, tienes 2 días hábiles para presentar reexamen.",
+      "opts": [
+        "Di: SOLICITO PROTECCIÓN INTERNACIONAL",
+        "ACNUR España: 91 556 35 49",
+        "CEAR: 91 598 05 35"
+      ]
+    },
+    "b4-r-cie": {
+      "id": "b4-r-cie",
+      "text": "En un CIE — puedes solicitar asilo desde aquí",
+      "note": "Puedes solicitar protección internacional incluso estando internado/a en un CIE. Pide hablar con el abogado de guardia o contacta ACNUR o CEAR. Tienes derecho a intérprete y abogado gratuitos. La solicitud paraliza el procedimiento de expulsión mientras se tramita.",
+      "opts": [
+        "Solicitar asilo al personal del CIE",
+        "ACNUR: 91 556 35 49",
+        "CEAR: 91 598 05 35"
+      ]
+    },
+    "b4-p1": {
+      "id": "b4-p1",
+      "text": "¿Ya has presentado la solicitud de protección internacional?",
+      "note": "El plazo para solicitar asilo es de 1 mes desde la entrada a España. Si has superado el mes, puedes demostrar causa justificada para ampliar el plazo. El procedimiento es gratuito.",
+      "opts": [
+        "No, todavía no la he solicitado",
+        "Sí, estoy esperando resolución",
+        "Sí, me han denegado"
+      ]
+    },
+    "b4-p-nosol": {
+      "id": "b4-p-nosol",
+      "text": "¿Hace menos de 1 mes que has entrado a España?",
+      "note": "El plazo oficial es 1 mes desde la entrada. Pasado el plazo, puedes alegar causa justificada. El procedimiento es gratuito y confidencial.",
+      "opts": [
+        "Sí, hace menos de 1 mes",
+        "No, hace más de 1 mes"
+      ]
+    },
+    "b4-r-com-sol": {
+      "id": "b4-r-com-sol",
+      "text": "Cómo solicitar protección internacional en España",
+      "note": "Dónde presentarla: Oficina de Asilo y Refugio (OAR) — Madrid: C/ Pradillo 40; Comisarías de Policía con servicio de extranjería (cualquier provincia); Puestos fronterizos. Hace falta cita previa (alta demanda). El trámite es GRATUITO — desconfía de quien te cobre. Documentos: pasaporte o documento de identidad (si lo tienes — sin documentos también se puede solicitar). En la cita: explicas los motivos de tu solicitud. Te darán una 'Manifestación de voluntad' que te protege de la expulsión. Después: entrevista formal → hoja blanca (resguardo) → tarjeta roja (documento de solicitante).",
+      "opts": [
+        "OAR Madrid: C/ Pradillo 40, 28002",
+        "Comisaría de Policía (cualquier provincia)",
+        "ACNUR asesoramiento: 91 556 35 49"
+      ]
+    },
+    "b4-r-fora-termini": {
+      "id": "b4-r-fora-termini",
+      "text": "Fuera del plazo de 1 mes — pero todavía es posible",
+      "note": "Puedes alegar causa justificada para superar el plazo. Contacta con un abogado o entidad especializada (CEAR, SJM, ACNUR) para valorar tu caso. Si te encuentras en situación irregular, la solicitud de asilo paraliza cualquier expediente de expulsión mientras se tramita.",
+      "opts": [
+        "Contactar CEAR/SJM/ACNUR para valorar el caso",
+        "Presentar solicitud alegando causa justificada"
+      ]
+    },
+    "b4-p-espera": {
+      "id": "b4-p-espera",
+      "text": "¿En qué fase se encuentra tu solicitud?",
+      "note": "El plazo máximo de resolución es 6 meses desde la admisión a trámite, pero en la práctica puede tardar mucho más. Tienes derecho a consultar tu expediente en cualquier momento.",
+      "opts": [
+        "Estoy esperando admisión a trámite (<1 mes)",
+        "Admitida a trámite, esperando resolución",
+        "Tengo la tarjeta roja, estoy en el sistema"
+      ]
+    },
+    "b4-r-espera-admissio": {
+      "id": "b4-r-espera-admissio",
+      "text": "Esperando admisión a trámite — tienes la hoja blanca",
+      "note": "La hoja blanca (Resguardo de Presentación) es tu documento válido mientras esperas. La OAR tiene 1 mes para decidir si admite a trámite. En la práctica, se admite de forma automática casi siempre. Si no recibes notificación en 1 mes → la solicitud se entiende admitida. Renueva el documento cuando caduca (a los 9 meses de la hoja blanca).",
+      "opts": [
+        "Renovar cita cuando caduca la hoja blanca (9 meses)",
+        "Si te inadmiten → recurso en 2 días hábiles"
+      ]
+    },
+    "b4-r-espera-resolucio": {
+      "id": "b4-r-espera-resolucio",
+      "text": "Solicitud admitida — esperando resolución final",
+      "note": "Plazo máximo: 6 meses (puede tardar mucho más en la práctica). Tienes derecho a trabajar a los 6 meses de la solicitud si no has recibido resolución. Acceso a sanidad, educación y sistema de acogida (plazas limitadas). Renueva la tarjeta roja anualmente mientras esperas. Puedes consultar el estado de tu expediente en la OAR.",
+      "opts": [
+        "Derecho a trabajar a los 6 meses sin resolución",
+        "Renovar tarjeta roja anualmente",
+        "Regularización extraordinaria 2026 si cumples requisitos"
+      ]
+    },
+    "b4-r-tarjeta-roja": {
+      "id": "b4-r-tarjeta-roja",
+      "text": "Tienes la tarjeta roja — situación activa",
+      "note": "La tarjeta roja acredita que eres solicitante de protección internacional. Derechos: acceso a sanidad, educación, sistema de acogida. Derecho a trabajar a los 6 meses de la solicitud si no hay resolución. Renuévala anualmente. Si has solicitado el asilo antes del 01/01/2026, puedes optar a la regularización extraordinaria 2026.",
+      "opts": [
+        "Derecho a trabajar a los 6 meses",
+        "Regularización extraordinaria hasta 30/06/2026",
+        "Renovar tarjeta roja anualmente"
+      ]
+    },
+    "b4-r-reg-ext": {
+      "id": "b4-r-reg-ext",
+      "text": "Regularización extraordinaria 2026 — vía para solicitantes de asilo",
+      "note": "Si has solicitado protección internacional ANTES del 01/01/2026, puedes optar a la regularización extraordinaria hasta el 30/06/2026. Requisitos: mayor de edad + en España + 5 meses continuados + sin antecedentes penales + pasaporte/cédula/título de viaje (en vigor o caducado). Si te aprueban → debes desistir de la solicitud de asilo o el recurso. Autorización: 1 año + derecho a trabajar.",
+      "opts": [
+        "Solicitar hasta 30/06/2026 (telemático o presencial)",
+        "Tel. 060 para dudas y cita"
+      ]
+    },
+    "b4-p-denegat": {
+      "id": "b4-p-denegat",
+      "text": "¿Cuándo te han notificado la denegación?",
+      "note": "Los plazos para recurrir son muy estrictos. No los pierdas.",
+      "opts": [
+        "Hace menos de 2 días hábiles (inadmisión a trámite)",
+        "Hace menos de 1 mes (resolución definitiva)",
+        "Hace más de 1 mes"
+      ]
+    },
+    "b4-r-reexamen": {
+      "id": "b4-r-reexamen",
+      "text": "URGENTE — Reexamen: 2 días hábiles",
+      "note": "Si te han inadmitido a trámite, tienes SOLO 2 días hábiles para presentar el reexamen. Las autoridades tienen 48 horas para responder. Contacta INMEDIATAMENTE con un abogado o entidad. El servicio es gratuito.",
+      "opts": [
+        "CEAR: 91 598 05 35 — URGENTE",
+        "SJM: 91 445 90 85 — URGENTE",
+        "Abogado de oficio: solicitar en la Comisaría"
+      ]
+    },
+    "b4-r-recurs": {
+      "id": "b4-r-recurs",
+      "text": "URGENTE — Recurso contra denegación: 1 mes",
+      "note": "Tienes 1 mes desde la notificación para presentar recurso potestativo de reposición ante la OAR, o 2 meses para recurso contencioso-administrativo ante la Audiencia Nacional. Contacta abogado especializado en protección internacional. El servicio es gratuito si no tienes recursos. Considera si cumplías requisitos para la regularización extraordinaria 2026 (hasta 30/06/2026).",
+      "opts": [
+        "Recurso reposición (1 mes) → OAR",
+        "Recurso contencioso (2 meses) → Audiencia Nacional",
+        "Regularización extraordinaria si aplica → hasta 30/06/2026",
+        "CEAR/SJM/ACNUR — asesoramiento gratuito"
+      ]
+    },
+    "b4-r-denegat-antic": {
+      "id": "b4-r-denegat-antic",
+      "text": "Denegación hace más de 1 mes — opciones residuales",
+      "note": "Los plazos de recurso han pasado. Opciones: (1) Si has solicitado el asilo antes del 01/01/2026, puedes optar a la regularización extraordinaria hasta el 30/06/2026. (2) Si llevas 2 años en España, puedes optar a arraigo (ver Rama 1). (3) Protección humanitaria por motivos de salud o riesgo personal. Consulta con abogado o entidad especializada.",
+      "opts": [
+        "Regularización extraordinaria hasta 30/06/2026",
+        "Llevas 2 años en España → Rama 1 arraigo",
+        "Consultar CEAR/SJM/ACNUR"
+      ]
+    },
+    "b4-r-resolucio-positiva": {
+      "id": "b4-r-resolucio-positiva",
+      "text": "Resolución favorable — Estatuto de refugiado o protección subsidiaria",
+      "note": "Enhorabuena. Tienes derecho a: residencia y trabajo en España, documento de viaje (refugiados), reunificación familiar, acceso a servicios sociales en igualdad de condiciones, solicitud de nacionalidad a los 5 años (refugiados, en lugar de los 10 habituales). La tarjeta se debe renovar periódicamente pero el estatuto es estable.",
+      "opts": [
+        "Solicitar TIE como refugiado/a",
+        "Reunificación familiar — solicitar extensión",
+        "Nacionalidad a los 5 años (estatuto refugiado)"
+      ]
+    }
+  },
+  "fr": {
+    "b1-p0": {
+      "id": "b1-p0",
+      "text": "As-tu un passeport accessible en ce moment ?",
+      "note": "Sans passeport en cours de validité, aucune autorisation de résidence ne peut être traitée. C'est la première bifurcation critique.",
+      "opts": [
+        "Oui, je l'ai",
+        "Retenu par la Brigada de Extranjería",
+        "Je l'ai perdu ou détruit",
+        "Je n'en ai jamais eu",
+        "J'ai une carte d'identité du pays mais pas de passeport"
+      ]
+    },
+    "b1-block-a": {
+      "id": "b1-block-a",
+      "text": "Passeport retenu par la Brigada Provincial de Extranjería y Fronteras",
+      "note": "La Brigada retient le passeport quand il y a des doutes sur l'âge déclaré à l'entrée. Cela peut prendre 6-7 mois. Tu peux demander un certificat attestant que le document est retenu. L'organisme tuteur peut faire le suivi.",
+      "opts": [
+        "Y a-t-il une procédure pénale ouverte au parquet ?",
+        "Non, c'est une rétention administrative → attendre"
+      ]
+    },
+    "b1-p0b": {
+      "id": "b1-p0b",
+      "text": "La Brigada t'a-t-elle dit qu'il y a une procédure pénale ouverte au parquet ?",
+      "note": "La rétention administrative du passeport est habituelle et temporaire. S'il y a en plus une procédure pénale pour présumée falsification de documents, la situation est différente et nécessite un avocat urgent.",
+      "opts": [
+        "Oui, il y a une procédure pénale",
+        "Non, seulement une rétention administrative"
+      ]
+    },
+    "b1-sos1-doc": {
+      "id": "b1-sos1-doc",
+      "text": "Procédure pénale ouverte pour ta documentation d'entrée",
+      "note": "Tu as besoin d'un avocat spécialisé en droit pénal et droit des étrangers. N'essaie pas de résoudre cela seul. L'aide juridictionnelle peut t'assigner un avocat gratuit si tu n'as pas de ressources.",
+      "opts": [
+        "Contacter CEAR / SJM / aide juridictionnelle",
+        "Chercher un avocat spécialisé urgent"
+      ]
+    },
+    "b1-block-a-wait": {
+      "id": "b1-block-a-wait",
+      "text": "Rétention administrative — attendre la résolution (6-7 mois)",
+      "note": "Rassemble pendant que tu attends : certificat de domicile, carte de santé, bulletins scolaires ou rapports de travail, certificats de l'organisme tuteur. Quand tu récupères le passeport, reviens ici et continue.",
+      "opts": [
+        "✓ J'ai récupéré mon passeport → continuer par P1",
+        "Demander un certificat de rétention à la Brigada"
+      ]
+    },
+    "b1-block-b": {
+      "id": "b1-block-b",
+      "text": "Passeport perdu ou détruit — renouveler au consulat du pays d'origine",
+      "note": "Apporte la carte d'identité du pays d'origine. Le Sénégal, la Guinée, la Gambie et le Bénin acceptent généralement le renouvellement avec la carte d'identité nationale. Délai estimé : 1-3 mois. L'organisme peut accompagner au consulat.",
+      "opts": [
+        "✓ J'ai le nouveau passeport → continuer par P1",
+        "Contacter l'organisme pour accompagnement au consulat"
+      ]
+    },
+    "b1-block-c": {
+      "id": "b1-block-c",
+      "text": "Sans aucun document de voyage — demander un passeport au consulat",
+      "note": "Apporte tout document d'identité que tu as. ATTENTION : s'il y a un risque de persécution dans le pays d'origine, consulte sur la protection internationale AVANT d'aller au consulat — y aller peut être dangereux.",
+      "opts": [
+        "⚠ Il y a un risque → orienter vers Branche Asile (B4)",
+        "✓ J'ai le nouveau passeport → continuer par P1",
+        "Contacter l'organisme pour accompagnement"
+      ]
+    },
+    "b1-block-d": {
+      "id": "b1-block-d",
+      "text": "Tu as une carte d'identité du pays d'origine mais pas de passeport",
+      "note": "La carte d'identité du pays d'origine n'a pas de validité en Espagne comme document de voyage. Avec elle tu peux : t'inscrire au registre municipal, accéder à la santé et à l'éducation. Tu NE PEUX PAS traiter aucune autorisation de résidence sans passeport.",
+      "opts": [
+        "Demander un passeport au consulat avec la carte d'identité",
+        "Contacter l'organisme de référence"
+      ]
+    },
+    "b1-p1": {
+      "id": "b1-p1",
+      "text": "Es-tu mineur ou as-tu eu 18 ans il y a moins de 3 mois ?",
+      "note": "Voie du mineur non accompagné (art. 174 RD 1155/2024) : pour qui était sous tutelle d'un service de protection des mineurs et atteint la majorité sans autorisation de résidence. Fenêtre : 2 mois AVANT jusqu'à 3 mois APRÈS les 18 ans. Voie exceptionnelle : jusqu'à 20 ans si causes étrangères dûment justifiées + rapport de la CA.",
+      "opts": [
+        "Oui, je suis mineur (< 18 ans)",
+        "J'étais sous tutelle et j'ai eu 18 ans il y a < 3 mois",
+        "J'ai eu 18 ans il y a entre 3 mois et 2 ans (voie exceptionnelle jusqu'à 20 ans)",
+        "Non, je suis majeur sans tutelle"
+      ]
+    },
+    "b1-r-menor": {
+      "id": "b1-r-menor",
+      "text": "Voie du mineur non accompagné — fais ta demande MAINTENANT (art. 174 RD 1155/2024)",
+      "note": "Conditions : être sous tutelle, garde ou protection d'un service de protection des mineurs + avoir participé aux actions de formation programmées par l'organisme (ou justifier l'intégration) + moyens économiques suffisants (IMV ou programme public/privé). Délai : 2 mois AVANT jusqu'à 3 mois APRÈS les 18 ans. Formulaire EX-25. Autorise à travailler comme salarié et indépendant. Silence administratif : DÉFAVORABLE (3 mois sans réponse = refusé).",
+      "opts": [
+        "Formulaire : EX-25",
+        "Contacter le service de protection des mineurs de la CA"
+      ]
+    },
+    "b1-p2": {
+      "id": "b1-p2",
+      "text": "Régularisation extraordinaire — remplis-tu les conditions ?",
+      "note": "Délai : 16 avril – 30 juin 2026 (ACTIVE MAINTENANT). Conditions : (1) Être en Espagne avant le 1er janvier 2026. (2) Séjour ininterrompu minimum de 5 mois. (3) Sans antécédents pénaux. PAS BESOIN de passeport — accepte cédula de inscripción ou titre de voyage. NE PEUT PAS avoir de demande en cours.",
+      "opts": [
+        "Oui, je remplis toutes les conditions",
+        "Non / je ne sais pas"
+      ]
+    },
+    "b1-r-reg": {
+      "id": "b1-r-reg",
+      "text": "Régularisation extraordinaire — FAIS TA DEMANDE MAINTENANT (jusqu'au 30/06/2026)",
+      "note": "Documents : copie passeport/cédula de inscripción/titre de voyage + preuve d'être en Espagne avant le 01/01/2026 + preuve des 5 mois de séjour + certificat d'antécédents pénaux (Espagne + pays d'origine). Voie télématique : disponible 24h. Voie en personne : rendez-vous obligatoire. Tél. 060 (9h30-14h et 16h30-19h30). Avec l'admission au traitement on peut déjà travailler. Autorisation résultante : 1 an.",
+      "opts": [
+        "Voie télématique (24h, sans rendez-vous)",
+        "Voie en personne — demander rendez-vous",
+        "Tél. 060 pour questions et rendez-vous"
+      ]
+    },
+    "b1-p3": {
+      "id": "b1-p3",
+      "text": "Depuis combien de temps vis-tu en Espagne de façon continue ?",
+      "note": "Il faut pouvoir justifier la résidence continue : certificat de domicile, factures, bulletins scolaires, carte de santé, certificats des services sociaux. Si tu es là depuis moins de 5 mois ou si tu es arrivé après le 01/01/2026, la régularisation extraordinaire ne s'applique pas non plus.",
+      "opts": [
+        "Moins d'1 an",
+        "Entre 1 et 2 ans",
+        "Plus de 2 ans"
+      ]
+    },
+    "b1-r-aviat": {
+      "id": "b1-r-aviat",
+      "text": "Trop tôt — rassemble la documentation pour le futur",
+      "note": "Rassemble dès maintenant : certificat de domicile, factures avec adresse, photos datées, bulletins scolaires ou rapports des services sociaux. Quand tu atteins 2 ans, reviens à l'arbre.",
+      "opts": [
+        "Orientation : CEAR / SJM / organisme local"
+      ]
+    },
+    "b1-r-gairebe": {
+      "id": "b1-r-gairebe",
+      "text": "Presque — commence à préparer l'arraigo social maintenant",
+      "note": "Demande maintenant le rapport d'intégration à la Comunidad Autónoma (peut prendre des mois). Rassemble les preuves de résidence continue. Cherche un pré-contrat de travail si possible.",
+      "opts": [
+        "Demander le rapport d'intégration à la CA maintenant"
+      ]
+    },
+    "b1-p4": {
+      "id": "b1-p4",
+      "text": "As-tu un employeur prêt à te faire un contrat de travail ?",
+      "note": "Le contrat doit être minimum 90 jours et minimum 20h/semaine. Le salaire doit être au moins le SMI proportionnel à la durée de travail. Toute modalité de contrat est acceptée. L'entreprise doit être à jour avec la Seguridad Social.",
+      "opts": [
+        "Oui, j'ai un contrat ou précontrat",
+        "Non"
+      ]
+    },
+    "b1-r-laboral": {
+      "id": "b1-r-laboral",
+      "text": "Arraigo sociolaboral",
+      "note": "Conditions : 2 ans de résidence continue + contrat en vigueur minimum 90 jours (3 mois) et minimum 20h/semaine + salaire minimum SMI proportionnel. Toute modalité acceptée : indéfini, temporaire, fixe discontinu, remplacement. Dès l'admission du dossier tu peux déjà travailler. Autorisation : 1 an. Formulaire EX-10.",
+      "opts": [
+        "Formulaire : EX-10 arraigo sociolaboral",
+        "Dès l'admission du dossier → tu peux déjà travailler"
+      ]
+    },
+    "b1-p5": {
+      "id": "b1-p5",
+      "text": "Es-tu inscrit ou peux-tu t'inscrire à une formation officielle en Espagne ?",
+      "note": "Formations valides pour l'arraigo socioformatiu : FP niveau moyen ou supérieur, certificats de professionnalité (niveaux 1, 2 ou 3), ESO/éducation pour adultes, formation SEPE orientée vers l'emploi. Les cours non officiels et académies non accréditées NE comptent PAS. Maximum 50% en ligne. Tu peux travailler 30h/semaine pendant les études.",
+      "opts": [
+        "Oui, je suis inscrit ou je peux le faire",
+        "Non"
+      ]
+    },
+    "b1-r-formatiu": {
+      "id": "b1-r-formatiu",
+      "text": "Arraigo socioformatiu",
+      "note": "Conditions : 2 ans de résidence continue + inscription en formation officielle valide (FP, certificat de professionnalité, ESO adultes, formation SEPE) + rapport d'intégration sociale de la CA. Tu peux travailler 30h/semaine pendant les études (compte propre ou pour autrui). À la fin de la formation → modification vers permis de travail. Formulaire EX-10.",
+      "opts": [
+        "Formulaire : EX-10 arraigo socioformatiu",
+        "Tu peux travailler 30h/semaine pendant les études"
+      ]
+    },
+    "b1-p6": {
+      "id": "b1-p6",
+      "text": "As-tu des membres de famille directs avec résidence légale ou nationalité espagnole ?",
+      "note": "ATTENTION : L'arraigo familiar classique est maintenant pour les parents de mineurs citoyens UE (non espagnols). Si le membre de famille est ESPAGNOL, la démarche est différente : c'est une « autorisation de résidence de membre de famille de personne de nationalité espagnole » (EX-24), pas arraigo. Les membres de famille de résidents légaux (conjoint/partenaire ou famille 1er degré en ligne directe) passent par arraigo social avec moyens économiques.",
+      "opts": [
+        "Oui, fils/fille ou parent d'Espagnol(e)",
+        "Oui, conjoint ou partenaire de résident légal",
+        "Oui, père/mère de mineur citoyen UE (non espagnol)",
+        "Non"
+      ]
+    },
+    "b1-r-familiar": {
+      "id": "b1-r-familiar",
+      "text": "Arraigo social par liens familiaux (conjoint/partenaire de résident légal)",
+      "note": "Conditions : 2 ans de résidence continue + lien familial prouvé (conjoint ou partenaire de fait enregistré, ou famille au 1er degré en ligne directe, avec résidence légale) + moyens économiques 200% IPREM (~1.200€/mois). Formulaire EX-10. Note : si le membre de famille est ESPAGNOL, voir option EX-24.",
+      "opts": [
+        "Formulaire : EX-10 arraigo social"
+      ]
+    },
+    "b1-p7": {
+      "id": "b1-p7",
+      "text": "As-tu ou peux-tu obtenir un rapport d'intégration sociale de la Communauté Autonome ?",
+      "note": "Le rapport d'intégration se demande à la CA où tu résides (services sociaux ou organisme équivalent). En Catalogne : Departament de Drets Socials. À Madrid : Comunidad de Madrid. Peut prendre 2-6 mois. Il faut le demander à l'avance. Il atteste : temps de séjour, connaissance de la langue, participation aux activités sociales.",
+      "opts": [
+        "Oui, je l'ai ou je peux le demander",
+        "Non / en cours"
+      ]
+    },
+    "b1-r-social": {
+      "id": "b1-r-social",
+      "text": "Arraigo social",
+      "note": "Conditions : 2 ans de résidence continue + rapport d'intégration CA (ou liens familiaux avec résidents légaux) + moyens économiques propres ou familiaux équivalents à 100% IPREM. Permet de travailler pour son compte ou pour autrui. Formulaire EX-10.",
+      "opts": [
+        "Formulaire : EX-10 arraigo social",
+        "Demander le rapport d'intégration CA maintenant (prend des mois)"
+      ]
+    },
+    "b1-p8": {
+      "id": "b1-p8",
+      "text": "Ta situation implique-t-elle un risque immédiat ? (détention, expulsion, police)",
+      "note": "Si tu es retenu en ce moment ou si tu as une notification d'expulsion imminente, active le mode SOS. Si la situation est stable mais tu n'as aucune voie, contacte une association.",
+      "opts": [
+        "Oui, risque immédiat maintenant",
+        "Non, la situation est stable"
+      ]
+    },
+    "b1-sos2": {
+      "id": "b1-sos2",
+      "text": "MODE SOS — Risque immédiat",
+      "note": "Tu as droit à l'assistance juridique gratuite. Tu as droit à un interprète. Tu ne dois signer aucun document sans le lire et le comprendre. Tu peux demander qu'on contacte ton avocat ou association de référence.",
+      "opts": [
+        "Appeler CEAR : 91 598 05 35",
+        "Appeler SJM : 91 445 90 85",
+        "Montre cet écran à la police"
+      ]
+    },
+    "b1-r-sense": {
+      "id": "b1-r-sense",
+      "text": "Pas de voie active maintenant — accompagnement et préparation",
+      "note": "Pas de voie active en ce moment pour ton profil. Contacte une association de référence : CEAR, SJM, Croix-Rouge ou association locale. Rassemble les documents de résidence. Si ta situation change (travail, formation, famille), reviens à l'arbre. L'arraigo de 2e chance NE s'applique PAS si tu n'as jamais eu d'autorisation de résidence.",
+      "opts": [
+        "Orientation : association locale proche"
+      ]
+    },
+    "b1-r-familiar-espanyol": {
+      "id": "b1-r-familiar-espanyol",
+      "text": "Autorisation de résidence familiale de personne de nationalité espagnole",
+      "note": "Fils/fille de père/mère espagnol(e) d'origine (sans limite d'âge), conjoint ou partenaire d'Espagnol(e), ascendant/descendant à charge. NE requiert PAS de temps minimum de résidence en Espagne. Autorisation initiale 5 ans. Formulaire EX-24.",
+      "opts": [
+        "Formulaire : EX-24",
+        "Pas de temps minimum de résidence requis"
+      ]
+    },
+    "b1-r-familiar-ue": {
+      "id": "b1-r-familiar-ue",
+      "text": "Arraigo familiar — père/mère de mineur citoyen UE non espagnol",
+      "note": "Pour les pères/mères d'enfant mineur de nationalité UE/EEE/Suisse (non espagnole). Il faut avoir le mineur à charge et vivre avec lui/elle. Formulaire EX-10.",
+      "opts": [
+        "Formulaire : EX-10 arraigo familiar"
+      ]
+    },
+    "b1-r-menor-excepcional": {
+      "id": "b1-r-menor-excepcional",
+      "text": "Voie exceptionnelle mineur — jusqu'à 20 ans",
+      "note": "Si le délai ordinaire (3 mois après les 18 ans) est passé mais tu n'as pas encore 20 ans, tu peux demander exceptionnellement si tu prouves des causes extérieures dûment documentées + rapport de la communauté autonome ou mairie. Contacte URGEMMENT l'entité qui t'a pris en charge ou un avocat spécialisé en mineurs.",
+      "opts": [
+        "Contacter service de protection des mineurs URGENT",
+        "Avocat spécialisé en mineurs étrangers",
+        "CEAR / SJM : conseil gratuit"
+      ]
+    },
+    "b2-p0": {
+      "id": "b2-p0",
+      "text": "Quel type d'autorisation as-tu ou avais-tu ?",
+      "note": "Regarde ta carte (TIE) ou la résolution. Le type figure sur le document.",
+      "opts": [
+        "Résidence temporaire (1-2 ans, en vigueur)",
+        "Résidence longue durée (5+ ans, en vigueur)",
+        "J'ai une autorisation mais elle a expiré",
+        "J'avais une autorisation mais je l'ai perdue (irrégulier maintenant)",
+        "Je ne sais pas quel type j'ai"
+      ]
+    },
+    "b2-r-identificar": {
+      "id": "b2-r-identificar",
+      "text": "Identifie ton document — apporte-le à une entité",
+      "note": "Apporte ton document physique (TIE ou résolution) à une entité de référence ou au bureau d'extranjeria. Ils pourront te dire exactement quel type d'autorisation tu as et quelles options tu as.",
+      "opts": [
+        "Orientation : bureau extranjeria ou entité"
+      ]
+    },
+    "b2-p1": {
+      "id": "b2-p1",
+      "text": "Quand expire ton autorisation de résidence temporaire ?",
+      "note": "Délai officiel : de 60 jours AVANT jusqu'à 90 jours APRÈS l'expiration. Avec la demande présentée dans les délais, la validité se prolonge jusqu'à la résolution (max. 3 mois). Le silence administratif est FAVORABLE pour le renouvellement.",
+      "opts": [
+        "Plus de 2 mois (60 jours)",
+        "Moins de 2 mois",
+        "Déjà expirée (moins de 90 jours)"
+      ]
+    },
+    "b2-r-ok": {
+      "id": "b2-r-ok",
+      "text": "Tu as le temps — prépare le renouvellement maintenant",
+      "note": "Présente entre 60 jours avant et la date d'expiration. Le renouvellement approuvé dure 2 ans. Documentation de base : formulaire EX correspondant, passeport en cours de validité, certificat de domicile (padrón), casier judiciaire + documentation spécifique à ton type de permis. Voie télématique (Mercurio) ou en personne avec rendez-vous.",
+      "opts": [
+        "Salarié → EX-13 + contrat + vie professionnelle",
+        "Indépendant → EX-15 + activité + cotisations SS",
+        "Non lucrative → EX-07 + moyens économiques + assurance"
+      ]
+    },
+    "b2-r-urgent": {
+      "id": "b2-r-urgent",
+      "text": "URGENT — moins de 2 mois avant expiration",
+      "note": "Présente la demande CETTE SEMAINE. Avec la demande présentée, la validité se prolonge jusqu'à la résolution. Silence administratif FAVORABLE : s'il n'y a pas de réponse en 3 mois, elle est considérée approuvée.",
+      "opts": [
+        "Voie Mercurio (télématique) ou rendez-vous urgent en personne",
+        "Consulter une entité d'accompagnement"
+      ]
+    },
+    "b2-r-critic": {
+      "id": "b2-r-critic",
+      "text": "CRITIQUE — expire dans moins d'1 mois",
+      "note": "Situation très urgente. Présente la demande aujourd'hui si possible. Avec la demande présentée, même hors délai, la résolution positive régularisera ta situation. Cherche l'aide d'un avocat ou d'une entité spécialisée.",
+      "opts": [
+        "CEAR : 91 598 05 35",
+        "SJM : 91 445 90 85",
+        "Présenter la demande aujourd'hui"
+      ]
+    },
+    "b2-r-ld": {
+      "id": "b2-r-ld",
+      "text": "Résidence de longue durée — situation stable",
+      "note": "La longue durée est indéfinie. La TIE doit être renouvelée tous les 5 ans (démarche simple, n'implique pas de réviser le fond). Tu as des droits professionnels pleins, tu peux regrouper ta famille et le temps compte pour la nationalité.",
+      "opts": [
+        "TIE expirée → renouveler (EX-17, démarche simple)",
+        "Prochaine étape → demande de nationalité"
+      ]
+    },
+    "b2-p2": {
+      "id": "b2-p2",
+      "text": "Depuis combien de temps ton autorisation est-elle expirée ?",
+      "note": "Passé 90 jours après l'expiration sans présenter de demande, le renouvellement ordinaire n'est plus possible.",
+      "opts": [
+        "Moins de 90 jours → tu peux encore renouveler",
+        "Entre 90 jours et 1 an",
+        "Plus d'1 an"
+      ]
+    },
+    "b2-r-caducada-recent": {
+      "id": "b2-r-caducada-recent",
+      "text": "Expirée depuis moins de 90 jours — tu peux encore renouveler",
+      "note": "Légalement tu peux présenter jusqu'à 90 jours APRÈS l'expiration. Attention : tu es en situation irrégulière (infraction légère si <3 mois, grave si >3 mois). Présente aujourd'hui. Un dossier de sanction peut être ouvert, mais le renouvellement approuvé régularise la situation.",
+      "opts": [
+        "Présenter la demande de renouvellement aujourd'hui",
+        "Chercher l'accompagnement d'une entité ou d'un avocat"
+      ]
+    },
+    "b2-r-caducada-mitja": {
+      "id": "b2-r-caducada-mitja",
+      "text": "Expirée depuis 90 jours à 1 an — situation irrégulière grave",
+      "note": "Renouvellement ordinaire n'est plus possible. Situation irrégulière grave (amende ou procédure d'expulsion possible). Options : (1) Tu es en Espagne depuis 2 ans → arraigo Branche 1. (2) Autorisation dans les 2 dernières années → arraigo 2e chance. (3) Régularisation extraordinaire jusqu'au 30/06/2026 si tu remplis les conditions.",
+      "opts": [
+        "Tu es en Espagne depuis 2 ans → Branche 1 arraigo",
+        "Arraigo 2e chance",
+        "Régularisation extraordinaire jusqu'au 30/06/2026",
+        "Consulter avocat ou CEAR/SJM urgent"
+      ]
+    },
+    "b2-r-caducada-llarga": {
+      "id": "b2-r-caducada-llarga",
+      "text": "Expirée depuis plus d'1 an — situation complexe",
+      "note": "Le renouvellement ordinaire n'est probablement pas viable. Les options dépendent de ta situation concrète : si tu es en Espagne depuis 2+ ans tu peux opter pour l'arraigo (voir Branche 1). Si tu as eu une autorisation dans les 2 dernières années, tu peux opter pour l'arraigo de 2e chance.",
+      "opts": [
+        "Tu es en Espagne depuis 2 ans ? → Branche 1 arraigo",
+        "Autorisation dans les 2 dernières années → arraigo 2e chance",
+        "Consulter un avocat urgent"
+      ]
+    },
+    "b2-p3": {
+      "id": "b2-p3",
+      "text": "Quand as-tu perdu ou cessé d'avoir l'autorisation ?",
+      "note": "L'arraigo de 2e chance requiert avoir eu une autorisation dans les 2 années immédiatement antérieures à la demande.",
+      "opts": [
+        "Il y a moins de 2 ans",
+        "Il y a plus de 2 ans"
+      ]
+    },
+    "b2-r-2a-op": {
+      "id": "b2-r-2a-op",
+      "text": "Arraigo de 2e chance",
+      "note": "Pour qui a eu une autorisation de résidence (PAS pour circonstances exceptionnelles, c'est-à-dire pas un arraigo antérieur) dans les 2 dernières années et n'a pas pu renouveler pour des raisons qui NE sont PAS l'ordre public ni la sécurité. Conditions : 2 ans de résidence continue + sans casier judiciaire. EXCLUT les demandeurs d'asile actifs et qui vient d'un arraigo antérieur. Autorisation : 1 an + travail. Formulaire EX-10.",
+      "opts": [
+        "Formulaire : EX-10 arraigo 2e chance",
+        "L'autorisation antérieure était un arraigo ? → ne s'applique pas"
+      ]
+    },
+    "b2-r-antiga": {
+      "id": "b2-r-antiga",
+      "text": "Autorisation il y a plus de 2 ans — arraigo 2e chance non disponible",
+      "note": "L'arraigo de 2e chance requiert que l'autorisation ait été dans les 2 dernières années. Si cela fait plus longtemps, cette voie n'est pas accessible. Options : si tu es en Espagne depuis 2+ ans, regarde les voies d'arraigo de la Branche 1 (socio-professionnel, socio-formatif, social).",
+      "opts": [
+        "Tu es en Espagne depuis 2 ans ? → Branche 1",
+        "Consulter avocat ou entité"
+      ]
+    },
+    "b3-p0": {
+      "id": "b3-p0",
+      "text": "Es-tu citoyen/ne de l'UE, de l'EEE ou de la Suisse ?",
+      "note": "UE : Allemagne, Autriche, Belgique, Bulgarie, Chypre, Croatie, Danemark, Espagne, Estonie, Finlande, France, Grèce, Hongrie, Irlande, Italie, Lettonie, Lituanie, Luxembourg, Malte, Pays-Bas, Pologne, Portugal, République tchèque, Roumanie, Slovaquie, Slovénie, Suède. EEE en plus : Islande, Liechtenstein, Norvège. Suisse par accord bilatéral.",
+      "opts": [
+        "Oui, je suis citoyen/ne UE/EEE/Suisse",
+        "Non, je suis membre de la famille non communautaire d'un/e citoyen/ne UE",
+        "Je suis membre de la famille d'un/e Espagnol/e"
+      ]
+    },
+    "b3-p1": {
+      "id": "b3-p1",
+      "text": "Depuis combien de temps es-tu en Espagne ou combien de temps comptes-tu y rester ?",
+      "note": "La libre circulation UE permet de rester jusqu'à 90 jours sans aucune démarche. À partir du 91e jour, l'inscription est obligatoire.",
+      "opts": [
+        "Moins de 3 mois (90 jours)",
+        "Plus de 3 mois"
+      ]
+    },
+    "b3-r-curta": {
+      "id": "b3-r-curta",
+      "text": "Séjour court — aucune démarche nécessaire",
+      "note": "Jusqu'à 90 jours tu peux rester en Espagne librement avec ton passeport ou ta carte d'identité nationale. Tu n'as pas besoin de t'enregistrer ni d'obtenir aucun document. Si tu veux travailler, tu as besoin du NIE pour les démarches fiscales, mais ce n'est pas obligatoire pour le séjour.",
+      "opts": [
+        "Si tu vas travailler → demande le NIE au bureau d'extranjeria"
+      ]
+    },
+    "b3-p2": {
+      "id": "b3-p2",
+      "text": "T'es-tu enregistré au Registre Central des Étrangers (certificat vert) ?",
+      "note": "Le certificat vert (NIE vert / CUE) est obligatoire si tu résides plus de 3 mois. Il faut le demander dans les 3 premiers mois après l'entrée. On l'obtient au bureau d'extranjeria ou au commissariat de police de ta province. Formulaire EX-18. Il est délivré immédiatement le même jour.",
+      "opts": [
+        "Non, je ne l'ai pas fait",
+        "Oui, je l'ai déjà"
+      ]
+    },
+    "b3-r-registre": {
+      "id": "b3-r-registre",
+      "text": "Il faut s'enregistrer — obtenir le certificat vert (NIE vert)",
+      "note": "Obligatoire si tu es ou seras en Espagne plus de 3 mois. Délai : 3 premiers mois après l'entrée. Où : bureau d'extranjeria ou commissariat de police de ta province. Rendez-vous obligatoire (forte demande, réserve à l'avance). Documents : formulaire EX-18 + passeport/carte d'identité en cours de validité + justificatif du motif de résidence (contrat, inscription, moyens économiques + assurance maladie). Taxe : 790 code 012. Le certificat est délivré le même jour. Il n'expire pas mais la résidence doit être maintenue.",
+      "opts": [
+        "Salarié/e → contrat de travail ou déclaration de l'entreprise",
+        "Travailleur/euse indépendant/e → inscription fiscale ou SS",
+        "Étudiant/e → inscription + moyens économiques + assurance maladie",
+        "Sans activité → moyens économiques suffisants + assurance maladie"
+      ]
+    },
+    "b3-p3": {
+      "id": "b3-p3",
+      "text": "Depuis combien de temps résides-tu légalement en Espagne ?",
+      "note": "La résidence permanente s'acquiert avec 5 ans de résidence légale continue. Les interruptions de moins de 2 ans consécutifs n'affectent pas le calcul.",
+      "opts": [
+        "Moins de 5 ans",
+        "5 ans ou plus"
+      ]
+    },
+    "b3-r-permanent": {
+      "id": "b3-r-permanent",
+      "text": "Résidence permanente UE — droits pleins",
+      "note": "Avec 5 ans de résidence légale continue tu as droit à la résidence permanente. Le certificat de résidence permanente UE s'obtient au bureau d'extranjeria ou au commissariat. Formulaire EX-18. Validité : 10 ans, renouvelable automatiquement. Droits : travail, services sociaux, santé, regroupement familial, option pour la nationalité (10 ans de résidence légale totale, réduits à 2 ans pour les latino-américains et autres pays avec convention).",
+      "opts": [
+        "Demander le certificat de résidence permanente (EX-18)",
+        "Commencer le processus de nationalité si tu as 10 ans"
+      ]
+    },
+    "b3-p4": {
+      "id": "b3-p4",
+      "text": "Quel est ton objectif principal en ce moment ?",
+      "note": "",
+      "opts": [
+        "Travailler en Espagne",
+        "Faire venir ma famille de hors UE",
+        "Étudier",
+        "Accéder à la santé ou aux services sociaux"
+      ]
+    },
+    "b3-r-treball": {
+      "id": "b3-r-treball",
+      "text": "Travailler en Espagne comme citoyen/ne UE",
+      "note": "Tu as libre accès au marché du travail espagnol. Avec le certificat vert (NIE vert) tu peux travailler sans aucun permis supplémentaire. Pour les démarches fiscales et de travail tu as besoin du NIE. L'entreprise doit t'inscrire à la Seguridad Social. Si tu es indépendant/e : inscription aux impôts (modèle 036/037) + inscription SS.",
+      "opts": [
+        "Tu as le certificat vert ? → tu peux déjà travailler",
+        "Tu ne l'as pas → s'enregistrer d'abord (EX-18)"
+      ]
+    },
+    "b3-r-familia": {
+      "id": "b3-r-familia",
+      "text": "Faire venir ma famille de hors UE — régime communautaire",
+      "note": "Les membres de famille non communautaires (conjoint, enfants <21 ans ou à charge, ascendants à charge, partenaire enregistré) ont le droit de t'accompagner ou de te rejoindre. Le régime communautaire est plus favorable que le régime général. Ils doivent demander la Tarjeta de residencia de familiar de ciudadano UE. Formulaire EX-19. Validité : 5 ans. Délai de demande : 90 jours après l'entrée en Espagne. Coût : taxe 790 code 012 (équivalent au DNI espagnol).",
+      "opts": [
+        "Le membre de famille demande l'EX-19 dans les 90 jours après l'entrée",
+        "Conjoint espagnol ? → EX-19 s'il a exercé la libre circulation, EX-24 sinon"
+      ]
+    },
+    "b3-r-estudis": {
+      "id": "b3-r-estudis",
+      "text": "Étudier en Espagne comme citoyen/ne UE",
+      "note": "Tu as le droit d'étudier dans les mêmes conditions que les Espagnols (prix, bourses, accès). Tu as besoin du certificat vert si le séjour dépasse 3 mois. Documents pour l'enregistrement : formulaire EX-18 + inscription dans l'établissement + moyens économiques suffisants (prouver que tu ne seras pas une charge pour l'État) + assurance maladie publique ou privée avec couverture adéquate.",
+      "opts": [
+        "S'enregistrer (EX-18) + inscription + moyens + assurance"
+      ]
+    },
+    "b3-r-serveis": {
+      "id": "b3-r-serveis",
+      "text": "Accès à la santé et aux services sociaux comme citoyen/ne UE",
+      "note": "Avec le certificat vert et en cotisant à la Seguridad Social tu as accès complet à la santé publique. Si tu ne travailles pas, tu dois justifier de moyens économiques et d'une assurance maladie. L'empadronamiento te donne accès aux services municipaux et régionaux. Carte de santé individuelle : demande-la au CAP ou centre de santé de ta zone.",
+      "opts": [
+        "Empadronamiento + certificat vert → accès aux services"
+      ]
+    },
+    "b3-p-familiar": {
+      "id": "b3-p-familiar",
+      "text": "Quel est ton lien avec le/la citoyen/ne UE ?",
+      "note": "Le régime communautaire est très favorable pour les membres de famille. La demande doit être faite dans les 90 jours après l'entrée en Espagne. Formulaire EX-19.",
+      "opts": [
+        "Conjoint ou partenaire enregistré",
+        "Enfant de moins de 21 ans ou à charge",
+        "Ascendant à charge (père, mère...)",
+        "Autre membre de famille (frères, oncles...)"
+      ]
+    },
+    "b3-r-familiar-ue": {
+      "id": "b3-r-familiar-ue",
+      "text": "Carte de résidence de membre de famille de citoyen/ne UE",
+      "note": "À demander dans les 90 jours après l'entrée. Documents : formulaire EX-19 + passeport valide + justificatif du lien familial (acte de mariage/naissance apostillé et traduit) + NIE vert du membre de famille UE. Coût : taxe 790 code 012 (prix du DNI). Validité initiale : 5 ans. Après 5 ans → résidence permanente (10 ans, renouvelable automatiquement). Formulaire EX-19.",
+      "opts": [
+        "Formulaire : EX-19 (dans les 90 jours après l'entrée)",
+        "5 ans → résidence permanente automatique"
+      ]
+    },
+    "b3-r-familiar-altres": {
+      "id": "b3-r-familiar-altres",
+      "text": "Membre de famille élargie — situation à évaluer au cas par cas",
+      "note": "Les autres membres de famille (frères, beaux-frères, neveux...) n'ont pas de droit automatique au régime communautaire. Il faut prouver une dépendance économique ou une cohabitation de 24 mois dans le pays d'origine. La décision est à la discrétion du bureau d'extranjeria. Nous recommandons de consulter un avocat spécialisé.",
+      "opts": [
+        "Consulter un avocat spécialisé en droit UE"
+      ]
+    },
+    "b3-r-familiar-espanyol": {
+      "id": "b3-r-familiar-espanyol",
+      "text": "Membre de famille d'Espagnol/e — deux voies possibles",
+      "note": "Si ton/ta membre de famille espagnol/e a exercé le droit à la libre circulation (a vécu dans un autre pays UE), tu peux passer par l'EX-19 (régime communautaire, très favorable). S'il/elle n'a pas exercé la libre circulation, tu dois passer par l'EX-24 (régime général de membre de famille d'Espagnol). En cas de doute, consulte un avocat — la voie EX-19 est beaucoup plus favorable et vaut la peine d'être explorée.",
+      "opts": [
+        "A vécu dans un autre pays UE → EX-19 (régime communautaire)",
+        "N'a jamais vécu hors d'Espagne → EX-24 (régime général)",
+        "Consulter un avocat pour déterminer la meilleure voie"
+      ]
+    },
+    "b4-p0": {
+      "id": "b4-p0",
+      "text": "Où es-tu en ce moment ?",
+      "note": "L'endroit où tu te trouves détermine comment tu dois procéder. Tu as le droit de demander une protection internationale peu importe où tu es.",
+      "opts": [
+        "En Espagne, sur le territoire national",
+        "À la frontière, port ou aéroport espagnol",
+        "Dans un CIE (Centre de Rétention)"
+      ]
+    },
+    "b4-r-frontera": {
+      "id": "b4-r-frontera",
+      "text": "DROIT DE DEMANDER L'ASILE À LA FRONTIÈRE — Montre cet écran",
+      "note": "Tu as le droit de demander la protection internationale à tout point d'entrée. Dis clairement : 'Je demande la protection internationale'. On ne peut pas t'expulser tant que la demande est en cours. Tu as droit à un interprète gratuit. Tu as droit à un avocat gratuit. La demande est CONFIDENTIELLE — on ne communique rien à ton pays d'origine. Si ta demande est jugée irrecevable, tu as 2 jours ouvrables pour demander un réexamen.",
+      "opts": [
+        "Dis : JE DEMANDE LA PROTECTION INTERNATIONALE",
+        "ACNUR Espagne : 91 556 35 49",
+        "CEAR : 91 598 05 35"
+      ]
+    },
+    "b4-r-cie": {
+      "id": "b4-r-cie",
+      "text": "Dans un CIE — tu peux demander l'asile depuis ici",
+      "note": "Tu peux demander la protection internationale même si tu es interné(e) dans un CIE. Demande à parler avec l'avocat de garde ou contacte ACNUR ou CEAR. Tu as droit à un interprète et un avocat gratuits. La demande suspend la procédure d'expulsion pendant son traitement.",
+      "opts": [
+        "Demander l'asile au personnel du CIE",
+        "ACNUR : 91 556 35 49",
+        "CEAR : 91 598 05 35"
+      ]
+    },
+    "b4-p1": {
+      "id": "b4-p1",
+      "text": "As-tu déjà déposé ta demande de protection internationale ?",
+      "note": "Le délai pour demander l'asile est d'1 mois après l'entrée en Espagne. Si tu as dépassé le mois, tu peux démontrer une cause justifiée pour prolonger le délai. La procédure est gratuite.",
+      "opts": [
+        "Non, je ne l'ai pas encore demandée",
+        "Oui, j'attends la décision",
+        "Oui, on m'a refusé"
+      ]
+    },
+    "b4-p-nosol": {
+      "id": "b4-p-nosol",
+      "text": "Es-tu entré(e) en Espagne il y a moins d'1 mois ?",
+      "note": "Le délai officiel est 1 mois après l'entrée. Passé ce délai, tu peux invoquer une cause justifiée. La procédure est gratuite et confidentielle.",
+      "opts": [
+        "Oui, il y a moins d'1 mois",
+        "Non, il y a plus d'1 mois"
+      ]
+    },
+    "b4-r-com-sol": {
+      "id": "b4-r-com-sol",
+      "text": "Comment demander la protection internationale en Espagne",
+      "note": "Où la déposer : Oficina d'Asil i Refugi (OAR) — Madrid : C/ Pradillo 40 ; Commissariats de Police avec service des étrangers (toute province) ; Postes frontières. Il faut un rendez-vous (forte demande). La démarche est GRATUITE — méfie-toi de qui te fait payer. Documents : passeport ou pièce d'identité (si tu en as — sans documents tu peux aussi demander). Au rendez-vous : tu expliques les motifs de ta demande. On te donne une 'Manifestation de volonté' qui te protège de l'expulsion. Ensuite : entretien formel → feuille blanche (récépissé) → tarjeta roja (document de demandeur).",
+      "opts": [
+        "OAR Madrid : C/ Pradillo 40, 28002",
+        "Commissariat de Police (toute province)",
+        "ACNUR conseil : 91 556 35 49"
+      ]
+    },
+    "b4-r-fora-termini": {
+      "id": "b4-r-fora-termini",
+      "text": "Hors délai d'1 mois — mais c'est encore possible",
+      "note": "Tu peux invoquer une cause justifiée pour dépasser le délai. Contacte un avocat ou une organisation spécialisée (CEAR, SJM, ACNUR) pour évaluer ton cas. Si tu es en situation irrégulière, la demande d'asile suspend toute procédure d'expulsion pendant son traitement.",
+      "opts": [
+        "Contacter CEAR/SJM/ACNUR pour évaluer le cas",
+        "Déposer la demande en invoquant une cause justifiée"
+      ]
+    },
+    "b4-p-espera": {
+      "id": "b4-p-espera",
+      "text": "À quelle étape se trouve ta demande ?",
+      "note": "Le délai maximum de décision est 6 mois après l'admission, mais en pratique ça peut prendre beaucoup plus de temps. Tu as le droit de consulter ton dossier à tout moment.",
+      "opts": [
+        "J'attends l'admission (moins d'1 mois)",
+        "Admise, j'attends la décision",
+        "J'ai la tarjeta roja, je suis dans le système"
+      ]
+    },
+    "b4-r-espera-admissio": {
+      "id": "b4-r-espera-admissio",
+      "text": "En attente d'admission — tu as la feuille blanche",
+      "note": "La feuille blanche (Récépissé de Dépôt) est ton document valide pendant l'attente. L'OAR a 1 mois pour décider de l'admission. En pratique, l'admission est presque toujours automatique. Si tu ne reçois pas de notification en 1 mois → la demande est considérée admise. Renouvelle le document quand il expire (à 9 mois de la feuille blanche).",
+      "opts": [
+        "Renouveler rendez-vous quand la feuille blanche expire (9 mois)",
+        "Si irrecevable → recours en 2 jours ouvrables"
+      ]
+    },
+    "b4-r-espera-resolucio": {
+      "id": "b4-r-espera-resolucio",
+      "text": "Demande admise — en attente de décision finale",
+      "note": "Délai maximum : 6 mois (peut prendre beaucoup plus en pratique). Tu as le droit de travailler à 6 mois de la demande si tu n'as pas reçu de décision. Accès à la santé, l'éducation et au système d'accueil (places limitées). Renouvelle la tarjeta roja chaque année pendant l'attente. Tu peux consulter l'état de ton dossier à l'OAR.",
+      "opts": [
+        "Droit de travailler à 6 mois sans décision",
+        "Renouveler la tarjeta roja chaque année",
+        "Régularisation extraordinaire 2026 si tu remplis les conditions"
+      ]
+    },
+    "b4-r-tarjeta-roja": {
+      "id": "b4-r-tarjeta-roja",
+      "text": "Tu as la tarjeta roja — situation active",
+      "note": "La tarjeta roja atteste que tu es demandeur de protection internationale. Droits : accès à la santé, l'éducation, le système d'accueil. Droit de travailler à 6 mois de la demande si pas de décision. Renouvelle-la chaque année. Si tu as demandé l'asile avant le 01/01/2026, tu peux accéder à la régularisation extraordinaire 2026.",
+      "opts": [
+        "Droit de travailler à 6 mois",
+        "Régularisation extraordinaire jusqu'au 30/06/2026",
+        "Renouveler la tarjeta roja chaque année"
+      ]
+    },
+    "b4-r-reg-ext": {
+      "id": "b4-r-reg-ext",
+      "text": "Régularisation extraordinaire 2026 — voie pour demandeurs d'asile",
+      "note": "Si tu as demandé la protection internationale AVANT le 01/01/2026, tu peux accéder à la régularisation extraordinaire jusqu'au 30/06/2026. Conditions : majeur + en Espagne + 5 mois continus + sans antécédents pénaux + passeport/carte d'identité/titre de voyage (valide ou expiré). Si approuvé → tu dois te désister de ta demande d'asile ou du recours. Autorisation : 1 an + droit de travailler.",
+      "opts": [
+        "Demander jusqu'au 30/06/2026 (en ligne ou en personne)",
+        "Tél. 060 pour questions et rendez-vous"
+      ]
+    },
+    "b4-p-denegat": {
+      "id": "b4-p-denegat",
+      "text": "Quand t'a-t-on notifié le refus ?",
+      "note": "Les délais pour faire recours sont très stricts. Ne les rate pas.",
+      "opts": [
+        "Il y a moins de 2 jours ouvrables (irrecevabilité)",
+        "Il y a moins d'1 mois (décision définitive)",
+        "Il y a plus d'1 mois"
+      ]
+    },
+    "b4-r-reexamen": {
+      "id": "b4-r-reexamen",
+      "text": "URGENT — Réexamen : 2 jours ouvrables",
+      "note": "Si ta demande a été jugée irrecevable, tu as SEULEMENT 2 jours ouvrables pour demander le réexamen. Les autorités ont 48 heures pour répondre. Contacte IMMÉDIATEMENT un avocat ou une organisation. Le service est gratuit.",
+      "opts": [
+        "CEAR : 91 598 05 35 — URGENT",
+        "SJM : 91 445 90 85 — URGENT",
+        "Avocat commis d'office : demander au Commissariat"
+      ]
+    },
+    "b4-r-recurs": {
+      "id": "b4-r-recurs",
+      "text": "URGENT — Recours contre le refus : 1 mois",
+      "note": "Tu as 1 mois après la notification pour déposer un recours gracieux devant l'OAR, ou 2 mois pour un recours contentieux-administratif devant l'Audiencia Nacional. Contacte un avocat spécialisé en protection internationale. Le service est gratuit si tu n'as pas de ressources. Vérifie si tu remplis les conditions pour la régularisation extraordinaire 2026 (jusqu'au 30/06/2026).",
+      "opts": [
+        "Recours gracieux (1 mois) → OAR",
+        "Recours contentieux (2 mois) → Audiencia Nacional",
+        "Régularisation extraordinaire si applicable → jusqu'au 30/06/2026",
+        "CEAR/SJM/ACNUR — conseil gratuit"
+      ]
+    },
+    "b4-r-denegat-antic": {
+      "id": "b4-r-denegat-antic",
+      "text": "Refus il y a plus d'1 mois — options résiduelles",
+      "note": "Les délais de recours sont passés. Options : (1) Si tu as demandé l'asile avant le 01/01/2026, tu peux accéder à la régularisation extraordinaire jusqu'au 30/06/2026. (2) Si tu es en Espagne depuis 2 ans, tu peux demander l'arraigo (voir Branche 1). (3) Protection humanitaire pour raisons de santé ou risque personnel. Consulte un avocat ou une organisation spécialisée.",
+      "opts": [
+        "Régularisation extraordinaire jusqu'au 30/06/2026",
+        "2 ans en Espagne → Branche 1 arraigo",
+        "Consulter CEAR/SJM/ACNUR"
+      ]
+    },
+    "b4-r-resolucio-positiva": {
+      "id": "b4-r-resolucio-positiva",
+      "text": "Résolution favorable — Statut de réfugié ou protection subsidiaire",
+      "note": "Félicitations. Vous avez droit à : résidence et travail en Espagne, document de voyage (réfugiés), regroupement familial, accès aux services sociaux dans les mêmes conditions, demande de nationalité après 5 ans (réfugiés, au lieu des 10 habituels). La carte TIE doit être renouvelée périodiquement mais le statut est stable.",
+      "opts": [
+        "Demander TIE comme réfugié/e",
+        "Regroupement familial — demander extension",
+        "Nationalité après 5 ans (statut réfugié)"
+      ]
+    }
+  },
+  "ar": {
+    "b1-p0": {
+      "id": "b1-p0",
+      "text": "عندك جواز سفر متاح دابا؟",
+      "note": "بلا جواز سفر صالح ما يمكنش تدير أي إقامة. هذا أول سؤال مهم.",
+      "opts": [
+        "إيه، عندي",
+        "محجوز عند الشرطة (Brigada de Extranjería)",
+        "ضيعتو ولا تلف",
+        "عمري ما كان عندي",
+        "عندي بطاقة هوية البلاد بصح ما عنديش جواز سفر"
+      ]
+    },
+    "b1-block-a": {
+      "id": "b1-block-a",
+      "text": "جواز السفر محجوز عند الشرطة (Brigada Provincial de Extranjería y Fronteras)",
+      "note": "الشرطة تحجز جواز السفر كي يكون شك في العمر اللي قلتو وقت الدخول. يمكن ياخذ 6-7 شهور. تقدر تطلب شهادة تثبت أن الوثيقة محجوزة. الجمعية اللي راعياتك تقدر تتبع الملف.",
+      "opts": [
+        "واش كاينة قضية جنائية مفتوحة في النيابة؟",
+        "لا، غير حجز إداري → نستناو"
+      ]
+    },
+    "b1-p0b": {
+      "id": "b1-p0b",
+      "text": "الشرطة قالتلك كاينة قضية جنائية مفتوحة في النيابة؟",
+      "note": "حجز جواز السفر الإداري عادي ومؤقت. إذا كاينة زيادة قضية جنائية بسبب تزوير وثائق، الوضعية مختلفة وخاصك محامي بسرعة.",
+      "opts": [
+        "إيه، كاينة قضية جنائية",
+        "لا، غير حجز إداري"
+      ]
+    },
+    "b1-sos1-doc": {
+      "id": "b1-sos1-doc",
+      "text": "قضية جنائية مفتوحة بسبب وثائق الدخول ديالك",
+      "note": "خاصك محامي متخصص في القانون الجنائي والأجانب. ما تحاولش تحل الأمور وحدك. المحامي المجاني (turno de oficio) يقدر يعطيوك محامي بلاش إذا ما عندكش فلوس.",
+      "opts": [
+        "اتصل بـ CEAR / SJM / turno de oficio",
+        "دور على محامي متخصص بسرعة"
+      ]
+    },
+    "b1-block-a-wait": {
+      "id": "b1-block-a-wait",
+      "text": "حجز إداري — نستناو القرار (6-7 شهور)",
+      "note": "وأنت تستنى، جمع: شهادة السكن (padró/padrón)، البطاقة الصحية، تقارير المدرسة أو العمل، شهادات من الجمعية اللي راعياتك. كي ترجعلك جواز السفر، ارجع هنا وكمل.",
+      "opts": [
+        "✓ رجعلي جواز السفر → كمل لـ P1",
+        "نطلب شهادة الحجز من الشرطة"
+      ]
+    },
+    "b1-block-b": {
+      "id": "b1-block-b",
+      "text": "جواز السفر ضاع أو تلف — جدده في القنصلية ديال بلادك",
+      "note": "جيب معاك بطاقة الهوية ديال بلادك. السنغال، غينيا، غامبيا وبنين عادة يقبلو التجديد بالبطاقة الوطنية. الوقت المتوقع: 1-3 شهور. الجمعية تقدر تصاحبك للقنصلية.",
+      "opts": [
+        "✓ عندي جواز السفر الجديد → كمل لـ P1",
+        "اتصل بالجمعية باش يصاحبوك للقنصلية"
+      ]
+    },
+    "b1-block-c": {
+      "id": "b1-block-c",
+      "text": "ما عندك حتى وثيقة سفر — اطلب جواز السفر من القنصلية",
+      "note": "جيب أي وثيقة هوية عندك. انتباه: إذا كان خطر عليك في بلادك، استشر على الحماية الدولية قبل ما تمشي للقنصلية — المشي للقنصلية يمكن يكون خطير.",
+      "opts": [
+        "⚠ كاين خطر → روح لفرع اللجوء (B4)",
+        "✓ عندي جواز السفر الجديد → كمل لـ P1",
+        "اتصل بالجمعية باش يصاحبوك"
+      ]
+    },
+    "b1-block-d": {
+      "id": "b1-block-d",
+      "text": "عندك بطاقة هوية بلادك بصح ما عندكش جواز سفر",
+      "note": "بطاقة الهوية ديال بلادك ما تصلحش في إسبانيا كوثيقة سفر. بيها تقدر: تسجل في السكن (empadronarte)، تدخل للصحة والتعليم. ما تقدرش تدير أي إقامة حتى يكون عندك جواز سفر.",
+      "opts": [
+        "اطلب جواز السفر من القنصلية بالبطاقة",
+        "اتصل بالجمعية المرجعية"
+      ]
+    },
+    "b1-p1": {
+      "id": "b1-p1",
+      "text": "راك قاصر ولا عديت 18 سنة من أقل من 3 شهور؟",
+      "note": "طريق القاصر غير المصحوب (المادة 174 RD 1155/2024): للي كان تحت رعاية مصلحة حماية القاصرين ووصل للرشد بلا إقامة. المدة: شهرين قبل حتى 3 شهور بعد 18 سنة. طريق استثنائي: حتى 20 سنة إذا كانت أسباب خارجية مثبتة + تقرير من الجهة المختصة (CA).",
+      "opts": [
+        "إيه، أنا قاصر (أقل من 18 سنة)",
+        "كنت تحت الرعاية وعديت 18 سنة من أقل من 3 شهور",
+        "عديت 18 سنة من بين 3 شهور و2 سنين (طريق استثنائي حتى 20 سنة)",
+        "لا، أنا راشد بلا رعاية"
+      ]
+    },
+    "b1-r-menor": {
+      "id": "b1-r-menor",
+      "text": "طريق القاصر غير المصحوب — قدم الطلب دابا (المادة 174 RD 1155/2024)",
+      "note": "الشروط: تكون تحت رعاية أو حضانة مصلحة حماية القاصرين + تكون شاركت في تكوينات الجمعية (أو تثبت الاندماج) + موارد مالية كافية (IMV أو برنامج عام/خاص). المدة: شهرين قبل حتى 3 شهور بعد 18 سنة. الاستمارة EX-25. تخليك تخدم كأجير أو مستقل. السكوت الإداري: غير ملائم (3 شهور بلا جواب = مرفوض).",
+      "opts": [
+        "الاستمارة: EX-25",
+        "اتصل بمصلحة حماية القاصرين ديال الجهة (CA)"
+      ]
+    },
+    "b1-p2": {
+      "id": "b1-p2",
+      "text": "التسوية الاستثنائية — عندك الشروط كاملة؟",
+      "note": "المدة: 16 أبريل – 30 يونيو 2026 (نشطة دابا). الشروط: (1) تكون في إسبانيا قبل 1 يناير 2026. (2) إقامة متواصلة على الأقل 5 شهور. (3) بلا سوابق عدلية. ما تحتاجش جواز سفر — تقبل شهادة التسجيل أو وثيقة السفر. ما يكونش عندك أي طلب في الانتظار.",
+      "opts": [
+        "إيه، عندي كل الشروط",
+        "لا / ما نعرفش"
+      ]
+    },
+    "b1-r-reg": {
+      "id": "b1-r-reg",
+      "text": "التسوية الاستثنائية — قدم الطلب دابا (حتى 30/06/2026)",
+      "note": "الوثائق: نسخة جواز السفر/شهادة التسجيل/وثيقة السفر + إثبات الوجود في إسبانيا قبل 01/01/2026 + إثبات 5 شهور إقامة + شهادة السوابق العدلية (إسبانيا + بلادك). عبر الإنترنت: متاح 24 ساعة. حضوري: موعد مسبق إجباري. هاتف 060 (9:30-14h و 16:30-19:30h). مع قبول الطلب تقدر تخدم. الإقامة الناتجة: سنة واحدة.",
+      "opts": [
+        "عبر الإنترنت (24 ساعة، بلا موعد)",
+        "حضوري — اطلب موعد مسبق",
+        "هاتف 060 للأسئلة والموعد"
+      ]
+    },
+    "b1-p3": {
+      "id": "b1-p3",
+      "text": "شحال من وقت راك ساكن في إسبانيا بشكل متواصل؟",
+      "note": "خاصك تثبت الإقامة المتواصلة: شهادة السكن (padró/padrón)، فواتير، تقارير المدرسة، البطاقة الصحية، شهادات الخدمات الاجتماعية. إذا عندك أقل من 5 شهور أو وصلت بعد 01/01/2026، التسوية الاستثنائية ما تنطبقش عليك.",
+      "opts": [
+        "أقل من سنة",
+        "بين سنة و2 سنين",
+        "أكثر من سنتين"
+      ]
+    },
+    "b1-r-aviat": {
+      "id": "b1-r-aviat",
+      "text": "بكري بزاف — جمع الوثائق للمستقبل",
+      "note": "جمع من دابا: شهادة السكن (padró/padrón)، فواتير بالعنوان، صور بالتاريخ، تقارير المدرسة أو الخدمات الاجتماعية. كي توصل لسنتين ارجع للشجرة.",
+      "opts": [
+        "توجيه: CEAR / SJM / جمعية محلية"
+      ]
+    },
+    "b1-r-gairebe": {
+      "id": "b1-r-gairebe",
+      "text": "قريب — ابدأ تحضر arraigo social دابا",
+      "note": "اطلب دابا تقرير الاندماج من الجهة المختصة (CA) (يمكن ياخذ شهور). جمع إثباتات الإقامة المتواصلة. دور على عقد عمل مسبق إذا أمكن.",
+      "opts": [
+        "اطلب تقرير الاندماج من الجهة (CA) دابا"
+      ]
+    },
+    "b1-p4": {
+      "id": "b1-p4",
+      "text": "هل عندك صاحب عمل مستعد يعطيك عقد شغل؟",
+      "note": "العقد لازم يكون على الأقل 90 يوم وعلى الأقل 20 ساعة/أسبوع. الراتب لازم يكون على الأقل SMI حسب ساعات الشغل. أي نوع عقد مقبول. الشركة لازم تكون منتظمة مع الضمان الاجتماعي.",
+      "opts": [
+        "نعم، عندي عقد أو عقد مبدئي",
+        "لا"
+      ]
+    },
+    "b1-r-laboral": {
+      "id": "b1-r-laboral",
+      "text": "Arraigo sociolaboral (التجذر الاجتماعي-المهني)",
+      "note": "الشروط: سنتين إقامة متواصلة + عقد ساري على الأقل 90 يوم (3 أشهر) وعلى الأقل 20 ساعة/أسبوع + راتب أدنى SMI حسب الساعات. أي نوع عقد مقبول: دائم، مؤقت، موسمي، بديل. من قبول الطلب تقدر تشتغل. التصريح: سنة واحدة. استمارة EX-10.",
+      "opts": [
+        "استمارة: EX-10 arraigo sociolaboral",
+        "من قبول الطلب ← تقدر تشتغل"
+      ]
+    },
+    "b1-p5": {
+      "id": "b1-p5",
+      "text": "هل راك مسجل أو تقدر تسجل في تكوين رسمي في إسبانيا؟",
+      "note": "التكوين الصالح لـ arraigo socioformatiu: FP متوسط أو عالي، شهادات مهنية (مستوى 1، 2 أو 3)، ESO/تعليم الكبار، تكوين SEPE للتشغيل. ما يحسبوش الدورات غير الرسمية والأكاديميات غير المعتمدة. أقصى حد 50% عن بعد. تقدر تشتغل 30 ساعة/أسبوع وأنت تقرا.",
+      "opts": [
+        "نعم، أنا مسجل أو نقدر نسجل",
+        "لا"
+      ]
+    },
+    "b1-r-formatiu": {
+      "id": "b1-r-formatiu",
+      "text": "Arraigo socioformatiu (التجذر الاجتماعي-التكويني)",
+      "note": "الشروط: سنتين إقامة متواصلة + تسجيل في تكوين رسمي صالح (FP، شهادة مهنية، ESO للكبار، تكوين SEPE) + تقرير الاندماج الاجتماعي من المنطقة. تقدر تشتغل 30 ساعة/أسبوع وأنت تقرا (حر أو أجير). كي تكمل التكوين ← تحويل لتصريح عمل. استمارة EX-10.",
+      "opts": [
+        "استمارة: EX-10 arraigo socioformatiu",
+        "تقدر تشتغل 30 ساعة/أسبوع وأنت تقرا"
+      ]
+    },
+    "b1-p6": {
+      "id": "b1-p6",
+      "text": "عندك عائلة مباشرة بإقامة قانونية أو جنسية إسبانية؟",
+      "note": "انتباه: arraigo familiar التقليدي هو الآن للآباء الذين عندهم أطفال قاصرين مواطنين أوروبيين (مش إسبان). إذا العائلة إسبانية، الإجراء مختلف: هو \"تصريح إقامة عائلة شخص بجنسية إسبانية\" (EX-24)، مش arraigo. عائلة المقيمين القانونيين (زوج/زوجة أو قريب درجة أولى مباشر) يمشيو بـ arraigo social مع وسائل اقتصادية.",
+      "opts": [
+        "نعم، ولد/بنت أو والد/والدة إسباني/ة",
+        "نعم، زوج أو شريك مقيم قانوني",
+        "نعم، أب/أم لقاصر مواطن أوروبي (مش إسباني)",
+        "لا"
+      ]
+    },
+    "b1-r-familiar": {
+      "id": "b1-r-familiar",
+      "text": "Arraigo social بروابط عائلية (زوج/شريك مقيم قانوني)",
+      "note": "الشروط: سنتين إقامة متواصلة + رابط عائلي مثبت (زوج أو شريك مسجل، أو قريب درجة أولى مباشر، بإقامة قانونية) + وسائل اقتصادية 200% IPREM (~1.200€/شهر). استمارة EX-10. ملاحظة: إذا العائلة إسبانية، شوف خيار EX-24.",
+      "opts": [
+        "استمارة: EX-10 arraigo social"
+      ]
+    },
+    "b1-p7": {
+      "id": "b1-p7",
+      "text": "عندك أو تقدر تجيب تقرير الاندماج الاجتماعي من المنطقة؟",
+      "note": "تقرير الاندماج تطلبه من المنطقة وين ساكن (الخدمات الاجتماعية أو الجهة المختصة). في كاتالونيا: Departament de Drets Socials. في مدريد: Comunidad de Madrid. ممكن ياخذ 2-6 أشهر. لازم تطلبه مبكر. يثبت: مدة الإقامة، معرفة اللغة، المشاركة في أنشطة اجتماعية.",
+      "opts": [
+        "نعم، عندي أو نقدر نطلبه",
+        "لا / في الانتظار"
+      ]
+    },
+    "b1-r-social": {
+      "id": "b1-r-social",
+      "text": "Arraigo social (التجذر الاجتماعي)",
+      "note": "الشروط: سنتين إقامة متواصلة + تقرير اندماج المنطقة (أو روابط عائلية مع مقيمين قانونيين) + وسائل اقتصادية شخصية أو عائلية تعادل 100% IPREM. يسمح بالعمل حر أو أجير. استمارة EX-10.",
+      "opts": [
+        "استمارة: EX-10 arraigo social",
+        "اطلب تقرير الاندماج من المنطقة دابا (ياخذ شهور)"
+      ]
+    },
+    "b1-p8": {
+      "id": "b1-p8",
+      "text": "وضعيتك فيها خطر فوري؟ (احتجاز، ترحيل، بوليس)",
+      "note": "إذا راك محتجز دابا أو عندك إشعار ترحيل فوري، فعّل وضع SOS. إذا الوضع مستقر بصح ما عندك حتى طريق، تواصل مع جمعية.",
+      "opts": [
+        "نعم، خطر فوري دابا",
+        "لا، الوضع مستقر"
+      ]
+    },
+    "b1-sos2": {
+      "id": "b1-sos2",
+      "text": "وضع SOS — خطر فوري",
+      "note": "عندك الحق في مساعدة قانونية مجانية. عندك الحق في ترجمان. ما توقعش أي ورقة بلا ما تقراها وتفهمها. تقدر تطلب يتصلوا بالمحامي ديالك أو الجمعية.",
+      "opts": [
+        "اتصل CEAR: 91 598 05 35",
+        "اتصل SJM: 91 445 90 85",
+        "وري هذه الشاشة للبوليس"
+      ]
+    },
+    "b1-r-sense": {
+      "id": "b1-r-sense",
+      "text": "ما كاين حتى طريق دابا — مرافقة وتحضير",
+      "note": "ما كاين حتى طريق فعال دابا لوضعيتك. تواصل مع جمعية: CEAR، SJM، الصليب الأحمر أو جمعية محلية. اجمع وثائق الإقامة. إذا الوضع تبدل (خدمة، تكوين، عائلة)، ارجع للشجرة. arraigo الفرصة الثانية ما ينطبقش إذا ما عمرك كانت عندك إقامة.",
+      "opts": [
+        "توجيه: جمعية محلية قريبة"
+      ]
+    },
+    "b1-r-familiar-espanyol": {
+      "id": "b1-r-familiar-espanyol",
+      "text": "تصريح إقامة عائلة شخص بجنسية إسبانية",
+      "note": "ولد/بنت أب/أم إسباني/ة أصلي (بلا حد عمر)، زوج أو شريك إسباني/ة، أصل/فرع معال. ما يحتاجش وقت أدنى للإقامة في إسبانيا. تصريح أولي 5 سنوات. استمارة EX-24.",
+      "opts": [
+        "استمارة: EX-24",
+        "ما يحتاجش وقت أدنى للإقامة"
+      ]
+    },
+    "b1-r-familiar-ue": {
+      "id": "b1-r-familiar-ue",
+      "text": "Arraigo familiar — أب/أم قاصر مواطن أوروبي مش إسباني",
+      "note": "للآباء/الأمهات الذين عندهم ولد/بنت قاصر بجنسية أوروبية/EEE/سويسرا (مش إسبانية). لازم يكون القاصر معالك وساكن معاك. استمارة EX-10.",
+      "opts": [
+        "استمارة: EX-10 arraigo familiar"
+      ]
+    },
+    "b1-r-menor-excepcional": {
+      "id": "b1-r-menor-excepcional",
+      "text": "طريق استثنائي للقاصرين — حتى 20 سنة",
+      "note": "إذا فات الأجل العادي (3 أشهر بعد 18 سنة) بصح مازال ما كملتش 20 سنة، تقدر تطلب استثنائياً إذا تثبت أسباب خارجة عن إرادتك موثقة + تقرير من المنطقة أو البلدية. تواصل عاجل مع الجهة اللي كانت تكفلك أو محامي متخصص في القاصرين.",
+      "opts": [
+        "تواصل مع مصلحة حماية القاصرين عاجل",
+        "محامي متخصص في القاصرين الأجانب",
+        "CEAR / SJM: استشارة مجانية"
+      ]
+    },
+    "b2-p0": {
+      "id": "b2-p0",
+      "text": "شنو نوع التصريح اللي عندك أو كان عندك؟",
+      "note": "شوف البطاقة ديالك (TIE) أو القرار. النوع مكتوب في الوثيقة.",
+      "opts": [
+        "إقامة مؤقتة (1-2 سنة، سارية)",
+        "إقامة طويلة المدة (5+ سنوات، سارية)",
+        "عندي تصريح بصح فات أجله",
+        "كان عندي تصريح بصح ضيعته (غير قانوني دابا)",
+        "ما نعرفش شنو النوع اللي عندي"
+      ]
+    },
+    "b2-r-identificar": {
+      "id": "b2-r-identificar",
+      "text": "حدد وثيقتك — اذهب إلى جهة مختصة",
+      "note": "خذ وثيقتك الأصلية (TIE أو قرار) إلى جهة مرجعية أو مكتب extranjería. سيخبرونك بالضبط نوع الإقامة التي لديك وما هي خياراتك.",
+      "opts": [
+        "التوجيه: مكتب extranjería أو جهة مختصة"
+      ]
+    },
+    "b2-p1": {
+      "id": "b2-p1",
+      "text": "متى تنتهي صلاحية إقامتك المؤقتة؟",
+      "note": "المدة القانونية: من 60 يوم قبل انتهاء الصلاحية إلى 90 يوم بعدها. إذا قدمت الطلب في الوقت المحدد، تبقى الإقامة سارية حتى صدور القرار (أقصاها 3 أشهر). السكوت الإداري إيجابي في التجديد.",
+      "opts": [
+        "أكثر من شهرين (60 يوم)",
+        "أقل من شهرين",
+        "انتهت الصلاحية (أقل من 90 يوم)"
+      ]
+    },
+    "b2-r-ok": {
+      "id": "b2-r-ok",
+      "text": "لديك وقت — جهز التجديد الآن",
+      "note": "قدم الطلب بين 60 يوم قبل تاريخ انتهاء الصلاحية وتاريخ الانتهاء. التجديد المقبول صالح لمدة سنتين. الوثائق الأساسية: استمارة EX المناسبة، جواز سفر ساري، padró، سجل عدلي + وثائق خاصة بنوع إقامتك. عبر الإنترنت (Mercurio) أو شخصياً بموعد.",
+      "opts": [
+        "عمل لحساب الغير → EX-13 + عقد عمل + vida laboral",
+        "عمل لحساب الخاص → EX-15 + نشاط + اشتراكات SS",
+        "غير ربحية → EX-07 + موارد مالية + تأمين صحي"
+      ]
+    },
+    "b2-r-urgent": {
+      "id": "b2-r-urgent",
+      "text": "عاجل — أقل من شهرين على انتهاء الصلاحية",
+      "note": "قدم الطلب هذا الأسبوع. بمجرد تقديم الطلب، تبقى الإقامة سارية حتى صدور القرار. السكوت الإداري إيجابي: إذا لم يصدر رد خلال 3 أشهر، يعتبر الطلب مقبولاً.",
+      "opts": [
+        "عبر Mercurio (إنترنت) أو موعد عاجل شخصياً",
+        "استشر جهة دعم"
+      ]
+    },
+    "b2-r-critic": {
+      "id": "b2-r-critic",
+      "text": "حالة حرجة — أقل من شهر على انتهاء الصلاحية",
+      "note": "وضع عاجل جداً. قدم الطلب اليوم إن أمكن. بتقديم الطلب، حتى خارج المدة، القرار الإيجابي سيُسوّي وضعك. اطلب مساعدة محامٍ أو جهة مختصة.",
+      "opts": [
+        "CEAR: 91 598 05 35",
+        "SJM: 91 445 90 85",
+        "قدم الطلب اليوم"
+      ]
+    },
+    "b2-r-ld": {
+      "id": "b2-r-ld",
+      "text": "إقامة طويلة الأمد — وضع مستقر",
+      "note": "الإقامة الطويلة غير محددة المدة. يجب تجديد TIE كل 5 سنوات (إجراء بسيط، لا يتطلب مراجعة الملف). لديك حقوق عمل كاملة، يمكنك لم شمل الأسرة، ويُحتسب الوقت للجنسية.",
+      "opts": [
+        "TIE منتهية → جدد (EX-17، إجراء بسيط)",
+        "الخطوة التالية → طلب الجنسية"
+      ]
+    },
+    "b2-p2": {
+      "id": "b2-p2",
+      "text": "منذ متى انتهت صلاحية إقامتك؟",
+      "note": "بعد 90 يوم من انتهاء الصلاحية دون تقديم طلب، التجديد العادي لم يعد ممكناً.",
+      "opts": [
+        "أقل من 90 يوم → لا يزال بإمكانك التجديد",
+        "بين 90 يوم وسنة",
+        "أكثر من سنة"
+      ]
+    },
+    "b2-r-caducada-recent": {
+      "id": "b2-r-caducada-recent",
+      "text": "انتهت منذ أقل من 90 يوم — لا يزال بإمكانك التجديد",
+      "note": "قانونياً يمكنك التقديم حتى 90 يوم بعد انتهاء الصلاحية. انتبه: أنت في وضع غير نظامي (مخالفة بسيطة إذا أقل من 3 أشهر، خطيرة إذا أكثر). قدم اليوم. قد يُفتح ملف عقوبات، لكن التجديد المقبول يُسوّي الوضع.",
+      "opts": [
+        "قدم طلب التجديد اليوم",
+        "اطلب دعم جهة أو محامٍ"
+      ]
+    },
+    "b2-r-caducada-mitja": {
+      "id": "b2-r-caducada-mitja",
+      "text": "انتهت منذ 90 يوم إلى سنة — وضع غير نظامي خطير",
+      "note": "التجديد العادي لم يعد ممكناً. وضع غير نظامي خطير (غرامة أو ملف طرد محتمل). الخيارات: (1) إذا مضى سنتان في إسبانيا → arraigo الفرع 1. (2) كانت لديك إقامة في آخر سنتين → arraigo الفرصة الثانية. (3) تسوية استثنائية حتى 30/06/2026 إذا توفرت الشروط.",
+      "opts": [
+        "مضى سنتان في إسبانيا → الفرع 1 arraigo",
+        "arraigo الفرصة الثانية",
+        "تسوية استثنائية حتى 30/06/2026",
+        "استشر محامٍ أو CEAR/SJM عاجل"
+      ]
+    },
+    "b2-r-caducada-llarga": {
+      "id": "b2-r-caducada-llarga",
+      "text": "انتهت منذ أكثر من سنة — وضع معقد",
+      "note": "التجديد العادي على الأرجح غير ممكن. الخيارات تعتمد على وضعك: إذا مضى أكثر من سنتين في إسبانيا يمكنك طلب arraigo (انظر الفرع 1). إذا كانت لديك إقامة في آخر سنتين، يمكنك طلب arraigo الفرصة الثانية.",
+      "opts": [
+        "مضى سنتان في إسبانيا؟ → الفرع 1 arraigo",
+        "إقامة في آخر سنتين → arraigo الفرصة الثانية",
+        "استشر محامٍ عاجل"
+      ]
+    },
+    "b2-p3": {
+      "id": "b2-p3",
+      "text": "متى فقدت إقامتك أو توقفت عن امتلاكها؟",
+      "note": "arraigo الفرصة الثانية يتطلب أن تكون قد امتلكت إقامة في السنتين الأخيرتين قبل تقديم الطلب.",
+      "opts": [
+        "منذ أقل من سنتين",
+        "منذ أكثر من سنتين"
+      ]
+    },
+    "b2-r-2a-op": {
+      "id": "b2-r-2a-op",
+      "text": "arraigo الفرصة الثانية",
+      "note": "لمن كانت لديه إقامة (ليس بظروف استثنائية، أي ليس arraigo سابق) في آخر سنتين ولم يتمكن من التجديد لأسباب ليست نظام عام أو أمن. الشروط: سنتان إقامة مستمرة + بدون سوابق جنائية. يُستثنى طالبو اللجوء النشطون ومن كان لديهم arraigo سابق. الإقامة: سنة + عمل. استمارة EX-10.",
+      "opts": [
+        "استمارة: EX-10 arraigo الفرصة الثانية",
+        "إقامتك السابقة كانت arraigo؟ → لا ينطبق"
+      ]
+    },
+    "b2-r-antiga": {
+      "id": "b2-r-antiga",
+      "text": "إقامة منذ أكثر من سنتين — arraigo الفرصة الثانية غير متاح",
+      "note": "arraigo الفرصة الثانية يتطلب أن تكون الإقامة في آخر سنتين. إذا مضى وقت أطول، هذا الطريق غير متاح. الخيارات: إذا مضى أكثر من سنتين في إسبانيا، انظر طرق arraigo في الفرع 1 (sociolaboral، socioformatiu، social).",
+      "opts": [
+        "مضى سنتان في إسبانيا؟ → الفرع 1",
+        "استشر محامٍ أو جهة مختصة"
+      ]
+    },
+    "b3-p0": {
+      "id": "b3-p0",
+      "text": "هل أنت مواطن/ة من الاتحاد الأوروبي أو المنطقة الاقتصادية الأوروبية أو سويسرا؟",
+      "note": "الاتحاد الأوروبي: ألمانيا، النمسا، بلجيكا، بلغاريا، كرواتيا، الدنمارك، سلوفاكيا، سلوفينيا، إسبانيا، إستونيا، فنلندا، فرنسا، اليونان، المجر، إيرلندا، إيطاليا، لاتفيا، ليتوانيا، لوكسمبورغ، مالطا، هولندا، بولندا، البرتغال، رومانيا، السويد، التشيك، قبرص. المنطقة الاقتصادية أيضاً: آيسلندا، ليختنشتاين، النرويج. سويسرا باتفاق ثنائي.",
+      "opts": [
+        "نعم، أنا مواطن/ة UE/EEE/سويسرا",
+        "لا، أنا فرد عائلة غير أوروبي لمواطن/ة UE",
+        "أنا فرد عائلة لمواطن/ة إسباني/ة"
+      ]
+    },
+    "b3-p1": {
+      "id": "b3-p1",
+      "text": "كم من الوقت قضيته في إسبانيا أو تنوي البقاء؟",
+      "note": "حرية التنقل في الاتحاد الأوروبي تسمح بالبقاء حتى 90 يوم دون أي إجراء. ابتداءً من اليوم 91، يجب التسجيل إلزامياً.",
+      "opts": [
+        "أقل من 3 أشهر (90 يوم)",
+        "أكثر من 3 أشهر"
+      ]
+    },
+    "b3-r-curta": {
+      "id": "b3-r-curta",
+      "text": "إقامة قصيرة — لا حاجة لأي إجراء",
+      "note": "حتى 90 يوم يمكنك البقاء في إسبانيا بحرية بجواز سفرك أو بطاقة هويتك الوطنية. لا تحتاج للتسجيل ولا للحصول على أي وثيقة. إذا أردت العمل، تحتاج NIE للإجراءات الضريبية، لكنه ليس إلزامياً للإقامة.",
+      "opts": [
+        "إذا ستعمل ← اطلب NIE في مكتب الأجانب"
+      ]
+    },
+    "b3-p2": {
+      "id": "b3-p2",
+      "text": "هل سجلت نفسك في السجل المركزي للأجانب (الشهادة الخضراء)؟",
+      "note": "الشهادة الخضراء (NIE الأخضر / CUE) إلزامية إذا أقمت أكثر من 3 أشهر. يجب طلبها في أول 3 أشهر من الدخول. تُحصل عليها في مكتب الأجانب أو مركز الشرطة في مقاطعتك. استمارة EX-18. تُصدر فوراً في نفس اليوم.",
+      "opts": [
+        "لا، لم أفعلها",
+        "نعم، عندي"
+      ]
+    },
+    "b3-r-registre": {
+      "id": "b3-r-registre",
+      "text": "يجب التسجيل — الحصول على الشهادة الخضراء (NIE الأخضر)",
+      "note": "إلزامي إذا مكثت أو ستمكث أكثر من 3 أشهر. المهلة: أول 3 أشهر من الدخول. أين: مكتب الأجانب أو مركز الشرطة في مقاطعتك. يلزم موعد مسبق (طلب عالي، احجز مبكراً). الوثائق: استمارة EX-18 + جواز سفر/بطاقة هوية سارية + وثائق تبرر سبب الإقامة (عقد عمل، تسجيل دراسي، موارد مالية + تأمين صحي). الرسوم: 790 رمز 012. الشهادة تُصدر في نفس اليوم. لا تنتهي صلاحيتها لكن يجب الحفاظ على الإقامة.",
+      "opts": [
+        "عامل/ة بأجر ← عقد عمل أو تصريح من الشركة",
+        "عامل/ة مستقل/ة ← تسجيل ضريبي أو ضمان اجتماعي",
+        "طالب/ة ← تسجيل دراسي + موارد مالية + تأمين صحي",
+        "بدون نشاط ← موارد مالية كافية + تأمين صحي"
+      ]
+    },
+    "b3-p3": {
+      "id": "b3-p3",
+      "text": "كم من الوقت تقيم بشكل قانوني في إسبانيا؟",
+      "note": "الإقامة الدائمة تُكتسب بـ 5 سنوات إقامة قانونية متواصلة. الانقطاعات لأقل من سنتين متتاليتين لا تؤثر على الحساب.",
+      "opts": [
+        "أقل من 5 سنوات",
+        "5 سنوات أو أكثر"
+      ]
+    },
+    "b3-r-permanent": {
+      "id": "b3-r-permanent",
+      "text": "إقامة دائمة أوروبية — حقوق كاملة",
+      "note": "بـ 5 سنوات إقامة قانونية متواصلة لك الحق في الإقامة الدائمة. شهادة الإقامة الدائمة الأوروبية تُحصل عليها في مكتب الأجانب أو مركز الشرطة. استمارة EX-18. الصلاحية: 10 سنوات، تُجدد تلقائياً. الحقوق: العمل، الخدمات الاجتماعية، الصحة، لم الشمل العائلي، خيار الجنسية (10 سنوات إقامة قانونية إجمالية، تُخفض إلى سنتين لمواطني أمريكا اللاتينية ودول أخرى لها اتفاقيات).",
+      "opts": [
+        "طلب شهادة الإقامة الدائمة (EX-18)",
+        "بدء إجراءات الجنسية إذا لديك 10 سنوات"
+      ]
+    },
+    "b3-p4": {
+      "id": "b3-p4",
+      "text": "ما هو هدفك الرئيسي الآن؟",
+      "note": "",
+      "opts": [
+        "العمل في إسبانيا",
+        "إحضار العائلة من خارج الاتحاد الأوروبي",
+        "الدراسة",
+        "الوصول للصحة أو الخدمات الاجتماعية"
+      ]
+    },
+    "b3-r-treball": {
+      "id": "b3-r-treball",
+      "text": "العمل في إسبانيا كمواطن/ة أوروبي/ة",
+      "note": "لديك حرية الوصول لسوق العمل الإسباني. بالشهادة الخضراء (NIE الأخضر) يمكنك العمل بدون أي تصريح إضافي. للإجراءات الضريبية والعمالية تحتاج NIE. الشركة يجب أن تسجلك في الضمان الاجتماعي. إذا كنت مستقلاً/ة: تسجيل في الضرائب (نموذج 036/037) + تسجيل في الضمان الاجتماعي.",
+      "opts": [
+        "عندك الشهادة الخضراء؟ ← يمكنك العمل الآن",
+        "ما عندكش ← سجل أولاً (EX-18)"
+      ]
+    },
+    "b3-r-familia": {
+      "id": "b3-r-familia",
+      "text": "إحضار العائلة من خارج الاتحاد الأوروبي — نظام المجموعة الأوروبية",
+      "note": "أفراد العائلة غير الأوروبيين (الزوج/ة، الأبناء أقل من 21 سنة أو المعالين، الأصول المعالين، الشريك/ة المسجل/ة) لهم الحق في مرافقتك أو لم الشمل. نظام المجموعة الأوروبية أفضل من النظام العام. يجب عليهم طلب بطاقة إقامة قريب مواطن أوروبي. استمارة EX-19. الصلاحية: 5 سنوات. مهلة الطلب: 90 يوم من الدخول لإسبانيا. التكلفة: رسوم 790 رمز 012 (مثل سعر DNI الإسباني).",
+      "opts": [
+        "القريب يطلب EX-19 خلال 90 يوم من الدخول",
+        "زوج/ة إسباني/ة؟ ← EX-19 إذا مارس حرية التنقل، EX-24 إذا لا"
+      ]
+    },
+    "b3-r-estudis": {
+      "id": "b3-r-estudis",
+      "text": "الدراسة في إسبانيا كمواطن/ة أوروبي/ة",
+      "note": "لديك الحق في الدراسة بنفس شروط الإسبان (الأسعار، المنح، القبول). تحتاج الشهادة الخضراء إذا الإقامة أكثر من 3 أشهر. وثائق التسجيل: استمارة EX-18 + تسجيل في المؤسسة التعليمية + موارد مالية كافية (إثبات أنك لن تكون عبئاً على الدولة) + تأمين صحي عام أو خاص بتغطية مناسبة.",
+      "opts": [
+        "التسجيل (EX-18) + تسجيل دراسي + موارد + تأمين"
+      ]
+    },
+    "b3-r-serveis": {
+      "id": "b3-r-serveis",
+      "text": "الوصول للصحة والخدمات الاجتماعية كمواطن/ة أوروبي/ة",
+      "note": "بالشهادة الخضراء والاشتراك في الضمان الاجتماعي لديك وصول كامل للصحة العامة. إذا لم تعمل، يجب إثبات موارد مالية وتأمين صحي. التسجيل البلدي يمنحك الوصول للخدمات البلدية والإقليمية. البطاقة الصحية الفردية: اطلبها في المركز الصحي في منطقتك.",
+      "opts": [
+        "التسجيل البلدي + الشهادة الخضراء ← الوصول للخدمات"
+      ]
+    },
+    "b3-p-familiar": {
+      "id": "b3-p-familiar",
+      "text": "ما هي علاقتك بالمواطن/ة الأوروبي/ة؟",
+      "note": "نظام المجموعة الأوروبية مفيد جداً للأقارب. الطلب يجب تقديمه خلال 90 يوم من الدخول لإسبانيا. استمارة EX-19.",
+      "opts": [
+        "زوج/ة أو شريك/ة مسجل/ة",
+        "ابن/ة أقل من 21 سنة أو معال/ة",
+        "أصل معال (أب، أم...)",
+        "قريب آخر (إخوة، أعمام...)"
+      ]
+    },
+    "b3-r-familiar-ue": {
+      "id": "b3-r-familiar-ue",
+      "text": "بطاقة إقامة قريب مواطن/ة أوروبي/ة",
+      "note": "الطلب خلال 90 يوم من الدخول. الوثائق: استمارة EX-19 + جواز سفر ساري + وثائق القرابة (عقد زواج/شهادة ميلاد مصدقة ومترجمة) + NIE الأخضر للقريب الأوروبي. التكلفة: رسوم 790 رمز 012 (سعر DNI). الصلاحية الأولى: 5 سنوات. بعد 5 سنوات ← إقامة دائمة (10 سنوات، تُجدد تلقائياً). استمارة EX-19.",
+      "opts": [
+        "الاستمارة: EX-19 (خلال 90 يوم من الدخول)",
+        "5 سنوات ← إقامة دائمة تلقائية"
+      ]
+    },
+    "b3-r-familiar-altres": {
+      "id": "b3-r-familiar-altres",
+      "text": "قريب بعيد — الوضع يُقيّم حالة بحالة",
+      "note": "الأقارب الآخرون (إخوة، أصهار، أبناء إخوة...) ليس لهم حق تلقائي في نظام المجموعة الأوروبية. يجب إثبات الاعتماد المالي أو العيش معاً لمدة 24 شهر في بلد الأصل. القرار تقديري من مكتب الأجانب. ننصح باستشارة محامي متخصص.",
+      "opts": [
+        "استشارة محامي متخصص في قانون الاتحاد الأوروبي"
+      ]
+    },
+    "b3-r-familiar-espanyol": {
+      "id": "b3-r-familiar-espanyol",
+      "text": "قريب إسباني/ة — طريقتان ممكنتان",
+      "note": "إذا قريبك الإسباني/ة مارس حق التنقل الحر (عاش في بلد أوروبي آخر)، يمكنك استخدام EX-19 (نظام المجموعة الأوروبية، مفيد جداً). إذا لم يمارس حرية التنقل، يجب استخدام EX-24 (النظام العام لقريب إسباني). في حالة الشك، استشر محامي — طريق EX-19 أفضل بكثير ويستحق الاستكشاف.",
+      "opts": [
+        "عاش في بلد أوروبي آخر ← EX-19 (نظام المجموعة الأوروبية)",
+        "لم يعش أبداً خارج إسبانيا ← EX-24 (النظام العام)",
+        "استشارة محامي لتحديد أفضل طريق"
+      ]
+    },
+    "b4-p0": {
+      "id": "b4-p0",
+      "text": "أين أنت الآن؟",
+      "note": "المكان الذي تتواجد فيه يحدد كيف يجب أن تتصرف. لديك الحق في طلب الحماية الدولية بغض النظر عن مكانك.",
+      "opts": [
+        "في إسبانيا، داخل الأراضي الوطنية",
+        "على الحدود، ميناء أو مطار إسباني",
+        "في CIE (مركز احتجاز الأجانب)"
+      ]
+    },
+    "b4-r-frontera": {
+      "id": "b4-r-frontera",
+      "text": "الحق في طلب اللجوء عند الحدود — أظهر هذه الشاشة",
+      "note": "لك الحق في طلب الحماية الدولية في أي نقطة دخول. قل بوضوح: 'أطلب الحماية الدولية'. لا يمكنهم ترحيلك حتى تتم معالجة الطلب. لك الحق في مترجم مجاني. لك الحق في محامٍ مجاني. الطلب سري — لا يُبلَّغ بلدك الأصلي. إذا رفضوا قبول طلبك للمعالجة، لديك يومان عمل لتقديم إعادة النظر.",
+      "opts": [
+        "قل: أطلب الحماية الدولية",
+        "ACNUR إسبانيا: 91 556 35 49",
+        "CEAR: 91 598 05 35"
+      ]
+    },
+    "b4-r-cie": {
+      "id": "b4-r-cie",
+      "text": "في CIE — يمكنك طلب اللجوء من هنا",
+      "note": "يمكنك طلب الحماية الدولية حتى وأنت محتجز في CIE. اطلب التحدث مع محامي المناوبة أو اتصل بـ ACNUR أو CEAR. لك الحق في مترجم ومحامٍ مجانيين. الطلب يوقف إجراءات الترحيل أثناء المعالجة.",
+      "opts": [
+        "طلب اللجوء من موظفي CIE",
+        "ACNUR: 91 556 35 49",
+        "CEAR: 91 598 05 35"
+      ]
+    },
+    "b4-p1": {
+      "id": "b4-p1",
+      "text": "هل قدمت بالفعل طلب الحماية الدولية؟",
+      "note": "المهلة لطلب اللجوء هي شهر واحد من الدخول إلى إسبانيا. إذا تجاوزت الشهر، يمكنك إثبات سبب مبرر لتمديد المهلة. الإجراء مجاني.",
+      "opts": [
+        "لا، لم أقدمه بعد",
+        "نعم، أنتظر القرار",
+        "نعم، رفضوا طلبي"
+      ]
+    },
+    "b4-p-nosol": {
+      "id": "b4-p-nosol",
+      "text": "هل دخلت إسبانيا منذ أقل من شهر؟",
+      "note": "المهلة الرسمية هي شهر واحد من الدخول. بعد انتهاء المهلة، يمكنك التمسك بسبب مبرر. الإجراء مجاني وسري.",
+      "opts": [
+        "نعم، منذ أقل من شهر",
+        "لا، منذ أكثر من شهر"
+      ]
+    },
+    "b4-r-com-sol": {
+      "id": "b4-r-com-sol",
+      "text": "كيفية طلب الحماية الدولية في إسبانيا",
+      "note": "أين تقدم الطلب: مكتب اللجوء واللاجئين (OAR) — مدريد: C/ Pradillo 40؛ مفوضيات الشرطة التي بها خدمة الأجانب (أي مقاطعة)؛ نقاط الحدود. يلزم موعد مسبق (طلب عالٍ). الإجراء مجاني — لا تثق بمن يطلب منك المال. المستندات: جواز السفر أو وثيقة الهوية (إن وُجدت — يمكن الطلب بدون وثائق أيضاً). في الموعد: تشرح أسباب طلبك. يعطونك 'إعلان الإرادة' الذي يحميك من الترحيل. بعد ذلك: مقابلة رسمية ← ورقة بيضاء (إيصال) ← بطاقة حمراء (وثيقة طالب اللجوء).",
+      "opts": [
+        "OAR مدريد: C/ Pradillo 40, 28002",
+        "مفوضية الشرطة (أي مقاطعة)",
+        "ACNUR للاستشارة: 91 556 35 49"
+      ]
+    },
+    "b4-r-fora-termini": {
+      "id": "b4-r-fora-termini",
+      "text": "خارج مهلة الشهر — لكن لا يزال ممكناً",
+      "note": "يمكنك التمسك بسبب مبرر لتجاوز المهلة. اتصل بمحامٍ أو منظمة متخصصة (CEAR، SJM، ACNUR) لتقييم حالتك. إذا كنت في وضع غير نظامي، طلب اللجوء يوقف أي إجراء ترحيل أثناء المعالجة.",
+      "opts": [
+        "الاتصال بـ CEAR/SJM/ACNUR لتقييم الحالة",
+        "تقديم الطلب مع التمسك بسبب مبرر"
+      ]
+    },
+    "b4-p-espera": {
+      "id": "b4-p-espera",
+      "text": "في أي مرحلة يوجد طلبك؟",
+      "note": "المهلة القصوى للقرار هي 6 أشهر من القبول للمعالجة، لكن عملياً قد يستغرق أكثر بكثير. لك الحق في الاطلاع على ملفك في أي وقت.",
+      "opts": [
+        "أنتظر القبول للمعالجة (أقل من شهر)",
+        "قُبل للمعالجة، أنتظر القرار",
+        "لدي البطاقة الحمراء، أنا في النظام"
+      ]
+    },
+    "b4-r-espera-admissio": {
+      "id": "b4-r-espera-admissio",
+      "text": "في انتظار القبول للمعالجة — لديك الورقة البيضاء",
+      "note": "الورقة البيضاء (إيصال التقديم) هي وثيقتك الصالحة أثناء الانتظار. لدى OAR شهر واحد لتقرير القبول للمعالجة. عملياً، يُقبل تلقائياً تقريباً دائماً. إذا لم تتلقَ إشعاراً خلال شهر ← يُعتبر الطلب مقبولاً. جدد الوثيقة عند انتهائها (بعد 9 أشهر من الورقة البيضاء).",
+      "opts": [
+        "تجديد الموعد عند انتهاء الورقة البيضاء (9 أشهر)",
+        "إذا رفضوا القبول ← طعن خلال يومين عمل"
+      ]
+    },
+    "b4-r-espera-resolucio": {
+      "id": "b4-r-espera-resolucio",
+      "text": "الطلب مقبول — في انتظار القرار النهائي",
+      "note": "المهلة القصوى: 6 أشهر (قد يستغرق أكثر بكثير عملياً). لك الحق في العمل بعد 6 أشهر من الطلب إذا لم تتلقَ قراراً. الوصول للصحة والتعليم ونظام الاستقبال (أماكن محدودة). جدد البطاقة الحمراء سنوياً أثناء الانتظار. يمكنك الاستعلام عن حالة ملفك في OAR.",
+      "opts": [
+        "الحق في العمل بعد 6 أشهر بدون قرار",
+        "تجديد البطاقة الحمراء سنوياً",
+        "التسوية الاستثنائية 2026 إذا استوفيت الشروط"
+      ]
+    },
+    "b4-r-tarjeta-roja": {
+      "id": "b4-r-tarjeta-roja",
+      "text": "لديك البطاقة الحمراء — وضع نشط",
+      "note": "البطاقة الحمراء تثبت أنك طالب حماية دولية. الحقوق: الوصول للصحة والتعليم ونظام الاستقبال. الحق في العمل بعد 6 أشهر من الطلب إذا لم يصدر قرار. جددها سنوياً. إذا قدمت طلب اللجوء قبل 01/01/2026، يمكنك الاستفادة من التسوية الاستثنائية 2026.",
+      "opts": [
+        "الحق في العمل بعد 6 أشهر",
+        "التسوية الاستثنائية حتى 30/06/2026",
+        "تجديد البطاقة الحمراء سنوياً"
+      ]
+    },
+    "b4-r-reg-ext": {
+      "id": "b4-r-reg-ext",
+      "text": "التسوية الاستثنائية 2026 — مسار لطالبي اللجوء",
+      "note": "إذا قدمت طلب الحماية الدولية قبل 01/01/2026، يمكنك الاستفادة من التسوية الاستثنائية حتى 30/06/2026. الشروط: بالغ + في إسبانيا + 5 أشهر متواصلة + بدون سوابق جنائية + جواز سفر/بطاقة هوية/وثيقة سفر (سارية أو منتهية). إذا وافقوا ← يجب التنازل عن طلب اللجوء أو الطعن. الإذن: سنة واحدة + الحق في العمل.",
+      "opts": [
+        "التقديم حتى 30/06/2026 (إلكتروني أو حضوري)",
+        "هاتف 060 للاستفسارات والمواعيد"
+      ]
+    },
+    "b4-p-denegat": {
+      "id": "b4-p-denegat",
+      "text": "متى أُبلغت بالرفض؟",
+      "note": "مهل الطعن صارمة جداً. لا تفوتها.",
+      "opts": [
+        "منذ أقل من يومين عمل (رفض القبول للمعالجة)",
+        "منذ أقل من شهر (قرار نهائي)",
+        "منذ أكثر من شهر"
+      ]
+    },
+    "b4-r-reexamen": {
+      "id": "b4-r-reexamen",
+      "text": "عاجل — إعادة النظر: يومان عمل",
+      "note": "إذا رفضوا قبول طلبك للمعالجة، لديك فقط يومان عمل لتقديم إعادة النظر. لدى السلطات 48 ساعة للرد. اتصل فوراً بمحامٍ أو منظمة. الخدمة مجانية.",
+      "opts": [
+        "CEAR: 91 598 05 35 — عاجل",
+        "SJM: 91 445 90 85 — عاجل",
+        "محامي معين: اطلبه في المفوضية"
+      ]
+    },
+    "b4-r-recurs": {
+      "id": "b4-r-recurs",
+      "text": "عاجل — طعن ضد الرفض: شهر واحد",
+      "note": "لديك شهر واحد من الإبلاغ لتقديم طعن اختياري أمام OAR، أو شهران للطعن الإداري القضائي أمام المحكمة الوطنية. اتصل بمحامٍ متخصص في الحماية الدولية. الخدمة مجانية إذا لم تكن لديك موارد. فكر إذا كنت تستوفي شروط التسوية الاستثنائية 2026 (حتى 30/06/2026).",
+      "opts": [
+        "طعن اختياري (شهر) ← OAR",
+        "طعن قضائي إداري (شهران) ← المحكمة الوطنية",
+        "التسوية الاستثنائية إذا انطبقت ← حتى 30/06/2026",
+        "CEAR/SJM/ACNUR — استشارة مجانية"
+      ]
+    },
+    "b4-r-denegat-antic": {
+      "id": "b4-r-denegat-antic",
+      "text": "الرفض منذ أكثر من شهر — خيارات متبقية",
+      "note": "انتهت مهل الطعن. الخيارات: (1) إذا قدمت طلب اللجوء قبل 01/01/2026، يمكنك الاستفادة من التسوية الاستثنائية حتى 30/06/2026. (2) إذا مضى عليك سنتان في إسبانيا، يمكنك طلب arraigo (انظر الفرع 1). (3) الحماية الإنسانية لأسباب صحية أو خطر شخصي. استشر محامياً أو منظمة متخصصة.",
+      "opts": [
+        "التسوية الاستثنائية حتى 30/06/2026",
+        "مضى عليك سنتان في إسبانيا ← الفرع 1 arraigo",
+        "استشارة CEAR/SJM/ACNUR"
+      ]
+    },
+    "b4-r-resolucio-positiva": {
+      "id": "b4-r-resolucio-positiva",
+      "text": "قرار إيجابي — صفة لاجئ أو حماية فرعية",
+      "note": "مبروك. لديك الحق في: الإقامة والعمل في إسبانيا، وثيقة سفر (للاجئين)، لم شمل الأسرة، الوصول إلى الخدمات الاجتماعية بنفس الشروط، طلب الجنسية بعد 5 سنوات (للاجئين، بدلاً من 10 سنوات المعتادة). يجب تجديد البطاقة بشكل دوري لكن الصفة مستقرة.",
+      "opts": [
+        "طلب TIE كلاجئ/ة",
+        "لم شمل الأسرة — طلب تمديد",
+        "الجنسية بعد 5 سنوات (صفة لاجئ)"
+      ]
+    }
+  }
+}
