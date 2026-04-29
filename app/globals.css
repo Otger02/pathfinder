@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Pathfinder Brand Palette ──
+     Inspired by Fundació Tierra Digna:
+     earthy greens + warm blues, human and accessible.
+  */
+
+  /* Primary: warm teal-green — trust, nature, growth */
+  --color-primary: #2a7d6e;
+  --color-primary-dark: #1f6358;
+  --color-primary-light: #e6f3f0;
+
+  /* Accent: warm amber/gold — warmth, hope, urgency */
+  --color-accent: #d4893f;
+  --color-accent-dark: #b8722e;
+  --color-accent-light: #fdf3e7;
+
+  /* Danger: muted warm red */
+  --color-danger: #c0392b;
+  --color-danger-dark: #a93226;
+  --color-danger-light: #fdecea;
+
+  /* Success: earthy green */
+  --color-success: #27774e;
+  --color-success-light: #e8f5ed;
+
+  /* Surfaces: warm neutrals (not cold grays) */
+  --color-surface: #faf8f5;
+  --color-surface-alt: #f0ece6;
+  --color-surface-warm: #f5f0ea;
+
+  /* Text: warm dark */
+  --color-text: #2c2520;
+  --color-text-muted: #6b5e54;
+  --color-text-faint: #9a8e83;
+
+  /* Borders */
+  --color-border: #e0d8cf;
+  --color-border-light: #ede7df;
+
+  /* Chat bubbles */
+  --color-user-bubble: #e6f3f0;
+  --color-assistant-bubble: #faf8f5;
+
+  /* SOS */
+  --color-sos-bg: #fdecea;
+  --color-warning-bg: #fdf3e7;
+  --color-warning-text: #b8722e;
+
+  /* Fonts */
+  --font-sans: "Inter", "Noto Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: "Noto Sans Arabic", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Base */
+body {
+  @apply bg-surface text-text antialiased;
+}
+
+/* Touch target minimum */
+button,
+a,
+input,
+select,
+textarea {
+  min-height: 44px;
+}
+
+/* RTL font override */
+[dir="rtl"] {
+  font-family: var(--font-arabic);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background: var(--color-primary-light);
+  color: var(--color-text);
+}

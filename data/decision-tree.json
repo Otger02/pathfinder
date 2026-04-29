@@ -1,0 +1,1710 @@
+{
+  "version": "2.0.0",
+  "lastUpdated": "2026-04-28",
+  "legalBasis": [
+    "RD 1155/2024 (en vigor 20/05/2025)",
+    "RD 316/2026 (modificació 14/04/2026)",
+    "RD 240/2007 (ciutadans UE)",
+    "Llei 12/2009 (asil)"
+  ],
+  "branches": {
+    "b1": [
+      {
+        "id": "b1-p0",
+        "type": "q",
+        "text": "Tens passaport accessible ara mateix?",
+        "note": "Sense passaport en vigor no es pot tramitar cap autorització de residència. És la primera bifurcació crítica.",
+        "opts": [
+          {
+            "text": "Sí, el tinc",
+            "s": "r",
+            "next": "b1-p1"
+          },
+          {
+            "text": "Retingut per la Brigada d'Extranjeria",
+            "s": "b",
+            "next": "b1-block-a"
+          },
+          {
+            "text": "L'he perdut o destruït",
+            "s": "b",
+            "next": "b1-block-b"
+          },
+          {
+            "text": "Mai n'he tingut",
+            "s": "b",
+            "next": "b1-block-c"
+          },
+          {
+            "text": "Tinc DNI del país però no passaport",
+            "s": "b",
+            "next": "b1-block-d"
+          }
+        ],
+        "x": 40,
+        "y": 40
+      },
+      {
+        "id": "b1-block-a",
+        "type": "block",
+        "text": "Passaport retingut per la Brigada Provincial d'Extranjeria i Fronteres",
+        "note": "La Brigada reté el passaport quan hi ha dubtes sobre l'edat declarada en l'entrada. Pot trigar 6-7 mesos. Pots demanar un certificat que acrediti que el document està retingut. L'entitat tutora pot fer seguiment.",
+        "opts": [
+          {
+            "text": "Hi ha causa penal oberta a fiscalia?",
+            "s": "b",
+            "next": "b1-p0b"
+          },
+          {
+            "text": "No, és retenció administrativa → esperar",
+            "s": "b",
+            "next": "b1-block-a-wait"
+          }
+        ],
+        "x": 370,
+        "y": 40
+      },
+      {
+        "id": "b1-p0b",
+        "type": "q",
+        "text": "La Brigada t'ha dit que hi ha una causa penal oberta a fiscalia?",
+        "note": "La retenció administrativa del passaport és habitual i temporal. Si a més hi ha causa penal per presumpta falsificació documental, la situació és diferent i requereix advocat urgent.",
+        "opts": [
+          {
+            "text": "Sí, hi ha causa penal",
+            "s": "s",
+            "next": "b1-sos1-doc"
+          },
+          {
+            "text": "No, només retenció administrativa",
+            "s": "b",
+            "next": "b1-block-a-wait"
+          }
+        ],
+        "x": 700,
+        "y": 40
+      },
+      {
+        "id": "b1-sos1-doc",
+        "type": "sos1",
+        "text": "Causa penal oberta per la teva documentació d'entrada",
+        "note": "Necessites advocat especialitzat en dret penal i estrangeria. No intentis resoldre-ho sol. El torn d'ofici pot assignar-te un advocat gratuïtament si no tens recursos.",
+        "opts": [
+          {
+            "text": "Contactar CEAR / SJM / torn d'ofici",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "Buscar advocat especialitzat urgent",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 1030,
+        "y": 40
+      },
+      {
+        "id": "b1-block-a-wait",
+        "type": "block",
+        "text": "Retenció administrativa — esperar resolució (6-7 mesos)",
+        "note": "Recull mentre esperes: padró, targeta sanitària, informes escolars o laborals, certificats de l'entitat tutora. Quan recuperis el passaport, torna aquí i continua.",
+        "opts": [
+          {
+            "text": "✓ Tinc el passaport de nou → continua per P1",
+            "s": "r",
+            "next": "b1-p1"
+          },
+          {
+            "text": "Demanar certificat de retenció a la Brigada",
+            "s": "b",
+            "next": null
+          }
+        ],
+        "x": 1030,
+        "y": 220
+      },
+      {
+        "id": "b1-block-b",
+        "type": "block",
+        "text": "Passaport perdut o destruït — renovar al consolat del país d'origen",
+        "note": "Porta el DNI del país d'origen. Senegal, Guinea, Gambia i Benin solen acceptar renovació amb DNI nacional. Temps estimat: 1-3 mesos. L'entitat pot acompanyar al consolat.",
+        "opts": [
+          {
+            "text": "✓ Tinc el passaport nou → continua per P1",
+            "s": "r",
+            "next": "b1-p1"
+          },
+          {
+            "text": "Contactar entitat per acompanyament al consolat",
+            "s": "b",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 220
+      },
+      {
+        "id": "b1-block-c",
+        "type": "block",
+        "text": "Sense cap document de viatge — sol·licitar passaport al consolat",
+        "note": "Porta qualsevol document d'identitat que tinguis. ATENCIÓ: si hi ha risc de persecució al país d'origen, consulta sobre protecció internacional ABANS d'anar al consolat — anar-hi pot ser perillós.",
+        "opts": [
+          {
+            "text": "⚠ Hi ha risc → deriva a Branca Asil (B4)",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "✓ Tinc el passaport nou → continua per P1",
+            "s": "r",
+            "next": "b1-p1"
+          },
+          {
+            "text": "Contactar entitat per acompanyament",
+            "s": "b",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 400
+      },
+      {
+        "id": "b1-block-d",
+        "type": "block",
+        "text": "Tens DNI del país d'origen però no passaport",
+        "note": "El DNI del país d'origen no té validesa a Espanya com a document de viatge. Amb ell pots: empadronar-te, accedir a sanitat i educació. NO pots tramitar cap autorització de residència fins tenir passaport.",
+        "opts": [
+          {
+            "text": "Sol·licitar passaport al consolat amb el DNI",
+            "s": "b",
+            "next": "b1-block-b"
+          },
+          {
+            "text": "Contactar entitat de referència",
+            "s": "b",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 580
+      },
+      {
+        "id": "b1-p1",
+        "type": "q",
+        "text": "Ets menor d'edat o has complert els 18 anys fa menys de 3 mesos?",
+        "note": "Via del menor no acompanyat (art. 174 RD 1155/2024): per a qui estava tutelat per un servei de protecció de menors i arriba a la majoria d'edat sense autorització de residència. Finestra: 2 mesos ABANS fins 3 mesos POSTERIORS als 18 anys. Via excepcional: fins als 20 anys si hi ha causes alienes degudament acreditades + informe de la CA.",
+        "opts": [
+          {
+            "text": "Sí, sóc menor d'edat (< 18 anys)",
+            "s": "r",
+            "next": "b1-r-menor"
+          },
+          {
+            "text": "Tenia tutela i he fet 18 anys fa < 3 mesos",
+            "s": "r",
+            "next": "b1-r-menor"
+          },
+          {
+            "text": "He fet 18 anys fa entre 3 mesos i 2 anys (via excepcional fins 20a)",
+            "s": "b",
+            "next": "b1-r-menor-excepcional"
+          },
+          {
+            "text": "No, sóc major d'edat sense tutela",
+            "s": "",
+            "next": "b1-p2"
+          }
+        ],
+        "x": 40,
+        "y": 800
+      },
+      {
+        "id": "b1-r-menor",
+        "type": "result",
+        "text": "Via del menor no acompanyat — sol·licita ARA (art. 174 RD 1155/2024)",
+        "note": "Requisits: estar sota tutela, custòdia o guarda d'un servei de protecció de menors + haver participat en accions formatives programades per l'entitat (o acreditar integració) + medis econòmics suficients (IMV o programa públic/privat). Termini: 2 mesos ABANS fins 3 mesos POSTERIORS als 18 anys. Formulari EX-25. Habilita per treballar per compte aliè i propi. Silenci administratiu: DESFAVORABLE (3 mesos sense resposta = denegat).",
+        "opts": [
+          {
+            "text": "Formulari: EX-25",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Contactar servei de protecció de menors de la CA",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 800
+      },
+      {
+        "id": "b1-p2",
+        "type": "q",
+        "text": "Regularització extraordinària — completes els requisits?",
+        "note": "Termini: 16 abril – 30 juny 2026 (ACTIVA ARA). Requisits: (1) Estar a Espanya abans de l'1 de gener de 2026. (2) Permanència ininterrompuda mínima de 5 mesos. (3) Sense antecedents penals. NO necessita passaport — accepta cèdula d'inscripció o títol de viatge. NO pot tenir cap sol·licitud en tràmit.",
+        "opts": [
+          {
+            "text": "Sí, compleixo tots els requisits",
+            "s": "r",
+            "next": "b1-r-reg"
+          },
+          {
+            "text": "No / no ho sé",
+            "s": "",
+            "next": "b1-p3"
+          }
+        ],
+        "x": 40,
+        "y": 980
+      },
+      {
+        "id": "b1-r-reg",
+        "type": "result",
+        "text": "Regularització extraordinària — SOL·LICITA ARA (fins 30/06/2026)",
+        "note": "Documentació: còpia passaport/cèdula d'inscripció/títol de viatge + prova d'estar a Espanya abans 01/01/2026 + prova dels 5 mesos de permanència + certificat antecedents penals (Espanya + país d'origen). Via telemàtica: disponible 24h. Via presencial: cita prèvia obligatòria. Tel. 060 (9:30-14h i 16:30-19:30h). Amb l'admissió a tràmit ja es pot treballar. Autorització resultant: 1 any.",
+        "opts": [
+          {
+            "text": "Via telemàtica (24h, sense cita)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Via presencial — demanar cita prèvia",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Tel. 060 per a dubtes i cita",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 980
+      },
+      {
+        "id": "b1-p3",
+        "type": "q",
+        "text": "Quant de temps portes vivint a Espanya de forma continuada?",
+        "note": "Cal poder acreditar la residència continuada: padró, factures, informes escolars, targeta sanitària, certificats de serveis socials. Si portes menys de 5 mesos o vas arribar després de l'1/1/2026, la regularització extraordinària tampoc aplica.",
+        "opts": [
+          {
+            "text": "Menys d'1 any",
+            "s": "r",
+            "next": "b1-r-aviat"
+          },
+          {
+            "text": "Entre 1 i 2 anys",
+            "s": "r",
+            "next": "b1-r-gairebe"
+          },
+          {
+            "text": "Més de 2 anys",
+            "s": "",
+            "next": "b1-p4"
+          }
+        ],
+        "x": 40,
+        "y": 1160
+      },
+      {
+        "id": "b1-r-aviat",
+        "type": "result",
+        "text": "Massa aviat — recull documentació per al futur",
+        "note": "Recull des d'ara: padró, factures amb adreça, fotos datades, informes escolars o de serveis socials. Quan arribes als 2 anys torna a l'arbre.",
+        "opts": [
+          {
+            "text": "Derivació: CEAR / SJM / entitat local",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 1160
+      },
+      {
+        "id": "b1-r-gairebe",
+        "type": "result",
+        "text": "Gairebé — comença a preparar l'arraigo social ja",
+        "note": "Sol·licita ara l'informe d'integració a la Comunitat Autònoma (pot trigar mesos). Recull proves de residència continuada. Busca precontracte laboral si és possible.",
+        "opts": [
+          {
+            "text": "Sol·licitar informe integració CA ara",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 1340
+      },
+      {
+        "id": "b1-p4",
+        "type": "q",
+        "text": "Tens un empresari disposat a fer-te contracte de treball?",
+        "note": "El contracte ha de ser mínim 90 dies i mínim 20h/setmana. El salari ha de ser com a mínim el SMI proporcional a la jornada. S'accepta qualsevol modalitat de contracte. L'empresa ha d'estar al corrent de la Seguretat Social.",
+        "opts": [
+          {
+            "text": "Sí, tinc contracte o precontracte",
+            "s": "r",
+            "next": "b1-r-laboral"
+          },
+          {
+            "text": "No",
+            "s": "",
+            "next": "b1-p5"
+          }
+        ],
+        "x": 40,
+        "y": 1520
+      },
+      {
+        "id": "b1-r-laboral",
+        "type": "result",
+        "text": "Arraigo sociolaboral",
+        "note": "Requisits: 2 anys residència continuada + contracte en vigor mínim 90 dies (3 mesos) i mínim 20h/setmana + salari mínim SMI proporcional. S'accepta qualsevol modalitat: indefinit, temporal, fix discontinu, substitució. Des de l'admissió a tràmit ja es pot treballar. Autorització: 1 any. Formulari EX-10.",
+        "opts": [
+          {
+            "text": "Formulari: EX-10 arraigo sociolaboral",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Des de l'admissió a tràmit → ja pots treballar",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 1520
+      },
+      {
+        "id": "b1-p5",
+        "type": "q",
+        "text": "Estàs matriculat o pots matricular-te en formació oficial a Espanya?",
+        "note": "Formació vàlida per a l'arraigo socioformatiu: FP grau mitjà o superior, certificats de professionalitat (nivells 1, 2 o 3), ESO/educació adults, formació SEPE orientada a ocupació. NO compten cursos no oficials ni acadèmies no acreditades. Màxim 50% en línia. Es pot treballar 30h/setmana mentre s'estudia.",
+        "opts": [
+          {
+            "text": "Sí, estic matriculat o ho puc fer",
+            "s": "r",
+            "next": "b1-r-formatiu"
+          },
+          {
+            "text": "No",
+            "s": "",
+            "next": "b1-p6"
+          }
+        ],
+        "x": 40,
+        "y": 1700
+      },
+      {
+        "id": "b1-r-formatiu",
+        "type": "result",
+        "text": "Arraigo socioformatiu",
+        "note": "Requisits: 2 anys residència continuada + matrícula en formació oficial vàlida (FP, certificat professionalitat, ESO adults, formació SEPE) + informe d'integració social de la CA. Es pot treballar 30h/setmana mentre s'estudia (compte propi o aliè). En completar la formació → modificació a permís de treball. Formulari EX-10.",
+        "opts": [
+          {
+            "text": "Formulari: EX-10 arraigo socioformatiu",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Es pot treballar 30h/setmana mentre s'estudia",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 1700
+      },
+      {
+        "id": "b1-p6",
+        "type": "q",
+        "text": "Tens familiars directes amb residència legal o nacionalitat espanyola?",
+        "note": "ATENCIÓ: L'arraigo familiar clàssic ara és per a pares de menors ciutadans UE (no espanyols). Si el familiar és ESPANYOL, el tràmit és diferent: és una \"autorització de residència de familiar de persona amb nacionalitat espanyola\" (EX-24), no arraigo. Familiars de residents legals (cònjuge/parella o familiar 1r grau en línia directa) van per arraigo social amb medis econòmics.",
+        "opts": [
+          {
+            "text": "Sí, fill/a o progenitor d'espanyol/a",
+            "s": "r",
+            "next": "b1-r-familiar-espanyol"
+          },
+          {
+            "text": "Sí, cònjuge o parella de resident legal",
+            "s": "r",
+            "next": "b1-r-familiar"
+          },
+          {
+            "text": "Sí, pare/mare de menor ciutadà UE (no espanyol)",
+            "s": "r",
+            "next": "b1-r-familiar-ue"
+          },
+          {
+            "text": "No",
+            "s": "",
+            "next": "b1-p7"
+          }
+        ],
+        "x": 40,
+        "y": 1880
+      },
+      {
+        "id": "b1-r-familiar",
+        "type": "result",
+        "text": "Arraigo social per vincles familiars (cònjuge/parella de resident legal)",
+        "note": "Requisits: 2 anys residència continuada + vínculo familiar acreditat (cònjuge o parella de fet registrada, o familiar en 1r grau en línia directa, amb residència legal) + medis econòmics 200% IPREM (~1.200€/mes). Formulari EX-10. Nota: si el familiar és ESPANYOL, veure opció EX-24.",
+        "opts": [
+          {
+            "text": "Formulari: EX-10 arraigo social",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 1880
+      },
+      {
+        "id": "b1-p7",
+        "type": "q",
+        "text": "Tens o pots obtenir informe d'integració social de la Comunitat Autònoma?",
+        "note": "L'informe d'integració el sol·licites a la CA on resideixes (serveis socials o òrgan equivalent). A Catalunya: Departament de Drets Socials. A Madrid: Comunidad de Madrid. Pot trigar 2-6 mesos. Cal demanar-lo amb antelació. Acredita: temps de permanència, coneixement de la llengua, participació en activitats socials.",
+        "opts": [
+          {
+            "text": "Sí, el tinc o el puc sol·licitar",
+            "s": "r",
+            "next": "b1-r-social"
+          },
+          {
+            "text": "No / en tràmit",
+            "s": "",
+            "next": "b1-p8"
+          }
+        ],
+        "x": 40,
+        "y": 2060
+      },
+      {
+        "id": "b1-r-social",
+        "type": "result",
+        "text": "Arraigo social",
+        "note": "Requisits: 2 anys residència continuada + informe integració CA (o vincles familiars amb residents legals) + medis econòmics propis o familiars equivalents al 100% IPREM. Permet treballar per compte propi o aliè. Formulari EX-10.",
+        "opts": [
+          {
+            "text": "Formulari: EX-10 arraigo social",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Sol·licitar informe integració CA ja (tarda mesos)",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 2060
+      },
+      {
+        "id": "b1-p8",
+        "type": "sos2",
+        "text": "La teva situació implica risc immediat? (detenció, expulsió, policia)",
+        "note": "Si t'estan retenint ara mateix o tens una notificació d'expulsió imminent, activa el mode SOS. Si la situació és estable però no tens cap via, contacta amb una entitat.",
+        "opts": [
+          {
+            "text": "Sí, risc immediat ara",
+            "s": "s",
+            "next": "b1-sos2"
+          },
+          {
+            "text": "No, la situació és estable",
+            "s": "r",
+            "next": "b1-r-sense"
+          }
+        ],
+        "x": 40,
+        "y": 2240
+      },
+      {
+        "id": "b1-sos2",
+        "type": "sos3",
+        "text": "MODE SOS — Risc immediat",
+        "note": "Tens dret a assistència jurídica gratuïta. Tens dret a intèrpret. No has de signar cap document sense llegir-lo i entendre'l. Pots demanar que es contacti amb el teu advocat o entitat de referència.",
+        "opts": [
+          {
+            "text": "Trucar CEAR: 91 598 05 35",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "Trucar SJM: 91 445 90 85",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "Mostra aquesta pantalla a la policia",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 2240
+      },
+      {
+        "id": "b1-r-sense",
+        "type": "result",
+        "text": "Sense via activa ara — acompanyament i preparació",
+        "note": "Cap via activa ara mateix per al teu perfil. Contacta amb una entitat de referència: CEAR, SJM, Creu Roja o entitat local. Recull documentació de residència. Si la situació canvia (treball, formació, familiar), torna a l'arbre. El arraigo de 2a oportunitat NO aplica si mai has tingut autorització de residència.",
+        "opts": [
+          {
+            "text": "Derivació: entitat local propera",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 370,
+        "y": 2420
+      },
+      {
+        "id": "b1-r-familiar-espanyol",
+        "type": "result",
+        "text": "Autorització residència familiar de persona amb nacionalitat espanyola",
+        "note": "Fill/a de pare/mare espanyol/a d'origen (sense límit d'edat), cònjuge o parella d'espanyol/a, ascendent/descendent a càrrec. NO requereix temps mínim de residència a Espanya. Autorització inicial 5 anys. Formulari EX-24.",
+        "opts": [
+          {
+            "text": "Formulari: EX-24",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "No cal temps mínim de residència",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 730,
+        "y": 1680
+      },
+      {
+        "id": "b1-r-familiar-ue",
+        "type": "result",
+        "text": "Arraigo familiar — pare/mare de menor ciutadà UE no espanyol",
+        "note": "Per a pares/mares de fill/a menor de nacionalitat UE/EEE/Suïssa (no espanyola). Cal tenir el menor a càrrec i conviure amb ell/ella. Formulari EX-10.",
+        "opts": [
+          {
+            "text": "Formulari: EX-10 arraigo familiar",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 730,
+        "y": 1820
+      },
+      {
+        "id": "b1-r-menor-excepcional",
+        "type": "block",
+        "text": "Via excepcional menor — fins als 20 anys",
+        "note": "Si el termini ordinari (3 mesos posteriors als 18 anys) ha passat però encara no has complert 20 anys, pots sol·licitar excepcionalment si acredites causes alienes degudament documentades + informe de la comunitat autònoma o ajuntament. Contacta URGENTMENT amb l'entitat que t'ha tutelat o amb un advocat especialitzat en menors.",
+        "opts": [
+          {
+            "text": "Contactar servei de protecció de menors URGENT",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "Advocat especialitzat en menors estrangers",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "CEAR / SJM: assessorament gratuït",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 180
+      }
+    ],
+    "b2": [
+      {
+        "id": "b2-p0",
+        "type": "q",
+        "text": "Quin tipus d'autorització tens o tenies?",
+        "note": "Mira la teva targeta (TIE) o la resolució. El tipus consta al document.",
+        "opts": [
+          {
+            "text": "Residència temporal (1-2 anys, en vigor)",
+            "s": "r",
+            "next": "b2-p1"
+          },
+          {
+            "text": "Residència llarga durada (5+ anys, en vigor)",
+            "s": "r",
+            "next": "b2-r-ld"
+          },
+          {
+            "text": "Tinc autorització però ha caducat",
+            "s": "b",
+            "next": "b2-p2"
+          },
+          {
+            "text": "Vaig tenir autorització però la vaig perdre (irregular ara)",
+            "s": "b",
+            "next": "b2-p3"
+          },
+          {
+            "text": "No sé quin tipus tinc",
+            "s": "",
+            "next": "b2-r-identificar"
+          }
+        ],
+        "x": 40,
+        "y": 40
+      },
+      {
+        "id": "b2-r-identificar",
+        "type": "result",
+        "text": "Identifica el teu document — porta'l a una entitat",
+        "note": "Porta el teu document físic (TIE o resolució) a una entitat de referència o oficina d'extranjeria. Podran dir-te exactament quin tipus d'autorització tens i quines opcions tens.",
+        "opts": [
+          {
+            "text": "Derivació: oficina extranjeria o entitat",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 40
+      },
+      {
+        "id": "b2-p1",
+        "type": "q",
+        "text": "Quan caduca la teva autorització de residència temporal?",
+        "note": "Termini oficial: des de 60 dies ABANS fins a 90 dies DESPRÉS de la caducitat. Amb la sol·licitud presentada en termini, la validesa s'allarga fins a la resolució (màx. 3 mesos). Silenci administratiu és FAVORABLE en renovació.",
+        "opts": [
+          {
+            "text": "Més de 2 mesos (60 dies)",
+            "s": "r",
+            "next": "b2-r-ok"
+          },
+          {
+            "text": "Menys de 2 mesos",
+            "s": "s",
+            "next": "b2-r-urgent"
+          },
+          {
+            "text": "Ja ha caducat (menys de 90 dies)",
+            "s": "s",
+            "next": "b2-r-caducada-recent"
+          }
+        ],
+        "x": 40,
+        "y": 260
+      },
+      {
+        "id": "b2-r-ok",
+        "type": "result",
+        "text": "Tens temps — prepara la renovació ara",
+        "note": "Presenta entre 60 dies abans i la data de caducitat. La renovació aprovada dura 2 anys. Documentació base: formulari EX corresponent, pasaport en vigor, padró, antecedents penals + documentació específica del teu tipus de permís. Via telemàtica (Mercurio) o presencial amb cita prèvia.",
+        "opts": [
+          {
+            "text": "Compte aliè → EX-13 + contracte + vida laboral",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Compte propi → EX-15 + activitat + cotitzacions SS",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "No lucrativa → EX-07 + medis econòmics + assegurança",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 180
+      },
+      {
+        "id": "b2-r-urgent",
+        "type": "sos1",
+        "text": "URGENT — menys de 2 mesos per caducar",
+        "note": "Presenta la sol·licitud AQUESTA SETMANA. Amb la sol·licitud presentada, la validesa s'allarga fins a la resolució. Silenci administratiu FAVORABLE: si no hi ha resposta en 3 mesos, s'entén aprovada.",
+        "opts": [
+          {
+            "text": "Via Mercurio (telemàtica) o cita presencial urgent",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "Consultar entitat de suport",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 320
+      },
+      {
+        "id": "b2-r-critic",
+        "type": "sos2",
+        "text": "CRÍTIC — caduca en menys d'1 mes",
+        "note": "Situació molt urgent. Presenta la sol·licitud avui si és possible. Amb la sol·licitud presentada, fins i tot fora de termini, la resolució positiva regularitzarà la teva situació. Busca ajuda d'un advocat o entitat especialitzada.",
+        "opts": [
+          {
+            "text": "CEAR: 91 598 05 35",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "SJM: 91 445 90 85",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "Presentar sol·licitud avui",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 460
+      },
+      {
+        "id": "b2-r-ld",
+        "type": "result",
+        "text": "Residència de llarga durada — situació estable",
+        "note": "La llarga durada és indefinida. La TIE s'ha de renovar cada 5 anys (tràmit senzill, no implica revisar el fons). Tens drets laborals plens, pots reagrupar família i computes temps per a la nacionalitat.",
+        "opts": [
+          {
+            "text": "TIE caducada → renovar (EX-17, tràmit senzill)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Propera fita → sol·licitud de nacionalitat",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 600
+      },
+      {
+        "id": "b2-p2",
+        "type": "q",
+        "text": "Quant temps fa que va caducar la teva autorització?",
+        "note": "Passats 90 dies de la caducitat sense presentar sol·licitud, la renovació ordinària ja no és possible.",
+        "opts": [
+          {
+            "text": "Menys de 90 dies → encara pots renovar",
+            "s": "s",
+            "next": "b2-r-caducada-recent"
+          },
+          {
+            "text": "Entre 90 dies i 1 any",
+            "s": "s",
+            "next": "b2-r-caducada-mitja"
+          },
+          {
+            "text": "Més d'1 any",
+            "s": "b",
+            "next": "b2-r-caducada-llarga"
+          }
+        ],
+        "x": 40,
+        "y": 560
+      },
+      {
+        "id": "b2-r-caducada-recent",
+        "type": "sos1",
+        "text": "Caducada fa menys de 90 dies — encara pots renovar",
+        "note": "Legalment pots presentar fins a 90 dies DESPRÉS de la caducitat. Atenció: estàs en situació irregular (infracció lleu si <3 mesos, greu si >3 mesos). Presenta avui. Es pot obrir expedient sancionador, però la renovació aprovada regularitza la situació.",
+        "opts": [
+          {
+            "text": "Presentar sol·licitud de renovació avui",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "Buscar suport d'entitat o advocat",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 780
+      },
+      {
+        "id": "b2-r-caducada-mitja",
+        "type": "sos1",
+        "text": "Caducada fa entre 90 dies i 1 any — irregular greu",
+        "note": "Renovació ordinària ja no possible. Situació irregular greu (multa o expedient d'expulsió possible). Opcions: (1) Portes 2 anys a Espanya → arraigo Branca 1. (2) Autorització en últims 2 anys → arraigo 2a oportunitat. (3) Regularització extraordinària fins 30/06/2026 si compleixes requisits.",
+        "opts": [
+          {
+            "text": "Portes 2 anys a Espanya → Branca 1 arraigo",
+            "s": "b",
+            "next": null
+          },
+          {
+            "text": "Arraigo 2a oportunitat",
+            "s": "b",
+            "next": "b2-r-2a-op"
+          },
+          {
+            "text": "Regularització extraordinària fins 30/06/2026",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Consultar advocat o CEAR/SJM urgent",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 920
+      },
+      {
+        "id": "b2-r-caducada-llarga",
+        "type": "block",
+        "text": "Caducada fa més d'1 any — situació complex",
+        "note": "La renovació ordinària probablement no és viable. Les opcions depenen de la situació concreta: si portes 2+ anys a Espanya pots optar a arraigo (veure Branca 1). Si vas tenir autorització en els últims 2 anys, pots optar a arraigo de 2a oportunitat.",
+        "opts": [
+          {
+            "text": "Portes 2 anys a Espanya? → Branca 1 arraigo",
+            "s": "b",
+            "next": null
+          },
+          {
+            "text": "Autorització en últims 2 anys → arraigo 2a oportunitat",
+            "s": "b",
+            "next": "b2-r-2a-op"
+          },
+          {
+            "text": "Consultar advocat urgent",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1060
+      },
+      {
+        "id": "b2-p3",
+        "type": "q",
+        "text": "Quan vas perdre o deixar de tenir l'autorització?",
+        "note": "L'arraigo de 2a oportunitat requereix haver tingut autorització en els 2 anys immediatament anteriors a la sol·licitud.",
+        "opts": [
+          {
+            "text": "Fa menys de 2 anys",
+            "s": "r",
+            "next": "b2-r-2a-op"
+          },
+          {
+            "text": "Fa més de 2 anys",
+            "s": "b",
+            "next": "b2-r-antiga"
+          }
+        ],
+        "x": 40,
+        "y": 860
+      },
+      {
+        "id": "b2-r-2a-op",
+        "type": "result",
+        "text": "Arraigo de 2a oportunitat",
+        "note": "Per a qui va tenir autorització de residència (NO per circumstàncies excepcionals, és a dir no un arraigo anterior) en els últims 2 anys i no va poder renovar per motius que NO siguin ordre públic ni seguretat. Requisits: 2 anys residència continuada + sense antecedents penals. EXCLOU sol·licitants d'asil actius i qui ve d'un arraigo anterior. Autorització: 1 any + treball. Formulari EX-10.",
+        "opts": [
+          {
+            "text": "Formulari: EX-10 arraigo 2a oportunitat",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "L'autorització anterior era un arraigo? → no aplica",
+            "s": "b",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1180
+      },
+      {
+        "id": "b2-r-antiga",
+        "type": "block",
+        "text": "Autorització fa més de 2 anys — arraigo 2a oportunitat no disponible",
+        "note": "L'arraigo de 2a oportunitat requereix que l'autorització fos en els últims 2 anys. Si fa més temps, aquesta via no és accessible. Opcions: si portes 2+ anys a Espanya, mira les vies d'arraigo de la Branca 1 (sociolaboral, socioformatiu, social).",
+        "opts": [
+          {
+            "text": "Portes 2 anys a Espanya? → Branca 1",
+            "s": "b",
+            "next": null
+          },
+          {
+            "text": "Consultar advocat o entitat",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1320
+      }
+    ],
+    "b3": [
+      {
+        "id": "b3-p0",
+        "type": "q",
+        "text": "Ets ciutadà/ana de la UE, l'EEE o Suïssa?",
+        "note": "UE: Alemanya, Àustria, Bèlgica, Bulgària, Croàcia, Dinamarca, Eslovàquia, Eslovènia, Espanya, Estònia, Finlàndia, França, Grècia, Hongria, Irlanda, Itàlia, Letònia, Lituània, Luxemburg, Malta, Països Baixos, Polònia, Portugal, Romania, Suècia, Txèquia, Xipre. EEE a més: Islàndia, Liechtenstein, Noruega. Suïssa per acord bilateral.",
+        "opts": [
+          {
+            "text": "Sí, sóc ciutadà/ana UE/EEE/Suïssa",
+            "s": "r",
+            "next": "b3-p1"
+          },
+          {
+            "text": "No, sóc familiar no comunitari d'un/a ciutadà/ana UE",
+            "s": "",
+            "next": "b3-p-familiar"
+          },
+          {
+            "text": "Sóc familiar d'un/a espanyol/a",
+            "s": "",
+            "next": "b3-r-familiar-espanyol"
+          }
+        ],
+        "x": 40,
+        "y": 40
+      },
+      {
+        "id": "b3-p1",
+        "type": "q",
+        "text": "Quant de temps portes a Espanya o tens previst quedar-t'hi?",
+        "note": "La llibertat de circulació UE permet estar fins a 90 dies sense cap tràmit. A partir del dia 91, cal registrar-se obligatòriament.",
+        "opts": [
+          {
+            "text": "Menys de 3 mesos (90 dies)",
+            "s": "r",
+            "next": "b3-r-curta"
+          },
+          {
+            "text": "Més de 3 mesos",
+            "s": "",
+            "next": "b3-p2"
+          }
+        ],
+        "x": 40,
+        "y": 260
+      },
+      {
+        "id": "b3-r-curta",
+        "type": "result",
+        "text": "Estada curta — no cal cap tràmit",
+        "note": "Fins a 90 dies pots estar a Espanya lliurement amb el teu passaport o DNI nacional. No necessites registrar-te ni obtenir cap document. Si vols treballar, necesites el NIE per a gestions fiscals, però no és obligatori per a l'estada.",
+        "opts": [
+          {
+            "text": "Si treballaràs → sol·licita NIE a l'oficina d'extranjeria",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 180
+      },
+      {
+        "id": "b3-p2",
+        "type": "q",
+        "text": "T'has registrat al Registre Central d'Estrangers (certificat verd)?",
+        "note": "El certificat verd (NIE verd / CUE) és obligatori si resideixes més de 3 mesos. Cal demanar-lo en els primers 3 mesos des de l'entrada. S'obté a l'oficina d'extranjeria o comissaria de policia de la teva província. Formulari EX-18. S'expedeix immediatament el mateix dia.",
+        "opts": [
+          {
+            "text": "No, no me l'he fet",
+            "s": "b",
+            "next": "b3-r-registre"
+          },
+          {
+            "text": "Sí, ja el tinc",
+            "s": "r",
+            "next": "b3-p3"
+          }
+        ],
+        "x": 40,
+        "y": 440
+      },
+      {
+        "id": "b3-r-registre",
+        "type": "result",
+        "text": "Cal registrar-se — obtenir el certificat verd (NIE verd)",
+        "note": "Obligatori si portes o portaràs més de 3 mesos. Termini: primers 3 mesos des de l'entrada. On: oficina d'extranjeria o comissaria de policia de la teva província. Cal cita prèvia (alta demanda, reserva amb temps). Documents: formulari EX-18 + pasaport/DNI en vigor + documentació que justifiqui el motiu de residència (contracte, matrícula, medis econòmics + assegurança mèdica). Tasa: 790 codi 012. El certificat s'expedeix el mateix dia. No caduca però la residència ha de mantenir-se.",
+        "opts": [
+          {
+            "text": "Treballador/a compte aliè → contracte laboral o declaració empresa",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Treballador/a compte propi → alta censal o SS",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Estudiant → matrícula + medis econòmics + assegurança mèdica",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Sense activitat → medis econòmics suficients + assegurança mèdica",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 360
+      },
+      {
+        "id": "b3-p3",
+        "type": "q",
+        "text": "Quant de temps portes residint legalment a Espanya?",
+        "note": "La residència permanent s'adquireix amb 5 anys de residència legal continuada. Interrupcions de menys de 2 anys consecutius no afecten la computació.",
+        "opts": [
+          {
+            "text": "Menys de 5 anys",
+            "s": "r",
+            "next": "b3-p4"
+          },
+          {
+            "text": "5 anys o més",
+            "s": "r",
+            "next": "b3-r-permanent"
+          }
+        ],
+        "x": 40,
+        "y": 640
+      },
+      {
+        "id": "b3-r-permanent",
+        "type": "result",
+        "text": "Residència permanent UE — drets plens",
+        "note": "Amb 5 anys de residència legal continuada tens dret a la residència permanent. El certificat de residència permanent UE s'obté a l'oficina d'extranjeria o comissaria. Formulari EX-18. Validesa: 10 anys, renovable automàticament. Drets: treball, serveis socials, sanitat, reagrupació familiar, opció a nacionalitat (10 anys de residència legal total, reduïts a 2 anys per iberoamericans i altres països amb conveni).",
+        "opts": [
+          {
+            "text": "Sol·licitar certificat de residència permanent (EX-18)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Iniciar procés de nacionalitat si tens 10 anys",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 580
+      },
+      {
+        "id": "b3-p4",
+        "type": "q",
+        "text": "Quin és el teu objectiu principal ara mateix?",
+        "note": "",
+        "opts": [
+          {
+            "text": "Treballar a Espanya",
+            "s": "r",
+            "next": "b3-r-treball"
+          },
+          {
+            "text": "Portar família de fora la UE",
+            "s": "r",
+            "next": "b3-r-familia"
+          },
+          {
+            "text": "Estudiar",
+            "s": "r",
+            "next": "b3-r-estudis"
+          },
+          {
+            "text": "Accedir a sanitat o serveis socials",
+            "s": "r",
+            "next": "b3-r-serveis"
+          }
+        ],
+        "x": 40,
+        "y": 840
+      },
+      {
+        "id": "b3-r-treball",
+        "type": "result",
+        "text": "Treballar a Espanya com a ciutadà/ana UE",
+        "note": "Tens lliure accés al mercat laboral espanyol. Amb el certificat verd (NIE verd) pots treballar sense cap permís addicional. Per a gestions fiscals i laborals necessites el NIE. L'empresa ha de donar-te d'alta a la Seguretat Social. Si ets autònom/a: alta a Hisenda (model 036/037) + alta SS.",
+        "opts": [
+          {
+            "text": "Tens el certificat verd? → ja pots treballar",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "No el tens → registrar-se primer (EX-18)",
+            "s": "b",
+            "next": "b3-r-registre"
+          }
+        ],
+        "x": 420,
+        "y": 760
+      },
+      {
+        "id": "b3-r-familia",
+        "type": "result",
+        "text": "Portar família de fora la UE — règim comunitari",
+        "note": "Els familiars no comunitaris (cònjuge, fills <21 anys o a càrrec, ascendents a càrrec, parella registrada) tenen dret a acompanyar-te o reagrupar-se. Règim comunitari és més favorable que el règim general. Han de sol·licitar la Tarjeta de residència de familiar de ciutadà UE. Formulari EX-19. Validesa: 5 anys. Plazo sol·licitud: 90 dies des de l'entrada a Espanya. Cost: tasa 790 codi 012 (equivalent al DNI espanyol).",
+        "opts": [
+          {
+            "text": "Familiar sol·licita EX-19 dins els 90 dies d'entrada",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Cònjuge espanyol? → EX-19 si ha exercit lliure circulació, EX-24 si no",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 920
+      },
+      {
+        "id": "b3-r-estudis",
+        "type": "result",
+        "text": "Estudiar a Espanya com a ciutadà/ana UE",
+        "note": "Tens dret a estudiar en igualtat de condicions que els espanyols (preus, beques, accés). Necessites el certificat verd si l'estada és superior a 3 mesos. Documents per al registre: formulari EX-18 + matrícula del centre educatiu + medis econòmics suficients (demostrar que no seràs una càrrega per a l'estat) + assegurança mèdica pública o privada amb cobertura adequada.",
+        "opts": [
+          {
+            "text": "Registrar-se (EX-18) + matrícula + medis + assegurança",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1060
+      },
+      {
+        "id": "b3-r-serveis",
+        "type": "result",
+        "text": "Accés a sanitat i serveis socials com a ciutadà/ana UE",
+        "note": "Amb el certificat verd i cotitzant a la Seguretat Social tens accés ple a la sanitat pública. Si no treballes, has d'acreditar medis econòmics i assegurança mèdica. L'empadronament et dóna accés a serveis municipals i autonòmics. Targeta sanitària individual: sol·licita-la al CAP o centre de salut de la teva zona.",
+        "opts": [
+          {
+            "text": "Empadronament + certificat verd → accés serveis",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1200
+      },
+      {
+        "id": "b3-p-familiar",
+        "type": "q",
+        "text": "Quin és el teu vincle amb el/la ciutadà/ana UE?",
+        "note": "El règim comunitari és molt favorable per als familiars. La sol·licitud s'ha de fer en els 90 dies des de l'entrada a Espanya. Formulari EX-19.",
+        "opts": [
+          {
+            "text": "Cònjuge o parella registrada",
+            "s": "r",
+            "next": "b3-r-familiar-ue"
+          },
+          {
+            "text": "Fill/a menor de 21 anys o a càrrec",
+            "s": "r",
+            "next": "b3-r-familiar-ue"
+          },
+          {
+            "text": "Ascendent a càrrec (pare, mare...)",
+            "s": "r",
+            "next": "b3-r-familiar-ue"
+          },
+          {
+            "text": "Altre familiar (germans, oncles...)",
+            "s": "b",
+            "next": "b3-r-familiar-altres"
+          }
+        ],
+        "x": 40,
+        "y": 1060
+      },
+      {
+        "id": "b3-r-familiar-ue",
+        "type": "result",
+        "text": "Tarjeta de residència de familiar de ciutadà/ana UE",
+        "note": "Sol·licitar en els 90 dies des de l'entrada. Documents: formulari EX-19 + pasaport vàlid + documentació del vincle familiar (acta matrimoni/naixement apostil·lada i traduïda) + NIE verd del familiar UE. Cost: tasa 790 codi 012 (preu DNI). Validesa inicial: 5 anys. Després de 5 anys → residència permanent (10 anys, renovable automàticament). Formulari EX-19.",
+        "opts": [
+          {
+            "text": "Formulari: EX-19 (dins 90 dies d'entrada)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "5 anys → residència permanent automàtica",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1060
+      },
+      {
+        "id": "b3-r-familiar-altres",
+        "type": "block",
+        "text": "Familiar extens — situació a valorar cas per cas",
+        "note": "Altres familiars (germans, cunyats, nebots...) no tenen dret automàtic al règim comunitari. Cal acreditar dependència econòmica o convivència de 24 mesos al país d'origen. La decisió és discrecional de l'oficina d'extranjeria. Recomanem assessorament d'advocat especialitzat.",
+        "opts": [
+          {
+            "text": "Consultar advocat especialitzat en dret UE",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1220
+      },
+      {
+        "id": "b3-r-familiar-espanyol",
+        "type": "result",
+        "text": "Familiar d'espanyol/a — dues vies possibles",
+        "note": "Si el/la teu/teva familiar espanyol/a ha exercit el dret a la lliure circulació (ha viscut en un altre país UE), pots anar per EX-19 (règim comunitari, molt favorable). Si no ha exercit lliure circulació, has d'anar per EX-24 (règim general de familiar d'espanyol). En cas de dubte, consulta amb advocat — la via EX-19 és molt més favorable i val la pena explorar-la.",
+        "opts": [
+          {
+            "text": "Ha viscut en altre país UE → EX-19 (règim comunitari)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Mai ha viscut fora d'Espanya → EX-24 (règim general)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Consultar advocat per determinar la millor via",
+            "s": "b",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1360
+      }
+    ],
+    "b4": [
+      {
+        "id": "b4-p0",
+        "type": "q",
+        "text": "On ets ara mateix?",
+        "note": "El lloc on et trobes determina com has de procedir. Tens dret a sol·licitar protecció internacional independentment d'on siguis.",
+        "opts": [
+          {
+            "text": "A Espanya, en territori nacional",
+            "s": "",
+            "next": "b4-p1"
+          },
+          {
+            "text": "A la frontera, port o aeroport espanyol",
+            "s": "s",
+            "next": "b4-r-frontera"
+          },
+          {
+            "text": "En un CIE (Centre d'Internament)",
+            "s": "s",
+            "next": "b4-r-cie"
+          }
+        ],
+        "x": 40,
+        "y": 40
+      },
+      {
+        "id": "b4-r-frontera",
+        "type": "sos3",
+        "text": "DRET A SOL·LICITAR ASIL A LA FRONTERA — Mostra aquesta pantalla",
+        "note": "Tens dret a sol·licitar protecció internacional en qualsevol punt d'entrada. Di clarament: 'Sol·licito protecció internacional'. No et poden expulsar fins que es tramiti la sol·licitud. Tens dret a intèrpret gratuït. Tens dret a advocat gratuït. La sol·licitud és CONFIDENCIAL — no es comunica al teu país d'origen. Si t'inadmeten a tràmit, tens 2 dies hàbils per presentar reexamen.",
+        "opts": [
+          {
+            "text": "Di: SOL·LICITO PROTECCIÓ INTERNACIONAL",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "ACNUR Espanya: 91 556 35 49",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "CEAR: 91 598 05 35",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 40
+      },
+      {
+        "id": "b4-r-cie",
+        "type": "sos2",
+        "text": "En un CIE — pots sol·licitar asil des d'aquí",
+        "note": "Pots sol·licitar protecció internacional fins i tot estant internat/da en un CIE. Demana parlar amb l'advocat de guàrdia o contacta ACNUR o CEAR. Tens dret a intèrpret i advocat gratuïts. La sol·licitud paralitza el procediment d'expulsió mentre es tramita.",
+        "opts": [
+          {
+            "text": "Sol·licitar asil al personal del CIE",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "ACNUR: 91 556 35 49",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "CEAR: 91 598 05 35",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 200
+      },
+      {
+        "id": "b4-p1",
+        "type": "q",
+        "text": "Ja has presentat la sol·licitud de protecció internacional?",
+        "note": "El termini per sol·licitar asil és d'1 mes des de l'entrada a Espanya. Si has superat el mes, pots demostrar causa justificada per ampliar el termini. El procediment és gratuït.",
+        "opts": [
+          {
+            "text": "No, encara no l'he sol·licitada",
+            "s": "",
+            "next": "b4-p-nosol"
+          },
+          {
+            "text": "Sí, estic esperant resolució",
+            "s": "",
+            "next": "b4-p-espera"
+          },
+          {
+            "text": "Sí, m'han denegat",
+            "s": "s",
+            "next": "b4-p-denegat"
+          }
+        ],
+        "x": 40,
+        "y": 300
+      },
+      {
+        "id": "b4-p-nosol",
+        "type": "q",
+        "text": "Fa menys d'1 mes que has entrat a Espanya?",
+        "note": "El termini oficial és 1 mes des de l'entrada. Passat el termini, pots al·legar causa justificada. El procediment és gratuït i confidencial.",
+        "opts": [
+          {
+            "text": "Sí, fa menys d'1 mes",
+            "s": "r",
+            "next": "b4-r-com-sol"
+          },
+          {
+            "text": "No, fa més d'1 mes",
+            "s": "b",
+            "next": "b4-r-fora-termini"
+          }
+        ],
+        "x": 40,
+        "y": 500
+      },
+      {
+        "id": "b4-r-com-sol",
+        "type": "result",
+        "text": "Com sol·licitar protecció internacional a Espanya",
+        "note": "On presentar-la: Oficina d'Asil i Refugi (OAR) — Madrid: C/ Pradillo 40; Comissaries de Policia amb servei d'extranjeria (qualsevol província); Puestos fronterers. Cal cita prèvia (alta demanda). El tràmit és GRATUÏT — desconfia de qui et cobri. Documents: pasaport o document d'identitat (si en tens — sense documents també es pot sol·licitar). A la cita: expliques els motius de la teva sol·licitud. Et donaran una 'Manifestació de voluntat' que et protegeix de l'expulsió. Desprès: entrevista formal → full blanc (resguard) → tarjeta roja (document de sol·licitant).",
+        "opts": [
+          {
+            "text": "OAR Madrid: C/ Pradillo 40, 28002",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Comissaria de Policia (qualsevol província)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "ACNUR assessorament: 91 556 35 49",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 420
+      },
+      {
+        "id": "b4-r-fora-termini",
+        "type": "block",
+        "text": "Fora del termini d'1 mes — però encara és possible",
+        "note": "Pots al·legar causa justificada per superar el termini. Contacta amb un advocat o entitat especialitzada (CEAR, SJM, ACNUR) per valorar el teu cas. Si et trobes en situació irregular, la sol·licitud d'asil paralitza qualsevol expedient d'expulsió mentre es tramita.",
+        "opts": [
+          {
+            "text": "Contactar CEAR/SJM/ACNUR per valorar el cas",
+            "s": "b",
+            "next": null
+          },
+          {
+            "text": "Presentar sol·licitud al·legant causa justificada",
+            "s": "b",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 560
+      },
+      {
+        "id": "b4-p-espera",
+        "type": "q",
+        "text": "En quina fase es troba la teva sol·licitud?",
+        "note": "El termini màxim de resolució és 6 mesos des de l'admissió a tràmit, però en la pràctica pot trigar molt més. Tens dret a consultar el teu expedient en qualsevol moment.",
+        "opts": [
+          {
+            "text": "Estic esperant admissió a tràmit (<1 mes)",
+            "s": "",
+            "next": "b4-r-espera-admissio"
+          },
+          {
+            "text": "Admesa a tràmit, esperant resolució",
+            "s": "",
+            "next": "b4-r-espera-resolucio"
+          },
+          {
+            "text": "Tinc la tarjeta roja, estic en el sistema",
+            "s": "r",
+            "next": "b4-r-tarjeta-roja"
+          }
+        ],
+        "x": 40,
+        "y": 700
+      },
+      {
+        "id": "b4-r-espera-admissio",
+        "type": "result",
+        "text": "Esperant admissió a tràmit — tens el full blanc",
+        "note": "El full blanc (Resguard de Presentació) és el teu document vàlid mentre esperes. La OAR té 1 mes per decidir si admet a tràmit. En la pràctica, s'admet de forma automàtica gairebé sempre. Si no reps notificació en 1 mes → la sol·licitud s'entén admesa. Renova el document quan caduca (als 9 mesos del full blanc).",
+        "opts": [
+          {
+            "text": "Renovar cita quan caduca el full blanc (9 mesos)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Si t'inadmeten → recurs en 2 dies hàbils",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 640
+      },
+      {
+        "id": "b4-r-espera-resolucio",
+        "type": "result",
+        "text": "Sol·licitud admesa — esperant resolució final",
+        "note": "Termini màxim: 6 mesos (pot trigar molt més en la pràctica). Tens dret a treballar als 6 mesos de la sol·licitud si no has rebut resolució. Accés a sanitat, educació i sistema d'acollida (places limitades). Renova la tarjeta roja anualment mentre esperes. Pots consultar l'estat del teu expedient a la OAR.",
+        "opts": [
+          {
+            "text": "Dret a treballar als 6 mesos sense resolució",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Renovar tarjeta roja anualment",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Regularització extraordinària 2026 si compleixes requisits",
+            "s": "r",
+            "next": "b4-r-reg-ext"
+          }
+        ],
+        "x": 420,
+        "y": 780
+      },
+      {
+        "id": "b4-r-tarjeta-roja",
+        "type": "result",
+        "text": "Tens la tarjeta roja — situació activa",
+        "note": "La tarjeta roja acredita que ets sol·licitant de protecció internacional. Drets: accés a sanitat, educació, sistema d'acollida. Dret a treballar als 6 mesos de la sol·licitud si no hi ha resolució. Renova-la anualment. Si has sol·licitat l'asil abans del 01/01/2026, pots optar a la regularització extraordinària 2026.",
+        "opts": [
+          {
+            "text": "Dret a treballar als 6 mesos",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Regularització extraordinària fins 30/06/2026",
+            "s": "r",
+            "next": "b4-r-reg-ext"
+          },
+          {
+            "text": "Renovar tarjeta roja anualment",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 920
+      },
+      {
+        "id": "b4-r-reg-ext",
+        "type": "result",
+        "text": "Regularització extraordinària 2026 — via per a sol·licitants d'asil",
+        "note": "Si has sol·licitat protecció internacional ABANS del 01/01/2026, pots optar a la regularització extraordinària fins al 30/06/2026. Requisits: major d'edat + a Espanya + 5 mesos continuats + sense antecedents penals + pasaport/cèdula/títol de viatge (en vigor o caducat). Si t'aproven → has de desistir de la sol·licitud d'asil o el recurs. Autorització: 1 any + dret a treballar.",
+        "opts": [
+          {
+            "text": "Sol·licitar fins 30/06/2026 (telemàtic o presencial)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Tel. 060 per a dubtes i cita",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 800,
+        "y": 850
+      },
+      {
+        "id": "b4-p-denegat",
+        "type": "q",
+        "text": "Quan t'han notificat la denegació?",
+        "note": "Els terminis per recórrer són molt estrictes. No els perdis.",
+        "opts": [
+          {
+            "text": "Fa menys de 2 dies hàbils (inadmissió a tràmit)",
+            "s": "s",
+            "next": "b4-r-reexamen"
+          },
+          {
+            "text": "Fa menys d'1 mes (resolució definitiva)",
+            "s": "s",
+            "next": "b4-r-recurs"
+          },
+          {
+            "text": "Fa més d'1 mes",
+            "s": "b",
+            "next": "b4-r-denegat-antic"
+          }
+        ],
+        "x": 40,
+        "y": 1060
+      },
+      {
+        "id": "b4-r-reexamen",
+        "type": "sos1",
+        "text": "URGENT — Reexamen: 2 dies hàbils",
+        "note": "Si t'han inadmès a tràmit, tens NOMÉS 2 dies hàbils per presentar el reexamen. Les autoritats tenen 48 hores per respondre. Contacta IMMEDIATAMENT amb un advocat o entitat. El servei és gratuït.",
+        "opts": [
+          {
+            "text": "CEAR: 91 598 05 35 — URGENT",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "SJM: 91 445 90 85 — URGENT",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "Advocat d'ofici: sol·licitar a la Comissaria",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1000
+      },
+      {
+        "id": "b4-r-recurs",
+        "type": "sos1",
+        "text": "URGENT — Recurs contra denegació: 1 mes",
+        "note": "Tens 1 mes des de la notificació per presentar recurs potestatiu de reposició davant la OAR, o 2 mesos per a recurs contenciós-administratiu davant l'Audiència Nacional. Contacta advocat especialitzat en protecció internacional. El servei és gratuït si no tens recursos. Considera si compleixies requisits per a la regularització extraordinària 2026 (fins 30/06/2026).",
+        "opts": [
+          {
+            "text": "Recurs reposició (1 mes) → OAR",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "Recurs contenciós (2 mesos) → Audiència Nacional",
+            "s": "s",
+            "next": null
+          },
+          {
+            "text": "Regularització extraordinària si aplica → fins 30/06/2026",
+            "s": "r",
+            "next": "b4-r-reg-ext"
+          },
+          {
+            "text": "CEAR/SJM/ACNUR — assessorament gratuït",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1140
+      },
+      {
+        "id": "b4-r-denegat-antic",
+        "type": "block",
+        "text": "Denegació fa més d'1 mes — opcions residuals",
+        "note": "Els terminis de recurs han passat. Opcions: (1) Si has sol·licitat l'asil abans del 01/01/2026, pots optar a la regularització extraordinària fins al 30/06/2026. (2) Si portes 2 anys a Espanya, pots optar a arraigo (veure Branca 1). (3) Protecció humanitària per motius de salut o risc personal. Consulta amb advocat o entitat especialitzada.",
+        "opts": [
+          {
+            "text": "Regularització extraordinària fins 30/06/2026",
+            "s": "r",
+            "next": "b4-r-reg-ext"
+          },
+          {
+            "text": "Portes 2 anys a Espanya → Branca 1 arraigo",
+            "s": "b",
+            "next": null
+          },
+          {
+            "text": "Consultar CEAR/SJM/ACNUR",
+            "s": "s",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1280
+      },
+      {
+        "id": "b4-r-resolucio-positiva",
+        "type": "result",
+        "text": "Resolució favorable — Estatut de refugiat o protecció subsidiària",
+        "note": "Enhorabona. Tens dret a: residència i treball a Espanya, document de viatge (refugiats), reunificació familiar, accés a serveis socials en igualtat de condicions, sol·licitud de nacionalitat als 5 anys (refugiats, en lloc dels 10 habituals). La targeta s'ha de renovar periòdicament però l'estatut és estable.",
+        "opts": [
+          {
+            "text": "Sol·licitar TIE com a refugiat/da",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Reunificació familiar — sol·licitar extensió",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Nacionalitat als 5 anys (estatut refugiat)",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 420,
+        "y": 1420
+      }
+    ]
+  }
+}

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, FormEvent, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import type { Lang, I18nText } from "@/lib/i18n";
+import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
 import type { PersonalData, PersonalDataField } from "@/lib/types/personal-data";
 import { EMPTY_PERSONAL_DATA } from "@/lib/types/personal-data";
@@ -14,6 +14,7 @@ import type {
   DocumentCardData,
   EmailDraftCardData,
 } from "@/lib/types/chat-flow";
+import type { DecisionNode, DecisionTree } from "@/lib/types/decision-tree";
 import LanguageSelector from "./components/LanguageSelector";
 import TreePhase from "./components/TreePhase";
 import ChatPhase from "./components/ChatPhase";
@@ -21,7 +22,47 @@ import FormPhase from "./components/FormPhase";
 import ConsentModal from "./components/ConsentModal";
 import SosOverlay from "./components/SosOverlay";
 import { RecordingEngine } from "@/lib/recording-engine";
-import type { TreeNode, TreeOption, TreeRoot, RecursUrgent } from "./components/TreePhase";
+
+interface RecursUrgent {
+  nom: string;
+  telefon: string;
+  disponibilitat: string;
+}
+
+type DecisionOption = DecisionNode["opts"][number];
+
+const ROOT_NODE: DecisionNode = {
+  id: "root",
+  type: "q",
+  text: "Quina és la teva situació?",
+  note: "",
+  opts: [
+    { text: "No tinc papers", s: "", next: "b1-p0" },
+    { text: "Tinc autorització", s: "", next: "b2-p0" },
+    { text: "Sóc ciutadà/ana UE", s: "", next: "b3-p0" },
+    { text: "Vull demanar asil", s: "", next: "b4-p0" },
+  ],
+};
+
+function buildNodeMap(tree: DecisionTree): Map<string, DecisionNode> {
+  const map = new Map<string, DecisionNode>();
+  map.set(ROOT_NODE.id, ROOT_NODE);
+  for (const branch of [tree.branches.b1, tree.branches.b2, tree.branches.b3, tree.branches.b4]) {
+    for (const node of branch) {
+      map.set(node.id, node);
+    }
+  }
+  return map;
+}
+
+function inferSituacioFromNextId(nextId: string | null): string | null {
+  if (!nextId) return null;
+  if (nextId.startsWith("b1")) return "sense_autoritzacio";
+  if (nextId.startsWith("b2")) return "amb_autoritzacio";
+  if (nextId.startsWith("b3")) return "ue";
+  if (nextId.startsWith("b4")) return "asil";
+  return null;
+}
 
 // ── Types ─────────────────────────────────────────────────────────
 
@@ -31,13 +72,6 @@ interface Source {
   llei_referencia: string | null;
   similarity: number;
 }
-
-const SITUACIO_MAP: Record<string, string> = {
-  "sense-autoritzacio": "sense_autoritzacio",
-  "amb-autoritzacio": "amb_autoritzacio",
-  "ciutada-ue": "ue",
-  asil: "asil",
-};
 
 // ── Component ─────────────────────────────────────────────────────
 
@@ -54,12 +88,12 @@ function ChatPageInner() {
   const initialLang = (searchParams.get("lang") as Lang) || "es";
 
   const [lang, setLang] = useState<Lang>(initialLang);
-  const [tree, setTree] = useState<TreeRoot | null>(null);
+  const [nodeMap, setNodeMap] = useState<Map<string, DecisionNode> | null>(null);
   const [phase, setPhase] = useState<"tree" | "chat" | "form">("tree");
   const [transitioning, setTransitioning] = useState(false);
 
   // Tree state
-  const [currentNode, setCurrentNode] = useState<TreeNode | null>(null);
+  const [currentNode, setCurrentNode] = useState<DecisionNode | null>(null);
   const [path, setPath] = useState<string[]>([]);
   const [situacioLegal, setSituacioLegal] = useState<string | null>(null);
   const [authSlugs, setAuthSlugs] = useState<string[]>([]);
@@ -167,72 +201,47 @@ function ChatPageInner() {
   useEffect(() => {
     fetch("/api/tree")
       .then((r) => r.json())
-      .then((data: TreeRoot) => {
-        setTree(data);
-        setCurrentNode({
-          id: data.id,
-          tipus: "questio",
-          pregunta: data.pregunta,
-          opcions: data.opcions,
-        });
+      .then((data: DecisionTree) => {
+        const map = buildNodeMap(data);
+        setNodeMap(map);
+        setCurrentNode(ROOT_NODE);
       })
       .catch(() => setPhase("chat"));
   }, []);
 
-  function handleOptionClick(option: TreeOption, parentNode: TreeNode) {
-    const label = t(option.text as I18nText, lang);
-    setPath((prev) => [...prev, label]);
+  function handleOptionClick(option: DecisionOption, parentNode: DecisionNode) {
+    setPath((prev) => [...prev, option.text]);
 
-    if (parentNode.id === tree?.id) {
-      setSituacioLegal(SITUACIO_MAP[option.id] || null);
+    if (parentNode.id === ROOT_NODE.id) {
+      setSituacioLegal(inferSituacioFromNextId(option.next));
     }
 
-    setCurrentNode(option.node);
+    if (option.next && nodeMap) {
+      const nextNode = nodeMap.get(option.next);
+      if (nextNode) {
+        setCurrentNode(nextNode);
+      }
+    }
   }
 
   function startChat() {
     setTransitioning(true);
     const resultNode = currentNode;
-
-    // Capture authorization slugs
-    if (resultNode?.autoritzacions) {
-      const slugs = resultNode.autoritzacions.map((a) => a.slug);
-      setAuthSlugs(slugs);
-      if (slugs.length > 0) {
-        setMode("collection");
-      }
-    }
+    const slugs = resultNode?.slugs ?? [];
+    setAuthSlugs(slugs);
+    setMode(slugs.length > 0 ? "collection" : "info");
 
     setTimeout(() => {
       setPhase("chat");
       setTransitioning(false);
 
-      // Carry SOS resources from tree
-      if (resultNode?.recursos_urgents && resultNode.recursos_urgents.length > 0) {
-        setTreeRecursosUrgents(resultNode.recursos_urgents);
-        setSosActive(true);
-        setSosCategories(["trafficking", "distress"]);
-        setSosView("emergency");
-      }
-
-      // Welcome message
-      if (resultNode?.missatge) {
-        const welcomeText = t(resultNode.missatge as I18nText, lang);
-        const auths = resultNode.autoritzacions || [];
-        let fullWelcome = welcomeText;
-        if (auths.length > 0) {
-          fullWelcome +=
-            "\n\n" +
-            auths
-              .sort((a, b) => a.prioritat - b.prioritat)
-              .map((a) => `• **${a.slug}**: ${t(a.nota, lang)}`)
-              .join("\n");
+      // Welcome message: use the result node's text + note as orientation
+      if (resultNode) {
+        let fullWelcome = resultNode.text;
+        if (resultNode.note) {
+          fullWelcome += `\n\n${resultNode.note}`;
         }
-        if (resultNode.nota_legal) {
-          fullWelcome += `\n\n${t(resultNode.nota_legal as I18nText, lang)}`;
-        }
-        // Collection mode: proactive intro instead of "ask anything"
-        if (auths.length > 0) {
+        if (slugs.length > 0) {
           fullWelcome += "\n\n" + t(labels.collectIntro, lang);
         } else {
           fullWelcome += "\n\n" + t(labels.askAnything, lang);
@@ -243,15 +252,10 @@ function ChatPageInner() {
   }
 
   function handleReset() {
-    if (tree) {
+    if (nodeMap) {
       setPath([]);
       setSituacioLegal(null);
-      setCurrentNode({
-        id: tree.id,
-        tipus: "questio",
-        pregunta: tree.pregunta,
-        opcions: tree.opcions,
-      });
+      setCurrentNode(ROOT_NODE);
     }
   }
 
@@ -666,7 +670,6 @@ function ChatPageInner() {
           currentNode={currentNode}
           lang={lang}
           path={path}
-          tree={tree!}
           transitioning={transitioning}
           onOptionClick={handleOptionClick}
           onStartChat={startChat}

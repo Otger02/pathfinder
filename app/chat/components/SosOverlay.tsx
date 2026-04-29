@@ -74,6 +74,7 @@ export default function SosOverlay({
   );
 
   const policeColors: Record<Lang, string> = {
+    ca: "bg-[#1a237e]",
     es: "bg-[#1a237e]",
     en: "bg-[#0d47a1]",
     ar: "bg-[#1b5e20]",

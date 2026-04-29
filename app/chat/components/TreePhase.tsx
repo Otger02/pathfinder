@@ -1,65 +1,33 @@
-import type { Lang, I18nText } from "@/lib/i18n";
+import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
+import type { DecisionNode } from "@/lib/types/decision-tree";
 import PathChips from "./PathChips";
-
-interface RecursUrgent {
-  nom: string;
-  telefon: string;
-  disponibilitat: string;
-}
-
-interface Autoritzacio {
-  slug: string;
-  prioritat: number;
-  nota: I18nText;
-}
-
-interface TreeNode {
-  id: string;
-  tipus: "questio" | "resultat";
-  pregunta?: I18nText;
-  missatge?: I18nText;
-  opcions?: TreeOption[];
-  autoritzacions?: Autoritzacio[];
-  recursos_urgents?: RecursUrgent[];
-  nota_legal?: I18nText;
-}
-
-interface TreeOption {
-  id: string;
-  text: I18nText;
-  sos?: boolean;
-  node: TreeNode;
-}
-
-interface TreeRoot {
-  id: string;
-  tipus: string;
-  pregunta: I18nText;
-  opcions: TreeOption[];
-}
-
-export type { TreeNode, TreeOption, TreeRoot, RecursUrgent, Autoritzacio };
 
 export default function TreePhase({
   currentNode,
   lang,
   path,
-  tree,
   transitioning,
   onOptionClick,
   onStartChat,
   onReset,
 }: {
-  currentNode: TreeNode;
+  currentNode: DecisionNode;
   lang: Lang;
   path: string[];
-  tree: TreeRoot;
   transitioning: boolean;
-  onOptionClick: (option: TreeOption, parentNode: TreeNode) => void;
+  onOptionClick: (option: DecisionNode["opts"][number], parentNode: DecisionNode) => void;
   onStartChat: () => void;
   onReset: () => void;
 }) {
+  const isQuestion = currentNode.type === "q";
+  const isResult =
+    currentNode.type === "result" ||
+    currentNode.type === "block" ||
+    currentNode.type === "sos1" ||
+    currentNode.type === "sos2" ||
+    currentNode.type === "sos3";
+
   return (
     <div
       className={`transition-all duration-300 ${
@@ -72,80 +40,42 @@ export default function TreePhase({
         </div>
       )}
 
-      {currentNode.tipus === "questio" && currentNode.pregunta && (
+      {isQuestion && (
         <>
-          <h2 className="text-lg font-semibold mb-4">
-            {t(currentNode.pregunta, lang)}
-          </h2>
+          <h2 className="text-lg font-semibold mb-4">{currentNode.text}</h2>
           <div className="flex flex-col gap-2">
-            {currentNode.opcions?.map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => onOptionClick(opt, currentNode)}
-                className={`w-full px-4 py-3.5 text-left text-[15px] rounded-xl cursor-pointer transition-all ${
-                  opt.sos
-                    ? "bg-danger-light border-2 border-danger hover:bg-red-100 shadow-sm"
-                    : "bg-white border border-border-light hover:border-primary hover:shadow-sm"
-                }`}
-              >
-                {opt.sos && "🆘 "}
-                {t(opt.text, lang)}
-              </button>
-            ))}
+            {currentNode.opts.map((opt, i) => {
+              const isSos = opt.s === "s";
+              return (
+                <button
+                  key={`${currentNode.id}-${i}`}
+                  onClick={() => onOptionClick(opt, currentNode)}
+                  className={`w-full px-4 py-3.5 text-left text-[15px] rounded-xl cursor-pointer transition-all ${
+                    isSos
+                      ? "bg-danger-light border-2 border-danger hover:bg-red-100 shadow-sm"
+                      : "bg-white border border-border-light hover:border-primary hover:shadow-sm"
+                  }`}
+                >
+                  {isSos && "🆘 "}
+                  {opt.text}
+                </button>
+              );
+            })}
           </div>
         </>
       )}
 
-      {currentNode.tipus === "resultat" && (
+      {isResult && (
         <>
-          <p className="text-base leading-relaxed mb-4">
-            {t(currentNode.missatge, lang)}
-          </p>
+          <p className="text-base leading-relaxed mb-4">{currentNode.text}</p>
 
-          {currentNode.recursos_urgents && currentNode.recursos_urgents.length > 0 && (
-            <div className="bg-danger text-white p-4 rounded-lg mb-4">
-              <strong className="block mb-2">
-                {t(labels.emergencyResources, lang)}
-              </strong>
-              {currentNode.recursos_urgents.map((r, i) => (
-                <div key={i} className="mt-2">
-                  <strong>{r.nom}</strong>
-                  <br />
-                  {"📞 "}
-                  <a
-                    href={`tel:${r.telefon.replace(/\s/g, "")}`}
-                    className="text-white underline"
-                  >
-                    {r.telefon}
-                  </a>{" "}
-                  ({r.disponibilitat})
-                </div>
-              ))}
-            </div>
-          )}
-
-          {currentNode.autoritzacions && currentNode.autoritzacions.length > 0 && (
-            <div className="mb-4">
-              {currentNode.autoritzacions
-                .sort((a, b) => a.prioritat - b.prioritat)
-                .map((auth) => (
-                  <div
-                    key={auth.slug}
-                    className="px-4 py-3 my-2 bg-white ltr:border-l-[3px] rtl:border-r-[3px] border-primary rounded-xl shadow-sm"
-                  >
-                    <strong>{auth.slug}</strong>
-                    <br />
-                    <span className="text-sm text-text-muted">{t(auth.nota, lang)}</span>
-                  </div>
-                ))}
-            </div>
-          )}
-
-          {currentNode.nota_legal && (
-            <p className="text-sm text-text-muted italic mb-3">
-              {t(currentNode.nota_legal, lang)}
+          {currentNode.note && (
+            <p className="text-sm text-text-muted italic mb-3 whitespace-pre-wrap">
+              {currentNode.note}
             </p>
           )}
+
+          {/* TODO: slugs — resoldre autoritzacions i recursos urgents des de data/catalogs.json */}
 
           <button
             onClick={onStartChat}
@@ -156,7 +86,7 @@ export default function TreePhase({
         </>
       )}
 
-      {path.length > 0 && currentNode.tipus === "questio" && (
+      {path.length > 0 && isQuestion && (
         <button
           onClick={onReset}
           className="mt-4 px-3 py-1.5 text-sm text-text-muted bg-transparent border border-border rounded hover:bg-surface transition-colors"

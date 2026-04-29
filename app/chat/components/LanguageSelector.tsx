@@ -1,6 +1,7 @@
 import type { Lang } from "@/lib/i18n";
 
 const LANG_LABELS: Record<Lang, string> = {
+  ca: "CA",
   es: "ES",
   en: "EN",
   ar: "AR",
