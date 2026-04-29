@@ -6,31 +6,46 @@
  * - Whether to transition phases
  * - How to merge extracted data
  * - Completion percentage
+ *
+ * Context-aware: recommended fields (e.g. empleador_actividad) are only
+ * treated as required when the relevant data block has already been started
+ * (hasFamiliar / hasEmpleador / hasFormacion).
  */
 
 import type { PersonalData, PersonalDataField } from "./types/personal-data";
 import { getRequiredFields } from "./form-config";
 
+// ── Field value helpers ───────────────────────────────────────────────────
+
+function isFilled(value: unknown): boolean {
+  if (value === undefined || value === null) return false;
+  if (typeof value === "boolean") return true;          // false is a valid answer
+  if (Array.isArray(value)) return value.length > 0;
+  if (typeof value === "string") return value.trim() !== "";
+  return false;
+}
+
+// ── Public API ────────────────────────────────────────────────────────────
+
 /**
  * Compute the list of fields still missing for the given authorization slugs.
+ * Passes collected data so context-sensitive recommended fields are included
+ * once their block has been started (hasFamiliar / hasEmpleador / hasFormacion).
  */
 export function computeMissingFields(
   authSlugs: string[],
   collected: Partial<PersonalData>
 ): PersonalDataField[] {
-  const required = getRequiredFields(authSlugs);
+  const required = getRequiredFields(authSlugs, collected);
   const missing: PersonalDataField[] = [];
   for (const field of required) {
-    const value = collected[field];
-    if (!value || (typeof value === "string" && value.trim() === "")) {
-      missing.push(field);
-    }
+    if (!isFilled(collected[field])) missing.push(field);
   }
   return missing;
 }
 
 /**
- * Returns true when all required fields for the auth slugs are filled.
+ * Returns true when all required (+ active recommended) fields are filled.
  */
 export function shouldTransitionToResum(
   authSlugs: string[],
@@ -41,7 +56,8 @@ export function shouldTransitionToResum(
 
 /**
  * Merge newly extracted data into existing collected data.
- * Does NOT overwrite existing values with empty strings.
+ * Handles strings, booleans, and arrays.
+ * Does NOT overwrite existing non-empty values with empty ones.
  */
 export function mergeExtractedData(
   existing: Partial<PersonalData>,
@@ -49,7 +65,12 @@ export function mergeExtractedData(
 ): Partial<PersonalData> {
   const merged = { ...existing };
   for (const [key, value] of Object.entries(extracted)) {
-    if (value && typeof value === "string" && value.trim() !== "") {
+    if (value === undefined || value === null) continue;
+    if (typeof value === "boolean") {
+      merged[key as PersonalDataField] = value as never;
+    } else if (Array.isArray(value)) {
+      if (value.length > 0) merged[key as PersonalDataField] = value as never;
+    } else if (typeof value === "string" && value.trim() !== "") {
       merged[key as PersonalDataField] = value.trim() as never;
     }
   }
@@ -57,21 +78,18 @@ export function mergeExtractedData(
 }
 
 /**
- * Compute completion percentage (0–100) for the required fields.
+ * Compute completion percentage (0–100) for required + active recommended fields.
  */
 export function computeCompletionPct(
   authSlugs: string[],
   collected: Partial<PersonalData>
 ): number {
-  const required = getRequiredFields(authSlugs);
+  const required = getRequiredFields(authSlugs, collected);
   if (required.size === 0) return 100;
 
   let filled = 0;
   for (const field of required) {
-    const value = collected[field];
-    if (value && typeof value === "string" && value.trim() !== "") {
-      filled++;
-    }
+    if (isFilled(collected[field])) filled++;
   }
   return Math.round((filled / required.size) * 100);
 }

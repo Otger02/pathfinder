@@ -128,28 +128,103 @@ export async function fillExForm(
     }
   }
 
-  // ── Fill representante legal fields ─────────────────────────
-  if (personalData.representanteLegal) {
-    // Parse "Nombre Apellido" format into the representative fields
-    const repName = personalData.representanteLegal.trim();
-    try {
-      // Texto27 = rep primer apellido, Texto31 = rep nombre
-      // Simple heuristic: first word = nombre, rest = apellido
-      const parts = repName.split(" ");
-      if (parts.length >= 2) {
-        form.getTextField("Texto31").setText(parts[0]);
-        form.getTextField("Texto27").setText(parts.slice(1).join(" "));
-      } else {
-        form.getTextField("Texto31").setText(repName);
+  // ── Fill tipo autorizacion checkboxes (from authSlug) ──────
+  if (authSlug && fieldMap.tipoAutorizacionCheckboxes) {
+    for (const [pdfField, slugValue] of Object.entries(fieldMap.tipoAutorizacionCheckboxes)) {
+      if (authSlug === slugValue) {
+        try {
+          form.getCheckBox(pdfField).check();
+        } catch {}
       }
+    }
+  }
+
+  // ── Fill consentimiento checkbox ───────────────────────────
+  if (personalData.consentimientoDehu && fieldMap.consentimientoCheckbox) {
+    try {
+      form.getCheckBox(fieldMap.consentimientoCheckbox).check();
     } catch {}
   }
 
-  if (personalData.representanteDniNiePas) {
-    try {
-      // Texto33 = rep document number (based on position Y~404)
-      form.getTextField("Texto33").setText(personalData.representanteDniNiePas);
-    } catch {}
+  // ── Fill hijos escolarizacion checkboxes ───────────────────
+  if (personalData.hijosEscolarizacion !== null && personalData.hijosEscolarizacion !== undefined && fieldMap.hijosEscolarizacionCheckboxes) {
+    for (const [pdfField, boolValue] of Object.entries(fieldMap.hijosEscolarizacionCheckboxes)) {
+      if (personalData.hijosEscolarizacion === boolValue) {
+        try { form.getCheckBox(pdfField).check(); } catch {}
+      }
+    }
+  }
+
+  // ── Fill titular sexo checkboxes (EX-01) ───────────────────
+  if (personalData.titular_sexo && fieldMap.titularSexoCheckboxes) {
+    for (const [pdfField, sexoValue] of Object.entries(fieldMap.titularSexoCheckboxes)) {
+      if (personalData.titular_sexo === sexoValue) {
+        try { form.getCheckBox(pdfField).check(); } catch {}
+      }
+    }
+  }
+
+  // ── Fill titular estado civil checkboxes (EX-01) ───────────
+  if (personalData.titular_estadoCivil && fieldMap.titularEstadoCivilCheckboxes) {
+    for (const [pdfField, estadoValue] of Object.entries(fieldMap.titularEstadoCivilCheckboxes)) {
+      if (personalData.titular_estadoCivil === estadoValue) {
+        try { form.getCheckBox(pdfField).check(); } catch {}
+      }
+    }
+  }
+
+  // ── Fill espanyol sexo checkboxes (EX-24) ──────────────────
+  if (personalData.espanyol_sexo && fieldMap.espanyolSexoCheckboxes) {
+    for (const [pdfField, sexoValue] of Object.entries(fieldMap.espanyolSexoCheckboxes)) {
+      if (personalData.espanyol_sexo === sexoValue) {
+        try { form.getCheckBox(pdfField).check(); } catch {}
+      }
+    }
+  }
+
+  // ── Fill espanyol estado civil checkboxes (EX-24) ──────────
+  if (personalData.espanyol_estadoCivil && fieldMap.espanyolEstadoCivilCheckboxes) {
+    for (const [pdfField, estadoValue] of Object.entries(fieldMap.espanyolEstadoCivilCheckboxes)) {
+      if (personalData.espanyol_estadoCivil === estadoValue) {
+        try { form.getCheckBox(pdfField).check(); } catch {}
+      }
+    }
+  }
+
+  // ── Fill familiar sexo checkboxes ──────────────────────────
+  if (personalData.familiar_sexo && fieldMap.familiarSexoCheckboxes) {
+    for (const [pdfField, sexoValue] of Object.entries(fieldMap.familiarSexoCheckboxes)) {
+      if (personalData.familiar_sexo === sexoValue) {
+        try { form.getCheckBox(pdfField).check(); } catch {}
+      }
+    }
+  }
+
+  // ── Fill familiar estado civil checkboxes ──────────────────
+  if (personalData.familiar_estadoCivil && fieldMap.familiarEstadoCivilCheckboxes) {
+    for (const [pdfField, estadoValue] of Object.entries(fieldMap.familiarEstadoCivilCheckboxes)) {
+      if (personalData.familiar_estadoCivil === estadoValue) {
+        try { form.getCheckBox(pdfField).check(); } catch {}
+      }
+    }
+  }
+
+  // ── Fill formacio tipus checkboxes (array — check all matching) ─
+  if (personalData.formacio_tipus?.length && fieldMap.formacioTipusCheckboxes) {
+    for (const [pdfField, tipusValue] of Object.entries(fieldMap.formacioTipusCheckboxes)) {
+      if ((personalData.formacio_tipus as string[]).includes(tipusValue)) {
+        try { form.getCheckBox(pdfField).check(); } catch {}
+      }
+    }
+  }
+
+  // ── Fill formacio modalitat checkboxes (array — check all matching)
+  if (personalData.formacio_modalitat?.length && fieldMap.formacioModalitatCheckboxes) {
+    for (const [pdfField, modalitatValue] of Object.entries(fieldMap.formacioModalitatCheckboxes)) {
+      if ((personalData.formacio_modalitat as string[]).includes(modalitatValue)) {
+        try { form.getCheckBox(pdfField).check(); } catch {}
+      }
+    }
   }
 
   // ── Flatten if requested ────────────────────────────────────

@@ -1,34 +1,38 @@
+/**
+ * EX-03 — Autorización de residencia temporal y trabajo por cuenta ajena
+ * 3 pages, 118 fields.
+ */
 import type { PersonalDataField } from "@/lib/types/personal-data";
 
 export const EX_03_TEXT_FIELDS: Record<string, PersonalDataField | null> = {
-  // Apartat 1 — Treballador
-  "Textfield":    "pasaporte",
-  "Textfield-1":  null,            // NIE lletra
-  "Textfield-2":  "nie",
-  "Textfield-3":  null,            // NIE control
+  // ── Apartado 1: Solicitante ──────────────────────────────
   "Textfield-8":  "primerApellido",
+  "Textfield":    null,             // NIE letra
+  "Textfield-1":  "nie",
+  "Textfield-2":  null,             // NIE control
+  "Textfield-3":  "nombre",
   "Textfield-5":  "segundoApellido",
-  "Lugar":        "nombre",
-  "Textfield-6":  null,            // DD fechaNacimiento
-  "Texto-1":      null,            // MM fechaNacimiento
-  "Feccha de nacimientoz": null,   // YYYY fechaNacimiento
+  "Lugar":        "nacionalidad",
+  "Feccha de nacimientoz": null,    // DD
+  "Texto-1":      null,             // MM
+  "Textfield-6":  null,             // YYYY
   "Estado civil3t S": "lugarNacimiento",
   "Textfield-7":  "paisNacimiento",
-  "Textfield-10": "nacionalidad",
-  "Textfield-11": "nombrePadre",
-  "Piso":         "nombreMadre",
-  "Textfield-12": "domicilio",
-  "Textfield-13": "numeroDomicilio",
-  "Textfield-14": "pisoDomicilio",
-  "Email":        "localidad",
-  "Textfield-15": "codigoPostal",
-  "Textfield-16": "provincia",
-  "Textfield-17": "telefono",
-  "Textfield-19": "email",
-  "Textfield-21": "representanteLegal",
-  "Textfield-23": "representanteDniNiePas",
-  "Textfield-25": "representanteTitulo",
-  // Apartat 2 — Empleador
+  "Textfield-10": "domicilio",
+  "Piso":         null,
+  "Textfield-12": "localidad",
+  "Textfield-13": "codigoPostal",
+  "Textfield-14": "provincia",
+  "Email":        "telefono",
+  "Textfield-15": "email",
+  "Textfield-16": "nombrePadre",
+  "Textfield-17": "representanteLegal",
+  "Textfield-19": "representanteDniNiePas",
+  "Textfield-21": "representanteTitulo",
+  "Textfield-23": null,
+  "Textfield-25": null,
+
+  // ── Apartado 2: Empleador ────────────────────────────────
   "Ocupacion6":   "empleador_nombre",
   "Textfield-26": "empleador_nifNie",
   "N Piso":       "empleador_actividad",
@@ -44,91 +48,78 @@ export const EX_03_TEXT_FIELDS: Record<string, PersonalDataField | null> = {
   "Textfield-39": "empleador_repNombre",
   "Textfield-40": "empleador_repDniNie",
   "Textfield-41": "empleador_repTitulo",
-  // Apartat 3 — RepPresentacion
-  "Textfield-42": "repPresentacion_nombre",
-  "Piso-0":       "repPresentacion_dniNiePas",
-  "Provincia-0":  "repPresentacion_domicilio",
-  "Textfield-43": "repPresentacion_numero",
-  "Textfield-44": "repPresentacion_piso",
-  "Email-1":      "repPresentacion_localidad",
-  "Textfield-46": "repPresentacion_codigoPostal",
-  "Textfield-48": "repPresentacion_provincia",
-  "Textfield-49": "repPresentacion_telefono",
-  "Titulo-0":     "repPresentacion_email",
-  "Textfield-50": "repPresentacion_repLegal",
-  "Textfield-51": "repPresentacion_repDniNiePas",
-  "Textfield-52": "repPresentacion_repTitulo",
-  // Apartat 4 — Notif
-  "Textfield-53": "notif_nombre",
-  "Textfield-54": "notif_dniNiePas",
-  "Textfield-55": "notif_domicilio",
-  "Textfield-56": "notif_numero",
-  "Textfield-57": "notif_piso",
-  "Email-2":      "notif_localidad",
-  "Textfield-59": "notif_codigoPostal",
-  "Textfield-60": "notif_provincia",
-  "Textfield-61": "notif_telefono",
-  "Textfield-64": "notif_email",
-  // Extra
-  "Texto-2":      null,
-};
 
-export const EX_03_DATE_FIELDS = {
-  fechaNacimiento: { dd: "Textfield-6", mm: "Texto-1", yyyy: "Feccha de nacimientoz" },
-} as const;
+  // ── Apartado 3: Contrato de trabajo ─────────────────────
+  "Textfield-42": null,             // puesto
+  "Piso-0":       null,             // grupoCotizacion
+  "Provincia-0":  null,             // cnoSepe
+  "Textfield-43": null,             // codigoConvenio
+  "Textfield-44": null,             // denominacionConvenio
+  "Email-1":      null,             // codigoContrato
+  "Textfield-46": null,             // denominacionContrato
+  "Textfield-48": null,             // cuentaCotizacion
+  "Textfield-49": null,             // retribucionBruta
+  "Titulo-0":     null,             // direccionCentroTrabajo
+  "Textfield-50": null,             // centro_numero
+  "Textfield-51": null,             // centro_piso
+  "Textfield-52": null,             // centro_localidad
+  "Textfield-53": null,             // centro_cp
+  "Textfield-54": null,             // centro_provincia
+
+  // ── Apartado 4: Representante presentación ───────────────
+  "Textfield-55": "repPresentacion_nombre",
+  "Textfield-56": "repPresentacion_dniNiePas",
+  "Textfield-57": "repPresentacion_domicilio",
+  "Textfield-59": "repPresentacion_numero",
+  "Textfield-60": "repPresentacion_piso",
+  "Textfield-61": "repPresentacion_localidad",
+  "Textfield-64": "repPresentacion_codigoPostal",
+
+  // ── Apartado 5: Notificaciones ───────────────────────────
+  "Nombre y apellidos del titular": "notif_nombre",
+};
 
 export const EX_03_SEXO_CHECKBOXES: Record<string, string> = {
   "H": "H", "M": "M", "ChkBox": "X",
 };
-
 export const EX_03_ESTADO_CIVIL_CHECKBOXES: Record<string, string> = {
-  "C": "casado", "V": "viudo", "D": "divorciado",
-  "Sp": "soltero", "ChkBox-0": "separado",
+  "C": "casado", "V": "viudo", "D": "divorciado", "Sp": "pareja_hecho", "ChkBox-0": "soltero",
 };
 
-export const EX_03_HIJOS_ESCOLARIZACION_CHECKBOXES: Record<string, boolean> = {
-  "Hijasos a cargo en edad de escolarizaclon en Espan": true,
-  "NO": false,
+export const EX_03_TIPO_DOC_CHECKBOXES: Record<string, string> = {
+  // EX-03 no tiene checkbox de tipo doc explícito
+};
+
+export const EX_03_CIRCUNSTANCIA_CHECKBOXES: Record<string, string> = {
+  // EX-03 no tiene checkbox de circunstancia
 };
 
 export const EX_03_TIPO_AUTORIZACION_CHECKBOXES: Record<string, string> = {
-  "INICIAL": "inicial",
-  "Supuestos especificos de exencion de la situacion": "inicial_exencion",
-  "Ocupacion de dificil cobertura segun Catalogo SPEE": "inicial_catalogo_spee",
-  "Oferta gestionada en Servicio Publico de Empleo":   "inicial_oferta_spe",
-  "Razones de interes economico social o laboral inve": "inicial_interes_economico",
-  "Familiar de titulartramite de autorizacion de resi": "inicial_familiar_especial",
-  "Titular de autorizacion de estancia por estudios i": "inicial_estudios_practicas",
-  "Titular de autorizacion de residenciaresidencia y": "inicial_residencia_previa",
-  "Nacionales afectados por Instrucciones dictadas po": "inicial_instrucciones_cm",
-  "Nacionales y familiares acogidos a ConveniosAcuerd": "inicial_convenios",
-  "Titular de autorizacion de residencia de busqueda": "inicial_busqueda_empleo",
-  "Residencia y trabajo independiente por cuenta ajen": "inicial_independiente",
-  "Otros": "inicial_otros",
-  "RENOVACION": "renovacion",
-  "Titular de autorizacion de residencia temporal y t": "renovacion_cuenta_ajena",
-  "Residencia y trabajo independiente por cuenta ajen-0": "renovacion_independiente",
-  "Otros-1": "renovacion_otros",
-  "MODIFICACION": "modificacion",
-  "De empleador por fallecimiento o desaparicion del": "modificacion_fallecimiento",
-  "De empleador con comunicacion previa de imposibili": "modificacion_imposibilidad",
-  "De ocupacion art 2031": "modificacion_ocupacion",
-  "De ambito territorial art 2031": "modificacion_ambito",
-  "De autorizacion por cuenta propia a cuenta ajena a": "modificacion_propia_ajena",
-  "Otros-3": "modificacion_otros",
-  "COMPATIBILIDAD": "compatibilidad",
-  "TITULAR de autorizacion de residencia temporal y t": "compatibilidad_cuenta_propia",
-  "Otros-5": "compatibilidad_otros",
+  // ── INICIAL ──
+  "INICIAL":                                                    "inicial",
+  "Autorizacion de residencia temporal y trabajo por":          "residencia_trabajo_cuenta_ajena",
+  "Autorizacion de residencia temporal y trabajo por-0":        "residencia_trabajo_cuenta_ajena_2",
+  "Otros":                                                      "otros_inicial",
+  // ── RENOVACION ──
+  "1a RENOVACION":                                              "primera_renovacion",
+  "2a RENOVACION":                                              "segunda_renovacion",
+  "Titular de autorizacion de residencia temporal y t":         "titular_residencia_trabajo",
+  "Titular de autorizacion de residencia temporal y t-0":       "titular_residencia_trabajo_2",
+  "Otros-1":                                                    "otros_renovacion",
+  // ── RENOVACION ESPECIAL ──
+  "RENOVACION ESPECIAL":                                        "renovacion_especial",
+  "Titular de autorizacion de residencia temporal y t-1":       "titular_residencia_trabajo_especial",
+  "Otros-3":                                                    "otros_renovacion_especial",
 };
 
-export const EX_03_FIRMA_CHECKBOXES: Record<string, string> = {
-  "Trabajadora": "trabajador",
-  "Empleadora": "empleador",
-  "Representante legal": "representante",
+export const EX_03_HIJOS_ESCOLARIZACION_CHECKBOXES: Record<string, boolean> = {
+  "NO": false,
+  "Hijasos a cargo en edad de escolarizaclon en Espan": true,
 };
 
 export const EX_03_CONSENTIMIENTO_CHECKBOX =
   "CONSIENTO que las comunicaciones y notifcaciones s";
 
-export const EX_03_TIPO_DOC_CHECKBOXES: Record<string, string> = {};
-export const EX_03_CIRCUNSTANCIA_CHECKBOXES: Record<string, string> = {};
+export const EX_03_DATE_FIELDS = {
+  fechaNacimiento: { dd: "Feccha de nacimientoz", mm: "Texto-1", yyyy: "Textfield-6" },
+} as const;

@@ -219,17 +219,177 @@ export function getFormsForAuth(slug: string): ExFormInfo[] {
   return exIds.map((id) => EX_FORMS[id]).filter(Boolean);
 }
 
+// ── Per-auth-slug field rules ────────────────────────────────────────────
+//
+// Three tiers:
+//   required    — always blocking; collection won't close until filled
+//   recommended — activated only when the relevant context block is already
+//                 present in the collected data (hasFamiliar / hasEmpleador /
+//                 hasFormacion). Treated as required once context is detected.
+//   optional    — extracted by the tool if the user mentions them, never
+//                 explicitly asked and never blocking.
+
+export interface AuthFieldRules {
+  required: PersonalDataField[];
+  recommended: PersonalDataField[];
+  optional: PersonalDataField[];
+}
+
+export const AUTH_FIELD_RULES: Partial<Record<string, AuthFieldRules>> = {
+  // ── Arraigo segunda oportunidad ──────────────────────────────
+  arraigo_segona_oportunitat: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    [],
+  },
+
+  // ── Arraigo social ───────────────────────────────────────────
+  arraigo_social: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    ["familiar_nombre", "familiar_primerApellido", "familiar_vinculo"],
+  },
+
+  // ── Arraigo sociolaboral ─────────────────────────────────────
+  arraigo_sociolaboral: {
+    required:    ["tipoSolicitud", "empleador_nombre", "empleador_nifNie"],
+    recommended: ["empleador_actividad"],   // activated when hasEmpleador
+    optional:    ["empleador_localidad", "empleador_provincia", "empleador_telefono"],
+  },
+
+  // ── Arraigo socioformativo ───────────────────────────────────
+  arraigo_socioformatiu: {
+    required:    ["tipoSolicitud", "formacio_entitat", "formacio_nifCif"],
+    recommended: ["formacio_tipus", "formacio_modalitat", "formacio_duracio"], // activated when hasFormacion
+    optional:    [],
+  },
+
+  // ── Arraigo familiar ─────────────────────────────────────────
+  arraigo_familiar: {
+    required:    ["tipoSolicitud", "familiar_nombre", "familiar_primerApellido", "familiar_vinculo"],
+    recommended: ["familiar_sexo", "familiar_estadoCivil"],  // activated when hasFamiliar
+    optional:    ["familiar_fechaNacimiento", "familiar_paisNacimiento", "familiar_lugarNacimiento"],
+  },
+
+  // ── Razones humanitarias y similares ────────────────────────
+  residencia_humanitaria: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    [],
+  },
+  colaboracio_autoritats_policials: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    [],
+  },
+  colaboracio_interes_public: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    [],
+  },
+  victima_violencia_genere: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    [],
+  },
+  victima_violencia_sexual: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    [],
+  },
+  colaboracio_contra_xarxes_admin: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    [],
+  },
+  colaboracio_contra_xarxes_policial: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    [],
+  },
+  victima_trata: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    [],
+  },
+  residencia_retorn_voluntari: {
+    required:    ["tipoSolicitud"],
+    recommended: [],
+    optional:    [],
+  },
+};
+
+// ── Context detection ────────────────────────────────────────────────────
+
+export interface CollectionContext {
+  hasFamiliar: boolean;
+  hasEmpleador: boolean;
+  hasFormacion: boolean;
+}
+
+export function detectContext(collected: Partial<Record<string, unknown>>): CollectionContext {
+  return {
+    hasFamiliar: !!(
+      (collected.familiar_nombre as string)?.trim() ||
+      (collected.familiar_primerApellido as string)?.trim()
+    ),
+    hasEmpleador: !!(
+      (collected.empleador_nombre as string)?.trim() ||
+      (collected.empleador_nifNie as string)?.trim()
+    ),
+    hasFormacion: !!(
+      (collected.formacio_entitat as string)?.trim() ||
+      ((collected.formacio_tipus as string[])?.length ?? 0) > 0
+    ),
+  };
+}
+
+/**
+ * Returns true if a recommended field should be treated as required
+ * given the current collection context.
+ */
+export function isRecommendedActive(
+  field: PersonalDataField,
+  ctx: CollectionContext
+): boolean {
+  if (field.startsWith("familiar_")) return ctx.hasFamiliar;
+  if (field.startsWith("empleador_")) return ctx.hasEmpleador;
+  if (field.startsWith("formacio_")) return ctx.hasFormacion;
+  return false;
+}
+
 /**
  * Get all required PersonalData fields across all forms for a set of auth slugs.
+ * Pass `collected` to also activate context-sensitive recommended fields.
  */
-export function getRequiredFields(slugs: string[]): Set<PersonalDataField> {
+export function getRequiredFields(
+  slugs: string[],
+  collected?: Partial<Record<string, unknown>>
+): Set<PersonalDataField> {
   const fields = new Set<PersonalDataField>();
+  const ctx = collected ? detectContext(collected) : null;
+
   for (const slug of slugs) {
+    // Form-level required fields (base, from EX_FORMS)
     for (const form of getFormsForAuth(slug)) {
-      for (const f of form.requiredFields) {
-        fields.add(f);
+      for (const f of form.requiredFields) fields.add(f);
+    }
+
+    // Auth-slug-specific rules
+    const rules = AUTH_FIELD_RULES[slug];
+    if (!rules) continue;
+
+    // Always add required
+    for (const f of rules.required) fields.add(f);
+
+    // Add recommended only when context is present
+    if (ctx) {
+      for (const f of rules.recommended) {
+        if (isRecommendedActive(f, ctx)) fields.add(f);
       }
     }
+    // optional: never added to required set
   }
+
   return fields;
 }

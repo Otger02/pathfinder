@@ -244,6 +244,10 @@ export interface PersonalData {
   autoritzacioTitularDni: string;
   autoritzacioTitularTitol: string;
 
+  // ── Tipo solicitud (EX-10) ─────────────────────────────────
+  /** Initial authorization, renewal, or provisional */
+  tipoSolicitud: "residencia_inicial" | "prorroga" | "provisional" | "";
+
   // ── Booleans / flags ───────────────────────────────────────
   hijosEscolarizacion: boolean | null;
   consentimientoDehu: boolean;
@@ -343,6 +347,7 @@ export const EMPTY_PERSONAL_DATA: PersonalData = {
   formacio_duracio: "", formacio_fechaInici: "", formacio_fechaFi: "",
   formacio_tipus: [], formacio_modalitat: [],
   autoritzacioTitular: "", autoritzacioTitularDni: "", autoritzacioTitularTitol: "",
+  tipoSolicitud: "",
   hijosEscolarizacion: null, consentimientoDehu: false,
   representanteNie: "", repPresentacionNombre: "", repPresentacionDniNiePas: "",
   repPresentacionDomicilio: "", repPresentacionNumero: "", repPresentacionPiso: "",
