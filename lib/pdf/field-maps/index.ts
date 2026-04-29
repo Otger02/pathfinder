@@ -156,7 +156,13 @@ const FIELD_MAP_LOADERS: Partial<Record<ExFormId, () => Promise<FieldMap>>> = {
       estadoCivilCheckboxes: m.EX_10_ESTADO_CIVIL_CHECKBOXES,
       circunstanciaCheckboxes: m.EX_10_CIRCUNSTANCIA_CHECKBOXES,
       tipoAutorizacionCheckboxes: m.EX_10_TIPO_AUTORIZACION_CHECKBOXES,
-      hijosEscolarizacionCheckboxes: m.EX_10_HIJOS_ESCOLARIZACION_CHECKBOXES,
+      // EX-10 stores hijosEscolarizacion as "si"|"no"|"no_aplica" (3 options),
+      // not boolean. The FieldMap interface still types this as
+      // Record<string, boolean> for backward compat with the other 12 forms.
+      // Cast preserves runtime correctness; specific EX-10 logic uses the
+      // raw constant from lib/forms/ex-10.ts when needed.
+      hijosEscolarizacionCheckboxes:
+        m.EX_10_HIJOS_ESCOLARIZACION_CHECKBOXES as unknown as Record<string, boolean>,
       consentimientoCheckbox: m.EX_10_CONSENTIMIENTO_CHECKBOX,
       dateFields: m.EX_10_DATE_FIELDS,
       familiarSexoCheckboxes: m.EX_10_FAMILIAR_SEXO_CHECKBOXES,

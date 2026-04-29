@@ -6,12 +6,80 @@
  * and returns the filled PDF as Uint8Array.
  */
 
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, PDFForm } from "pdf-lib";
 import { readFileSync } from "fs";
 import { join } from "path";
 import type { ExFormId } from "@/lib/form-config";
 import type { PersonalData } from "@/lib/types/personal-data";
 import { getFieldMap } from "./field-maps";
+import {
+  EX_10_TIPO_SOLICITUD_HEADER_CHECKBOX,
+  EX_10_TIPO_AUTORIZACION_HEADER_CHECKBOX,
+  EX_10_TIPO_SOLICITUD_CHECKBOXES,
+  EX_10_TIPO_DOC_CHECKBOXES,
+  EX_10_CONSENTIMIENTO_CHECKBOX,
+  resolveCircunstanciaCheckbox,
+  resolveTipoSolicitudCheckbox,
+} from "@/lib/forms/ex-10";
+
+/**
+ * EX-10-specific checkbox logic.
+ *
+ * The EX-10 PDF has 3 checkbox features that the generic FieldMap loop can't
+ * handle on its own:
+ *  1. The TIPO_SOLICITUD section has a HEADER checkbox (119) that must be
+ *     marked alongside the chosen sub-option (120 / 121 / 122).
+ *  2. The TIPO_AUTORIZACION section also has a HEADER (123) that pairs with
+ *     the chosen circunstancia (124-148), with slug aliasing for generic
+ *     form-config slugs (e.g. "victima_violencia_genere" → "vg_mujer_extranjera").
+ *  3. Reasonable defaults: residencia_inicial as tipo_solicitud,
+ *     pasaporte as tipo_doc, consentimiento Dehú checked — all unless the
+ *     personalData / authSlug specifies otherwise.
+ */
+function fillEx10Checkboxes(
+  form: PDFForm,
+  personalData: Partial<PersonalData>,
+  authSlug?: string
+): void {
+  const safeCheck = (fieldName: string) => {
+    if (!fieldName) return;
+    try {
+      form.getCheckBox(fieldName).check();
+    } catch {
+      // field may not exist in this PDF version
+    }
+  };
+
+  // 1. TIPO_SOLICITUD: header + default residencia_inicial
+  const tipoSolicitud =
+    (personalData.tipoSolicitud as keyof typeof EX_10_TIPO_SOLICITUD_CHECKBOXES) ??
+    "residencia_inicial";
+  safeCheck(EX_10_TIPO_SOLICITUD_HEADER_CHECKBOX);
+  safeCheck(resolveTipoSolicitudCheckbox(tipoSolicitud));
+
+  // 2. TIPO_AUTORIZACION: header + circumstància via authSlug (with aliasing)
+  if (authSlug) {
+    const circunField = resolveCircunstanciaCheckbox(authSlug);
+    if (circunField) {
+      safeCheck(EX_10_TIPO_AUTORIZACION_HEADER_CHECKBOX);
+      safeCheck(circunField);
+    }
+  }
+
+  // 3. TIPO_DOC: default pasaporte if no document type was collected
+  if (!personalData.tipoDocumento) {
+    for (const [pdfField, slugValue] of Object.entries(EX_10_TIPO_DOC_CHECKBOXES)) {
+      if (slugValue === "pasaporte") {
+        safeCheck(pdfField);
+      }
+    }
+  }
+
+  // 4. CONSENTIMIENTO Dehú: marked by default unless explicitly opted out
+  if (personalData.consentimientoDehu !== false) {
+    safeCheck(EX_10_CONSENTIMIENTO_CHECKBOX);
+  }
+}
 
 /**
  * Fill an official EX form PDF with personal data.
@@ -225,6 +293,11 @@ export async function fillExForm(
         try { form.getCheckBox(pdfField).check(); } catch {}
       }
     }
+  }
+
+  // ── EX-10 specific: headers + defaults that the generic loop can't do ─
+  if (exFormId === "EX-10") {
+    fillEx10Checkboxes(form, personalData, authSlug);
   }
 
   // ── Flatten if requested ────────────────────────────────────
