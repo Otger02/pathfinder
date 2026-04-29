@@ -330,12 +330,13 @@ async function main() {
       { what: "Código postal", field: "Texto20", expected: "08008" },
       { what: "Provincia", field: "Texto21", expected: "Barcelona" },
       { what: "Teléfono", field: "Texto22", expected: "612345678" },
-      // Checkboxes — sexo
-      { what: "Sexo M", field: "Casilla de verificación97", expected: "CHECKED" },
-      { what: "Sexo H (no)", field: "Casilla de verificación96", expected: "" },
-      // Checkboxes — tipoDoc
-      { what: "TipoDoc pasaporte", field: "Casilla de verificación99", expected: "CHECKED" },
-      { what: "TipoDoc nie (no)", field: "Casilla de verificación103", expected: "" },
+      // Checkboxes — sexo. After bug-fix: 96=X, 97=H, 98=M
+      { what: "Sexo M (cb98)", field: "Casilla de verificación98", expected: "CHECKED" },
+      { what: "Sexo H (not, cb97)", field: "Casilla de verificación97", expected: "" },
+      { what: "Sexo X (not, cb96)", field: "Casilla de verificación96", expected: "" },
+      // Checkboxes — tipoDoc. cb99/103 are estado civil; tipoDoc lives at 112-115.
+      { what: "TipoDoc pasaporte (cb112)", field: "Casilla de verificación112", expected: "CHECKED" },
+      { what: "TipoDoc nie (not, cb113)", field: "Casilla de verificación113", expected: "" },
       // Circunstancia
       { what: "Circunstancia arraigo_social (cb126)", field: "Casilla de verificación126", expected: "CHECKED" },
       { what: "Circunstancia arraigo_sociolaboral (no)", field: "Casilla de verificación125", expected: "" },
@@ -343,18 +344,23 @@ async function main() {
       { what: "Familiar nombre", field: "Texto33", expected: "Ibrahim" },
       { what: "Familiar apellido", field: "Texto31", expected: "Bah" },
       { what: "Familiar vínculo", field: "Texto47", expected: "cónyuge" },
-      { what: "Familiar sexo H", field: "Casilla de verificación104", expected: "CHECKED" },
+      // Familiar sexo H now lives at cb105 (after off-by-one fix)
+      { what: "Familiar sexo H (cb105)", field: "Casilla de verificación105", expected: "CHECKED" },
       { what: "Familiar estadoCivil casado", field: "Casilla de verificación108", expected: "CHECKED" },
-      // Formació
+      // Formació — text fields (interactive)
       { what: "Formació entitat", field: "Texto87", expected: "CIFO L'Hospitalet" },
       { what: "Formació NIF", field: "Texto90", expected: "Q1234567A" },
       { what: "Formació duació", field: "Texto93", expected: "6 meses" },
-      { what: "FormacioTipus certificat", field: "Casilla de verificación114", expected: "CHECKED" },
-      { what: "FormacioModalitat presencial", field: "Casilla de verificación116", expected: "CHECKED" },
+      // Formació tipus/modalitat are NOT interactive checkboxes in the official PDF
+      // (they're static graphics). EX_10_FORMACIO_TIPUS_CHECKBOXES = {} on purpose.
+      // Use EX_10_FORMACIO_TIPUS_COORDS via overlay drawText to mark them.
+      // The previous asserts on cb114/cb116 were spurious (cb114 = tipo doc cédula,
+      // cb116 = hijos escolarización — not formació). Removed.
       // Consentiment
       { what: "Consentiment DEHú", field: "Casilla de verificación261", expected: "CHECKED" },
-      // TipoAutorizacion — structural gap: none of cb120-122 will be checked
-      { what: "TipoAutorizacion residencia_inicial (gap)", field: "Casilla de verificación120", expected: "" },
+      // TipoSolicitud — fillEx10Checkboxes now defaults to residencia_inicial (cb120).
+      { what: "TipoSolicitud residencia_inicial (default cb120)", field: "Casilla de verificación120", expected: "CHECKED" },
+      { what: "TipoSolicitud header (cb119)", field: "Casilla de verificación119", expected: "CHECKED" },
     ]
   );
 
@@ -370,7 +376,7 @@ async function main() {
       // Present fields
       { what: "Nombre", field: "Texto7", expected: "Mohamed" },
       { what: "Primer apellido", field: "Texto5", expected: "Aziz" },
-      { what: "TipoDoc pasaporte", field: "Casilla de verificación99", expected: "CHECKED" },
+      { what: "TipoDoc pasaporte (cb112)", field: "Casilla de verificación112", expected: "CHECKED" },
       { what: "Circunstancia arraigo_sociolaboral (cb125)", field: "Casilla de verificación125", expected: "CHECKED" },
       // Missing required fields — must be empty
       { what: "Fecha nacimiento DD (missing)", field: "Texto8", expected: "" },
@@ -397,20 +403,23 @@ async function main() {
     SCENARIO_3,
     "arraigo_familiar",
     [
-      // tipoDocumento = pasaporte → cb99 checked, nie cb103 not checked
-      { what: "TipoDoc pasaporte (wins)", field: "Casilla de verificación99", expected: "CHECKED" },
-      { what: "TipoDoc nie (not checked)", field: "Casilla de verificación103", expected: "" },
-      // estadoCivil = "separado" — EX-10 main person estadoCivilCheckboxes is EMPTY
-      // so no checkbox is checked (correct behavior for EX-10)
-      { what: "EstadoCivil separado (no map in EX-10)", field: "Casilla de verificación110", expected: "" },
+      // tipoDocumento = pasaporte → cb112 checked; cb113 (nie) not checked
+      // (cb99/103 are estado civil, not tipo doc — fixed in d97ebac)
+      { what: "TipoDoc pasaporte (wins, cb112)", field: "Casilla de verificación112", expected: "CHECKED" },
+      { what: "TipoDoc nie (not checked, cb113)", field: "Casilla de verificación113", expected: "" },
+      // estadoCivil = "separado" maps to cb103 in the new mapping, but
+      // SCENARIO_3 sets estadoCivil="separado_pareja_hecho" → cb103 should
+      // be CHECKED. We assert cb110 (familiar separado) stays empty.
+      { what: "Familiar estadoCivil separado (cb111, not used here)", field: "Casilla de verificación111", expected: "" },
       // Circunstancia — arraigo_familiar = cb128
       { what: "Circunstancia arraigo_familiar (cb128)", field: "Casilla de verificación128", expected: "CHECKED" },
       // Familiar nombre provided
       { what: "Familiar nombre", field: "Texto33", expected: "Khalil" },
       { what: "Familiar vínculo", field: "Texto47", expected: "hijo" },
-      // familiar_sexo MISSING → no checkbox checked
-      { what: "Familiar sexo H (not provided)", field: "Casilla de verificación104", expected: "" },
-      { what: "Familiar sexo M (not provided)", field: "Casilla de verificación105", expected: "" },
+      // familiar_sexo MISSING → no checkbox checked across all 3 (X/H/M)
+      { what: "Familiar sexo X (cb104, not provided)", field: "Casilla de verificación104", expected: "" },
+      { what: "Familiar sexo H (cb105, not provided)", field: "Casilla de verificación105", expected: "" },
+      { what: "Familiar sexo M (cb106, not provided)", field: "Casilla de verificación106", expected: "" },
       // familiar_estadoCivil = soltero → cb107
       { what: "Familiar estadoCivil soltero", field: "Casilla de verificación107", expected: "CHECKED" },
       // Localidad/postal
@@ -427,20 +436,24 @@ async function main() {
       "Nací el 15/04/1978. Vivo en Lepanto 12, Valencia 46001. " +
       "Familiar Fatima Santos marcada como hombre por error.",
     SCENARIO_4,
-    "arraigo_segunda_oportunidad",
+    "arraigo_segona_oportunitat",
     [
-      // Pipeline uses tipoDocumento value as-is — nie checkbox checked despite wrong format
-      { what: "TipoDoc nie (as-is, no format check)", field: "Casilla de verificación103", expected: "CHECKED" },
-      { what: "TipoDoc pasaporte (not checked)", field: "Casilla de verificación99", expected: "" },
+      // Pipeline uses tipoDocumento value as-is — nie checkbox (cb113) checked
+      // despite the document number looking like a passport.
+      // (cb103 is estado civil separado, not tipo doc — fixed in d97ebac)
+      { what: "TipoDoc nie (as-is, no format check, cb113)", field: "Casilla de verificación113", expected: "CHECKED" },
+      { what: "TipoDoc pasaporte (not checked, cb112)", field: "Casilla de verificación112", expected: "" },
       // Fecha DD/MM/YYYY handled correctly
       { what: "Fecha DD (from DD/MM/YYYY)", field: "Texto8", expected: "15" },
       { what: "Fecha MM", field: "Texto9", expected: "04" },
       { what: "Fecha YYYY", field: "Texto10", expected: "1978" },
-      // Circunstancia arraigo_segunda_oportunidad = cb124
-      { what: "Circunstancia segunda_oportunidad (cb124)", field: "Casilla de verificación124", expected: "CHECKED" },
-      // familiar_sexo = "H" — pipeline accepts it, no validation
-      { what: "Familiar sexo H (wrong but accepted)", field: "Casilla de verificación104", expected: "CHECKED" },
-      { what: "Familiar sexo M (not checked)", field: "Casilla de verificación105", expected: "" },
+      // Circunstancia arraigo_segona_oportunitat = cb124 (Catalan slug, aligned with form-config)
+      { what: "Circunstancia segona_oportunitat (cb124)", field: "Casilla de verificación124", expected: "CHECKED" },
+      // familiar_sexo = "H" — pipeline accepts it, no validation.
+      // After familiar-sexo bug fix: H → cb105, X → cb104, M → cb106.
+      { what: "Familiar sexo H (wrong but accepted, cb105)", field: "Casilla de verificación105", expected: "CHECKED" },
+      { what: "Familiar sexo X (not checked, cb104)", field: "Casilla de verificación104", expected: "" },
+      { what: "Familiar sexo M (not checked, cb106)", field: "Casilla de verificación106", expected: "" },
       // Consentimiento = true
       { what: "Consentiment DEHú", field: "Casilla de verificación261", expected: "CHECKED" },
     ]

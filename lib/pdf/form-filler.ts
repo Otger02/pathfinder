@@ -112,6 +112,21 @@ export async function fillExForm(
   const pdf = await PDFDocument.load(templateBytes);
   const form = pdf.getForm();
 
+  // ── Bridge: tipoDocumento + numeroDocumento → camp específic ──
+  // The slot-filling system stores any document number in
+  // `numeroDocumento` along with a `tipoDocumento` discriminator,
+  // but the per-form text mappings expect dedicated fields named
+  // `pasaporte` / `nie`. Mirror the value so both shapes work.
+  if (personalData.numeroDocumento && personalData.tipoDocumento) {
+    if (personalData.tipoDocumento === "pasaporte" && !personalData.pasaporte) {
+      (personalData as Record<string, unknown>).pasaporte =
+        personalData.numeroDocumento;
+    } else if (personalData.tipoDocumento === "nie" && !personalData.nie) {
+      (personalData as Record<string, unknown>).nie =
+        personalData.numeroDocumento;
+    }
+  }
+
   // ── Fill text fields ────────────────────────────────────────
   for (const [pdfField, dataKey] of Object.entries(fieldMap.textFields)) {
     if (!dataKey) continue; // null = handled separately (e.g., date parts)
