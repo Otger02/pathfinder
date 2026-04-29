@@ -13,11 +13,12 @@
     "ingest": "tsx scripts/embed-and-ingest.ts",
     "pipeline": "npm run convert && npm run chunk && npm run ingest",
     "test:engine": "npx tsx scripts/test-collection-engine.ts",
+    "test:rules": "npx tsx scripts/test-collection-rules.ts",
     "test:prompt": "npx tsx scripts/test-prompt-builder.ts",
     "test:email": "npx tsx scripts/test-email-draft.ts",
     "test:e2e": "npx tsx scripts/test-chat-flow.ts",
     "test:arraigo": "npx tsx scripts/test-conversation-arraigo.ts",
-    "test": "npm run test:engine && npm run test:prompt && npm run test:email"
+    "test": "npm run test:engine && npm run test:rules && npm run test:prompt && npm run test:email"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",

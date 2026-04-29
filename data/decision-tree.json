@@ -1,11 +1,10 @@
 {
-  "version": "2.0.0",
-  "lastUpdated": "2026-04-28",
+  "version": "2.1.0",
+  "lastUpdated": "2026-04-29",
   "legalBasis": [
-    "RD 1155/2024 (en vigor 20/05/2025)",
-    "RD 316/2026 (modificació 14/04/2026)",
+    "RD 1155/2024 (en vigor 20/05/2025, modificat RD 316/2026)",
     "RD 240/2007 (ciutadans UE)",
-    "Llei 12/2009 (asil)"
+    "Llei 12/2009 (asil i protecció subsidiària)"
   ],
   "branches": {
     "b1": [
@@ -62,7 +61,8 @@
           }
         ],
         "x": 370,
-        "y": 40
+        "y": 40,
+        "slugs": []
       },
       {
         "id": "b1-p0b",
@@ -102,7 +102,8 @@
           }
         ],
         "x": 1030,
-        "y": 40
+        "y": 40,
+        "slugs": []
       },
       {
         "id": "b1-block-a-wait",
@@ -122,7 +123,8 @@
           }
         ],
         "x": 1030,
-        "y": 220
+        "y": 220,
+        "slugs": []
       },
       {
         "id": "b1-block-b",
@@ -142,7 +144,8 @@
           }
         ],
         "x": 370,
-        "y": 220
+        "y": 220,
+        "slugs": []
       },
       {
         "id": "b1-block-c",
@@ -167,7 +170,8 @@
           }
         ],
         "x": 370,
-        "y": 400
+        "y": 400,
+        "slugs": []
       },
       {
         "id": "b1-block-d",
@@ -187,7 +191,8 @@
           }
         ],
         "x": 370,
-        "y": 580
+        "y": 580,
+        "slugs": []
       },
       {
         "id": "b1-p1",
@@ -237,7 +242,10 @@
           }
         ],
         "x": 370,
-        "y": 800
+        "y": 800,
+        "slugs": [
+          "menor_no_acompanyat"
+        ]
       },
       {
         "id": "b1-p2",
@@ -282,7 +290,8 @@
           }
         ],
         "x": 370,
-        "y": 980
+        "y": 980,
+        "slugs": []
       },
       {
         "id": "b1-p3",
@@ -322,7 +331,8 @@
           }
         ],
         "x": 370,
-        "y": 1160
+        "y": 1160,
+        "slugs": []
       },
       {
         "id": "b1-r-gairebe",
@@ -337,7 +347,8 @@
           }
         ],
         "x": 370,
-        "y": 1340
+        "y": 1340,
+        "slugs": []
       },
       {
         "id": "b1-p4",
@@ -377,7 +388,10 @@
           }
         ],
         "x": 370,
-        "y": 1520
+        "y": 1520,
+        "slugs": [
+          "arraigo_sociolaboral"
+        ]
       },
       {
         "id": "b1-p5",
@@ -417,7 +431,10 @@
           }
         ],
         "x": 370,
-        "y": 1700
+        "y": 1700,
+        "slugs": [
+          "arraigo_socioformatiu"
+        ]
       },
       {
         "id": "b1-p6",
@@ -462,7 +479,10 @@
           }
         ],
         "x": 370,
-        "y": 1880
+        "y": 1880,
+        "slugs": [
+          "arraigo_social"
+        ]
       },
       {
         "id": "b1-p7",
@@ -502,7 +522,10 @@
           }
         ],
         "x": 370,
-        "y": 2060
+        "y": 2060,
+        "slugs": [
+          "arraigo_social"
+        ]
       },
       {
         "id": "b1-p8",
@@ -522,7 +545,8 @@
           }
         ],
         "x": 40,
-        "y": 2240
+        "y": 2240,
+        "slugs": []
       },
       {
         "id": "b1-sos2",
@@ -547,7 +571,8 @@
           }
         ],
         "x": 370,
-        "y": 2240
+        "y": 2240,
+        "slugs": []
       },
       {
         "id": "b1-r-sense",
@@ -562,7 +587,8 @@
           }
         ],
         "x": 370,
-        "y": 2420
+        "y": 2420,
+        "slugs": []
       },
       {
         "id": "b1-r-familiar-espanyol",
@@ -582,7 +608,10 @@
           }
         ],
         "x": 730,
-        "y": 1680
+        "y": 1680,
+        "slugs": [
+          "residencia_familiar_espanyol"
+        ]
       },
       {
         "id": "b1-r-familiar-ue",
@@ -597,7 +626,10 @@
           }
         ],
         "x": 730,
-        "y": 1820
+        "y": 1820,
+        "slugs": [
+          "arraigo_familiar"
+        ]
       },
       {
         "id": "b1-r-menor-excepcional",
@@ -622,7 +654,10 @@
           }
         ],
         "x": 420,
-        "y": 180
+        "y": 180,
+        "slugs": [
+          "menor_excepcional_majoria_edat"
+        ]
       }
     ],
     "b2": [
@@ -674,7 +709,8 @@
           }
         ],
         "x": 420,
-        "y": 40
+        "y": 40,
+        "slugs": []
       },
       {
         "id": "b2-p1",
@@ -724,7 +760,12 @@
           }
         ],
         "x": 420,
-        "y": 180
+        "y": 180,
+        "slugs": [
+          "treball_compte_alie_renovacio",
+          "treball_compte_propi_renovacio",
+          "renovacio_residencia_no_lucrativa"
+        ]
       },
       {
         "id": "b2-r-urgent",
@@ -744,7 +785,11 @@
           }
         ],
         "x": 420,
-        "y": 320
+        "y": 320,
+        "slugs": [
+          "treball_compte_alie_renovacio",
+          "treball_compte_propi_renovacio"
+        ]
       },
       {
         "id": "b2-r-critic",
@@ -769,7 +814,10 @@
           }
         ],
         "x": 420,
-        "y": 460
+        "y": 460,
+        "slugs": [
+          "treball_compte_alie_renovacio"
+        ]
       },
       {
         "id": "b2-r-ld",
@@ -789,7 +837,10 @@
           }
         ],
         "x": 420,
-        "y": 600
+        "y": 600,
+        "slugs": [
+          "residencia_llarga_duracio_nacional"
+        ]
       },
       {
         "id": "b2-p2",
@@ -834,7 +885,10 @@
           }
         ],
         "x": 420,
-        "y": 780
+        "y": 780,
+        "slugs": [
+          "treball_compte_alie_renovacio"
+        ]
       },
       {
         "id": "b2-r-caducada-mitja",
@@ -864,7 +918,11 @@
           }
         ],
         "x": 420,
-        "y": 920
+        "y": 920,
+        "slugs": [
+          "arraigo_social",
+          "arraigo_sociolaboral"
+        ]
       },
       {
         "id": "b2-r-caducada-llarga",
@@ -889,7 +947,11 @@
           }
         ],
         "x": 420,
-        "y": 1060
+        "y": 1060,
+        "slugs": [
+          "arraigo_social",
+          "arraigo_sociolaboral"
+        ]
       },
       {
         "id": "b2-p3",
@@ -929,7 +991,10 @@
           }
         ],
         "x": 420,
-        "y": 1180
+        "y": 1180,
+        "slugs": [
+          "arraigo_segona_oportunitat"
+        ]
       },
       {
         "id": "b2-r-antiga",
@@ -949,7 +1014,10 @@
           }
         ],
         "x": 420,
-        "y": 1320
+        "y": 1320,
+        "slugs": [
+          "arraigo_social"
+        ]
       }
     ],
     "b3": [
@@ -1011,7 +1079,8 @@
           }
         ],
         "x": 420,
-        "y": 180
+        "y": 180,
+        "slugs": []
       },
       {
         "id": "b3-p2",
@@ -1061,7 +1130,10 @@
           }
         ],
         "x": 420,
-        "y": 360
+        "y": 360,
+        "slugs": [
+          "certificat_registre_ciutada_ue"
+        ]
       },
       {
         "id": "b3-p3",
@@ -1101,7 +1173,10 @@
           }
         ],
         "x": 420,
-        "y": 580
+        "y": 580,
+        "slugs": [
+          "certificat_registre_ciutada_ue"
+        ]
       },
       {
         "id": "b3-p4",
@@ -1151,7 +1226,10 @@
           }
         ],
         "x": 420,
-        "y": 760
+        "y": 760,
+        "slugs": [
+          "certificat_registre_ciutada_ue"
+        ]
       },
       {
         "id": "b3-r-familia",
@@ -1171,7 +1249,10 @@
           }
         ],
         "x": 420,
-        "y": 920
+        "y": 920,
+        "slugs": [
+          "targeta_familiar_ciutada_ue"
+        ]
       },
       {
         "id": "b3-r-estudis",
@@ -1186,7 +1267,10 @@
           }
         ],
         "x": 420,
-        "y": 1060
+        "y": 1060,
+        "slugs": [
+          "certificat_registre_ciutada_ue"
+        ]
       },
       {
         "id": "b3-r-serveis",
@@ -1201,7 +1285,10 @@
           }
         ],
         "x": 420,
-        "y": 1200
+        "y": 1200,
+        "slugs": [
+          "certificat_registre_ciutada_ue"
+        ]
       },
       {
         "id": "b3-p-familiar",
@@ -1251,7 +1338,10 @@
           }
         ],
         "x": 420,
-        "y": 1060
+        "y": 1060,
+        "slugs": [
+          "targeta_familiar_ciutada_ue"
+        ]
       },
       {
         "id": "b3-r-familiar-altres",
@@ -1266,7 +1356,8 @@
           }
         ],
         "x": 420,
-        "y": 1220
+        "y": 1220,
+        "slugs": []
       },
       {
         "id": "b3-r-familiar-espanyol",
@@ -1291,7 +1382,10 @@
           }
         ],
         "x": 420,
-        "y": 1360
+        "y": 1360,
+        "slugs": [
+          "residencia_familiar_espanyol"
+        ]
       }
     ],
     "b4": [
@@ -1343,7 +1437,8 @@
           }
         ],
         "x": 420,
-        "y": 40
+        "y": 40,
+        "slugs": []
       },
       {
         "id": "b4-r-cie",
@@ -1368,7 +1463,8 @@
           }
         ],
         "x": 420,
-        "y": 200
+        "y": 200,
+        "slugs": []
       },
       {
         "id": "b4-p1",
@@ -1438,7 +1534,8 @@
           }
         ],
         "x": 420,
-        "y": 420
+        "y": 420,
+        "slugs": []
       },
       {
         "id": "b4-r-fora-termini",
@@ -1458,7 +1555,8 @@
           }
         ],
         "x": 420,
-        "y": 560
+        "y": 560,
+        "slugs": []
       },
       {
         "id": "b4-p-espera",
@@ -1503,7 +1601,8 @@
           }
         ],
         "x": 420,
-        "y": 640
+        "y": 640,
+        "slugs": []
       },
       {
         "id": "b4-r-espera-resolucio",
@@ -1525,10 +1624,16 @@
             "text": "Regularització extraordinària 2026 si compleixes requisits",
             "s": "r",
             "next": "b4-r-reg-ext"
+          },
+          {
+            "text": "M'han concedit la protecció → estatut de refugiat",
+            "s": "r",
+            "next": "b4-r-resolucio-positiva"
           }
         ],
         "x": 420,
-        "y": 780
+        "y": 780,
+        "slugs": []
       },
       {
         "id": "b4-r-tarjeta-roja",
@@ -1550,10 +1655,16 @@
             "text": "Renovar tarjeta roja anualment",
             "s": "r",
             "next": null
+          },
+          {
+            "text": "M'han concedit la protecció → estatut de refugiat",
+            "s": "r",
+            "next": "b4-r-resolucio-positiva"
           }
         ],
         "x": 420,
-        "y": 920
+        "y": 920,
+        "slugs": []
       },
       {
         "id": "b4-r-reg-ext",
@@ -1573,7 +1684,8 @@
           }
         ],
         "x": 800,
-        "y": 850
+        "y": 850,
+        "slugs": []
       },
       {
         "id": "b4-p-denegat",
@@ -1623,7 +1735,8 @@
           }
         ],
         "x": 420,
-        "y": 1000
+        "y": 1000,
+        "slugs": []
       },
       {
         "id": "b4-r-recurs",
@@ -1653,7 +1766,8 @@
           }
         ],
         "x": 420,
-        "y": 1140
+        "y": 1140,
+        "slugs": []
       },
       {
         "id": "b4-r-denegat-antic",
@@ -1678,7 +1792,10 @@
           }
         ],
         "x": 420,
-        "y": 1280
+        "y": 1280,
+        "slugs": [
+          "arraigo_social"
+        ]
       },
       {
         "id": "b4-r-resolucio-positiva",
@@ -1703,7 +1820,8 @@
           }
         ],
         "x": 420,
-        "y": 1420
+        "y": 1420,
+        "slugs": []
       }
     ]
   }
