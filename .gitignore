@@ -13,3 +13,21 @@ dist/
 .DS_Store
 next-env.d.ts
 package-lock.json
+
+# Knowledge base (regenerable localment)
+knowledge/processed/
+knowledge/sources/
+
+# Artefactes temporals
+.claude/
+tsconfig.tsbuildinfo
+test-filled.pdf
+test-payload.json
+all-form-fields.txt
+ex10-fields.txt
+field-positions-all.txt
+simulate-profiles.ts
+ProgressTabs
+chat
+inline
+types/
