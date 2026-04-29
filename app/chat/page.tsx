@@ -15,6 +15,12 @@ import type {
   EmailDraftCardData,
 } from "@/lib/types/chat-flow";
 import type { DecisionNode, DecisionTree } from "@/lib/types/decision-tree";
+import {
+  loadTranslations,
+  translateNode,
+  getRootNode,
+  ROOT_NODE_ID,
+} from "@/lib/tree-i18n";
 import LanguageSelector from "./components/LanguageSelector";
 import TreePhase from "./components/TreePhase";
 import ChatPhase from "./components/ChatPhase";
@@ -31,22 +37,11 @@ interface RecursUrgent {
 
 type DecisionOption = DecisionNode["opts"][number];
 
-const ROOT_NODE: DecisionNode = {
-  id: "root",
-  type: "q",
-  text: "Quina és la teva situació?",
-  note: "",
-  opts: [
-    { text: "No tinc papers", s: "", next: "b1-p0" },
-    { text: "Tinc autorització", s: "", next: "b2-p0" },
-    { text: "Sóc ciutadà/ana UE", s: "", next: "b3-p0" },
-    { text: "Vull demanar asil", s: "", next: "b4-p0" },
-  ],
-};
-
+// nodeMap stores the source-of-truth (Catalan) nodes from the JSON.
+// translateNode() is applied each time we move to a new node so the
+// component receives strings in the user's selected language.
 function buildNodeMap(tree: DecisionTree): Map<string, DecisionNode> {
   const map = new Map<string, DecisionNode>();
-  map.set(ROOT_NODE.id, ROOT_NODE);
   for (const branch of [tree.branches.b1, tree.branches.b2, tree.branches.b3, tree.branches.b4]) {
     for (const node of branch) {
       map.set(node.id, node);
@@ -197,29 +192,44 @@ function ChatPageInner() {
     setIsRecording(false);
   }, []);
 
-  // Load decision tree
+  // Load decision tree + translations in parallel
   useEffect(() => {
-    fetch("/api/tree")
-      .then((r) => r.json())
-      .then((data: DecisionTree) => {
+    Promise.all([
+      fetch("/api/tree").then((r) => r.json() as Promise<DecisionTree>),
+      loadTranslations(),
+    ])
+      .then(([data]) => {
         const map = buildNodeMap(data);
         setNodeMap(map);
-        setCurrentNode(ROOT_NODE);
+        setCurrentNode(getRootNode(lang));
       })
       .catch(() => setPhase("chat"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Re-translate currentNode when lang changes mid-navigation
+  useEffect(() => {
+    if (!currentNode || !nodeMap) return;
+    if (currentNode.id === ROOT_NODE_ID) {
+      setCurrentNode(getRootNode(lang));
+    } else {
+      const original = nodeMap.get(currentNode.id);
+      if (original) setCurrentNode(translateNode(original, lang));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang, nodeMap]);
 
   function handleOptionClick(option: DecisionOption, parentNode: DecisionNode) {
     setPath((prev) => [...prev, option.text]);
 
-    if (parentNode.id === ROOT_NODE.id) {
+    if (parentNode.id === ROOT_NODE_ID) {
       setSituacioLegal(inferSituacioFromNextId(option.next));
     }
 
     if (option.next && nodeMap) {
       const nextNode = nodeMap.get(option.next);
       if (nextNode) {
-        setCurrentNode(nextNode);
+        setCurrentNode(translateNode(nextNode, lang));
       }
     }
   }
@@ -255,7 +265,7 @@ function ChatPageInner() {
     if (nodeMap) {
       setPath([]);
       setSituacioLegal(null);
-      setCurrentNode(ROOT_NODE);
+      setCurrentNode(getRootNode(lang));
     }
   }
 
