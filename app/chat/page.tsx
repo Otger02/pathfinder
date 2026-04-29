@@ -285,6 +285,10 @@ function ChatPageInner() {
           idioma: lang,
           auth_slugs: authSlugs.length > 0 ? authSlugs : undefined,
           mode: mode,
+          tree_node_id: currentNode?.id ?? null,
+          tree_node_text: currentNode?.text ?? null,
+          tree_node_note: currentNode?.note ?? null,
+          tree_path: path,
         }),
         signal: abortRef.current.signal,
       });

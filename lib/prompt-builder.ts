@@ -95,6 +95,93 @@ INSTRUCCIÓ PROTECCIÓ DADES:
 - Usa l'eina collect_personal_data per extreure les dades, mai les escriguis al text.
 - IMPORTANT: SEMPRE que l'usuari et doni qualsevol dada personal (nom, nacionalitat, document, adreça, etc.), HAS DE cridar l'eina collect_personal_data. Si no la crides, les dades es perdran. Crida-la a cada missatge on l'usuari doni informació nova.`;
 
+// ── Tree-node context block (multilingual) ─────────────────────────
+
+interface TreeContextStrings {
+  title: string;
+  intro: string;
+  labelSituation: string;
+  labelDetail: string;
+  labelPath: string;
+  labelAuth: string;
+  instruction: string;
+}
+
+const TREE_CONTEXT_STRINGS: Record<string, TreeContextStrings> = {
+  es: {
+    title: "CONTEXTO DE LA CONSULTA",
+    intro: "El usuario ha navegado el árbol de decisiones y ha llegado a:",
+    labelSituation: "Situación identificada",
+    labelDetail: "Detalle legal",
+    labelPath: "Camino recorrido",
+    labelAuth: "Autorizaciones aplicables",
+    instruction:
+      "Responde SIEMPRE basándote en este contexto específico. Si el usuario pregunta \"¿qué hago ahora?\" o similar, da una respuesta CONCRETA a su caso, no genérica. Si el usuario pregunta sobre tiempos, plazos, requisitos o pasos concretos, extráelos del Detalle legal de arriba antes que de los documentos de referencia.",
+  },
+  ca: {
+    title: "CONTEXT DE LA CONSULTA",
+    intro: "L'usuari ha navegat l'arbre de decisions i ha arribat a:",
+    labelSituation: "Situació identificada",
+    labelDetail: "Detall legal",
+    labelPath: "Camí recorregut",
+    labelAuth: "Autoritzacions aplicables",
+    instruction:
+      "Respon SEMPRE basant-te en aquest context específic. Si l'usuari pregunta \"què he de fer ara?\" o similar, dona una resposta CONCRETA al seu cas, no genèrica. Si l'usuari pregunta sobre temps, terminis, requisits o passos concrets, extreu-los del Detall legal de dalt abans que dels documents de referència.",
+  },
+  en: {
+    title: "QUERY CONTEXT",
+    intro: "The user has navigated the decision tree and reached:",
+    labelSituation: "Identified situation",
+    labelDetail: "Legal detail",
+    labelPath: "Path taken",
+    labelAuth: "Applicable authorizations",
+    instruction:
+      "ALWAYS respond based on this specific context. If the user asks \"what do I do now?\" or similar, give a CONCRETE answer for their case, not a generic one. If the user asks about times, deadlines, requirements, or concrete steps, extract them from the Legal detail above rather than from the reference documents.",
+  },
+  ar: {
+    title: "سياق الاستفسار",
+    intro: "تنقل المستخدم في شجرة القرارات ووصل إلى:",
+    labelSituation: "الحالة المحددة",
+    labelDetail: "التفصيل القانوني",
+    labelPath: "المسار المتبع",
+    labelAuth: "التصاريح المطبقة",
+    instruction:
+      "أجب دائماً بناءً على هذا السياق المحدد. إذا سأل المستخدم \"ماذا أفعل الآن؟\" أو ما شابه، أعطِ إجابة ملموسة لحالته، وليس إجابة عامة. إذا سأل المستخدم عن الأوقات أو المواعيد النهائية أو المتطلبات أو الخطوات المحددة، استخرجها من التفصيل القانوني أعلاه قبل الوثائق المرجعية.",
+  },
+  fr: {
+    title: "CONTEXTE DE LA REQUÊTE",
+    intro: "L'utilisateur a navigué dans l'arbre de décisions et est arrivé à :",
+    labelSituation: "Situation identifiée",
+    labelDetail: "Détail juridique",
+    labelPath: "Chemin parcouru",
+    labelAuth: "Autorisations applicables",
+    instruction:
+      "Réponds TOUJOURS en te basant sur ce contexte spécifique. Si l'utilisateur demande \"que dois-je faire maintenant ?\" ou similaire, donne une réponse CONCRÈTE à son cas, pas générique. Si l'utilisateur demande des délais, des exigences ou des étapes concrètes, extrais-les du Détail juridique ci-dessus plutôt que des documents de référence.",
+  },
+};
+
+function buildTreeContextBlock(
+  idioma: string,
+  nodeText: string | undefined,
+  nodeNote: string | undefined,
+  path: string[] | undefined,
+  authSlugs: string[]
+): string | null {
+  if (!nodeText && !nodeNote) return null;
+  const s = TREE_CONTEXT_STRINGS[idioma] || TREE_CONTEXT_STRINGS.es;
+  const lines: string[] = [`${s.title}:`, s.intro];
+  if (nodeText) lines.push(`- ${s.labelSituation}: ${nodeText}`);
+  if (nodeNote) lines.push(`- ${s.labelDetail}: ${nodeNote}`);
+  if (path && path.length > 0) {
+    lines.push(`- ${s.labelPath}: ${path.join(" → ")}`);
+  }
+  if (authSlugs.length > 0) {
+    lines.push(`- ${s.labelAuth}: ${authSlugs.join(", ")}`);
+  }
+  lines.push("", s.instruction);
+  return lines.join("\n");
+}
+
 // ── Builder ─────────────────────────────────────────────────────────
 
 export interface PromptBuilderOptions {
@@ -106,6 +193,10 @@ export interface PromptBuilderOptions {
   collectedFields?: PersonalDataField[];
   missingFields?: PersonalDataField[];
   contextBlock: string;
+  treeNodeId?: string;
+  treeNodeText?: string;
+  treeNodeNote?: string;
+  treePath?: string[];
 }
 
 export function buildSystemPrompt(options: PromptBuilderOptions): string {
@@ -118,6 +209,9 @@ export function buildSystemPrompt(options: PromptBuilderOptions): string {
     collectedFields = [],
     missingFields = [],
     contextBlock,
+    treeNodeText,
+    treeNodeNote,
+    treePath,
   } = options;
 
   const parts: string[] = [BASE_PROMPT];
@@ -131,6 +225,19 @@ export function buildSystemPrompt(options: PromptBuilderOptions): string {
     parts.push(
       `\nL'usuari es troba en situació: ${situacioLegal}. Prioritza informació rellevant per a aquesta situació.`
     );
+  }
+
+  // Tree-node context block (multilingual) — placed BEFORE RAG so the
+  // model treats the user's specific path as primary truth.
+  const treeContext = buildTreeContextBlock(
+    idioma,
+    treeNodeText,
+    treeNodeNote,
+    treePath,
+    authSlugs
+  );
+  if (treeContext) {
+    parts.push(`\n\n${treeContext}`);
   }
 
   // RAG context block (always present)

@@ -81,6 +81,10 @@ export async function POST(req: NextRequest) {
       idioma,
       auth_slugs,
       mode: requestMode,
+      tree_node_id,
+      tree_node_text,
+      tree_node_note,
+      tree_path,
     } = body as {
       message?: string;
       conversation_id?: string;
@@ -88,6 +92,10 @@ export async function POST(req: NextRequest) {
       idioma?: string;
       auth_slugs?: string[];
       mode?: "info" | "collection";
+      tree_node_id?: string | null;
+      tree_node_text?: string | null;
+      tree_node_note?: string | null;
+      tree_path?: string[];
     };
 
     if (!message || typeof message !== "string" || message.trim().length === 0) {
@@ -200,7 +208,12 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 3. Embed → RAG ──────────────────────────────────────────
-    const queryEmbedding = await embedQuery(message.trim(), voyageKey);
+    // Enrich query with the decision-tree node title so RAG retrieves
+    // chunks relevant to the user's specific path, not just their question.
+    const ragQuery = tree_node_text
+      ? `${tree_node_text}: ${message.trim()}`
+      : message.trim();
+    const queryEmbedding = await embedQuery(ragQuery, voyageKey);
 
     const rpcParams: Record<string, unknown> = {
       query_embedding: JSON.stringify(queryEmbedding),
@@ -265,6 +278,10 @@ export async function POST(req: NextRequest) {
       collectedFields,
       missingFields,
       contextBlock,
+      treeNodeId: tree_node_id ?? undefined,
+      treeNodeText: tree_node_text ?? undefined,
+      treeNodeNote: tree_node_note ?? undefined,
+      treePath: tree_path,
     });
 
     // ── 8. Build Claude messages ────────────────────────────────
