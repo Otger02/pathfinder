@@ -240,7 +240,30 @@ export const EX_10_FAMILIAR_SEXO_CHECKBOXES: Record<
 };
 
 // ------------------------------
-// 4. ESTRUCTURA UNIFICADA (helper)
+// 4. CHECKBOXES PENDENTS — stubs buits
+// ------------------------------
+// Aquests grups estan presents al PDF d'EX-10 però encara no s'han mapat
+// manualment. Quedan com a Record buits perquè el field-map satisfaci la
+// interfície FieldMap. Quan es mapin, substituir aquí amb les claus reals.
+
+export const EX_10_TIPO_DOC_CHECKBOXES: Record<string, string> = {};
+
+export const EX_10_FAMILIAR_ESTADO_CIVIL_CHECKBOXES: Record<string, string> = {};
+
+export const EX_10_FORMACIO_TIPUS_CHECKBOXES: Record<string, string> = {};
+
+export const EX_10_FORMACIO_MODALITAT_CHECKBOXES: Record<string, string> = {};
+
+export const EX_10_CIRCUNSTANCIA_CHECKBOXES: Record<string, string> = {};
+
+export const EX_10_TIPO_AUTORIZACION_CHECKBOXES: Record<string, string> = {};
+
+export const EX_10_HIJOS_ESCOLARIZACION_CHECKBOXES: Record<string, boolean> = {};
+
+export const EX_10_CONSENTIMIENTO_CHECKBOX = "";
+
+// ------------------------------
+// 5. ESTRUCTURA UNIFICADA (helper)
 // ------------------------------
 export const EX_10_CHECKBOXES = {
   sexo: EX_10_SEXO_CHECKBOXES,
@@ -265,16 +288,6 @@ export function getCheckboxKeyByValue(
 /* =========================================================
  * 4) FIELD MAP EXPORT
  * ======================================================= */
-
-// Stubs — pending identification of real PDF field names
-export const EX_10_TIPO_DOC_CHECKBOXES: Record<string, string> = {};
-export const EX_10_CIRCUNSTANCIA_CHECKBOXES: Record<string, string> = {};
-export const EX_10_TIPO_AUTORIZACION_CHECKBOXES: Record<string, string> = {};
-export const EX_10_HIJOS_ESCOLARIZACION_CHECKBOXES: Record<string, boolean> = {};
-export const EX_10_CONSENTIMIENTO_CHECKBOX = "";
-export const EX_10_FAMILIAR_ESTADO_CIVIL_CHECKBOXES: Record<string, string> = {};
-export const EX_10_FORMACIO_TIPUS_CHECKBOXES: Record<string, string> = {};
-export const EX_10_FORMACIO_MODALITAT_CHECKBOXES: Record<string, string> = {};
 
 export const EX_10_FIELD_MAP: FieldMap = {
   textFields: EX_10_TEXT_FIELDS,
