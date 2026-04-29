@@ -27,7 +27,7 @@ all-form-fields.txt
 ex10-fields.txt
 field-positions-all.txt
 simulate-profiles.ts
-ProgressTabs
-chat
-inline
-types/
+/ProgressTabs
+/chat
+/inline
+/types/
