@@ -106,6 +106,62 @@ export const COLLECT_PERSONAL_DATA_TOOL = {
         type: "string",
         description: "Legal representative's NIE",
       },
+
+      // ── Camps base que faltaven ────────────────────────────────
+      numeroDomicilio: {
+        type: "string",
+        description: "Número del domicilio del solicitante",
+      },
+      pisoDomicilio: {
+        type: "string",
+        description: "Piso/puerta del domicilio del solicitante",
+      },
+      tipoSolicitud: {
+        type: "string",
+        enum: ["residencia_inicial", "prorroga", "provisional"],
+        description:
+          "Tipo de solicitud: residencia_inicial, prorroga o provisional",
+      },
+      hijosEscolarizacion: {
+        type: "string",
+        enum: ["si", "no", "no_aplica"],
+        description:
+          "Hijos en edad escolar escolarizados: si, no o no_aplica",
+      },
+
+      // ── Empleador (arraigo sociolaboral) ──────────────────────
+      empleador_nombre: {
+        type: "string",
+        description: "Nombre o razón social del empleador",
+      },
+      empleador_nifNie: {
+        type: "string",
+        description: "NIF o NIE del empleador",
+      },
+      empleador_actividad: {
+        type: "string",
+        description: "Actividad o sector del empleador",
+      },
+      empleador_domicilio: {
+        type: "string",
+        description: "Calle/dirección del empleador",
+      },
+      empleador_localidad: {
+        type: "string",
+        description: "Localidad del empleador",
+      },
+      empleador_provincia: {
+        type: "string",
+        description: "Provincia del empleador",
+      },
+      empleador_codigoPostal: {
+        type: "string",
+        description: "Código postal del empleador",
+      },
+      empleador_telefono: {
+        type: "string",
+        description: "Teléfono del empleador",
+      },
     },
     required: [] as string[],
   },

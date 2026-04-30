@@ -341,10 +341,14 @@ export async function POST(req: NextRequest) {
       stream: true,
     };
 
-    // Add tool when in collection mode + conversa phase
+    // Add tool when in collection mode + conversa phase.
+    // Force the model to call collect_personal_data while there are
+    // missing required fields. Once everything is collected, fall back
+    // to "auto" so the model can answer free-form questions.
     if (mode === "collection" && chatSubPhase === "conversa") {
       claudeBody.tools = [COLLECT_PERSONAL_DATA_TOOL];
-      claudeBody.tool_choice = { type: "auto" };
+      claudeBody.tool_choice =
+        missingFields.length > 0 ? { type: "any" } : { type: "auto" };
     }
 
     const claudeController = new AbortController();
