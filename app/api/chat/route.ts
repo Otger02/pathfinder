@@ -263,10 +263,43 @@ export async function POST(req: NextRequest) {
       .filter(([, v]) => v && typeof v === "string" && v.trim() !== "")
       .map(([k]) => k as PersonalDataField);
 
-    const missingFields =
+    let missingFields =
       mode === "collection"
         ? computeMissingFields(effectiveAuthSlugs, collectedData)
         : [];
+
+    // ── 6.5. Defensive subPhase reset ─────────────────────────────
+    // If a previous turn left subPhase at "resum"/"document" but we still
+    // have required fields missing, the conversation must continue collecting.
+    // Otherwise the prompt-builder would inject the RESUM/DOCUMENT sections
+    // and the model would just announce a summary instead of asking for the
+    // next missing field.
+    if (
+      mode === "collection" &&
+      (chatSubPhase === "resum" || chatSubPhase === "document") &&
+      missingFields.length > 0
+    ) {
+      console.log(
+        "[chat] reset subPhase→conversa  was=",
+        chatSubPhase,
+        " missing=",
+        missingFields.length,
+        " collected=",
+        Object.keys(collectedData).length
+      );
+      chatSubPhase = "conversa";
+    }
+
+    // ── 6.6. Diagnostic log per turn ──────────────────────────────
+    console.log("[chat]", {
+      convId: typeof convId === "string" ? convId.slice(0, 8) : null,
+      mode,
+      subPhase: chatSubPhase,
+      authSlugs: effectiveAuthSlugs,
+      collected: Object.keys(collectedData).length,
+      missing: missingFields.length,
+      missingFields: missingFields.slice(0, 5),
+    });
 
     // ── 7. Build system prompt ──────────────────────────────────
     const systemPrompt = buildSystemPrompt({
@@ -505,7 +538,14 @@ export async function POST(req: NextRequest) {
                       .from("conversations")
                       .update(updateData)
                       .eq("id", convId)
-                      .then(() => {});
+                      .then(({ error }) => {
+                        if (error) {
+                          console.error(
+                            "[chat] supabase update failed:",
+                            error.message
+                          );
+                        }
+                      });
                   } catch (parseErr) {
                     console.error("Tool use JSON parse error:", parseErr);
                   }
