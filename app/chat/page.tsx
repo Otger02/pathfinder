@@ -130,6 +130,11 @@ function ChatPageInner() {
   const [showConsent, setShowConsent] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
 
+  // Pending message: stores the user's first message when the backend
+  // intercepts it with a consent_request. Re-sent after the user accepts.
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+  const lastSentTextRef = useRef<string>("");
+
   // Keep ref in sync with state
   useEffect(() => {
     collectedDataRef.current = collectedData;
@@ -275,8 +280,14 @@ function ChatPageInner() {
     e.preventDefault();
     const text = input.trim();
     if (!text || loading) return;
-
     setInput("");
+    await sendChatMessage(text);
+  }
+
+  async function sendChatMessage(text: string) {
+    if (!text || loading) return;
+
+    lastSentTextRef.current = text;
     setLoading(true);
     setSources([]);
 
@@ -345,6 +356,11 @@ function ChatPageInner() {
                 return updated;
               });
             } else if (event.type === "consent_request") {
+              // Save the user's first message so we can re-send it after
+              // they accept consent — the backend's first-turn response is
+              // dropped here because we replace the assistant placeholder
+              // with the consent card.
+              setPendingMessage(lastSentTextRef.current);
               // Inject consent card (guard: no duplicates)
               setMessages((prev) => {
                 if (prev.some((m) => m.cardType === "consent")) return prev;
@@ -415,6 +431,8 @@ function ChatPageInner() {
       )
     );
 
+    setConsentGiven(true);
+
     // Record consent server-side
     if (conversationId) {
       fetch("/api/chat/consent", {
@@ -423,7 +441,19 @@ function ChatPageInner() {
         body: JSON.stringify({ conversation_id: conversationId }),
       }).catch(() => {});
     }
-  }, [conversationId]);
+
+    // Re-send the message that triggered the consent prompt so the
+    // user doesn't have to retype it.
+    if (pendingMessage) {
+      const msg = pendingMessage;
+      setPendingMessage(null);
+      // Defer one tick so the consent card update flushes first
+      setTimeout(() => {
+        sendChatMessage(msg);
+      }, 50);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, pendingMessage]);
 
   const handleConsentDeclineInline = useCallback(() => {
     // Remove consent card and reset to info mode

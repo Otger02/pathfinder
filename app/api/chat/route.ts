@@ -378,6 +378,12 @@ export async function POST(req: NextRequest) {
     let toolUseJson = "";
     let toolUseActive = false;
     let toolWasCalled = false;
+    let stopReason: string | null = null;
+    const contentBlockTypes: string[] = [];
+
+    // Capture the toolChoiceUsed for the post-stream diagnostic
+    const toolChoiceUsed =
+      claudeBody.tool_choice as { type: string } | undefined;
 
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
@@ -460,6 +466,19 @@ export async function POST(req: NextRequest) {
                   streamController.enqueue(
                     encoder.encode(sseEvent({ type: "text", text }))
                   );
+                }
+
+                // Track content block types for diagnostics
+                if (event.type === "content_block_start" && event.content_block?.type) {
+                  contentBlockTypes.push(event.content_block.type);
+                }
+
+                // Track stop_reason from message_delta
+                if (
+                  event.type === "message_delta" &&
+                  event.delta?.stop_reason
+                ) {
+                  stopReason = event.delta.stop_reason;
                 }
 
                 // Tool use start
@@ -567,6 +586,22 @@ export async function POST(req: NextRequest) {
             encoder.encode(
               sseEvent({ type: "error", error: "Stream interrupted" })
             )
+          );
+        }
+
+        // ── Post-stream diagnostics ─────────────────────────────
+        console.log("[chat] stop_reason:", stopReason, "content blocks:", contentBlockTypes, "tool_called:", toolWasCalled, "tool_choice:", toolChoiceUsed?.type);
+        if (
+          mode === "collection" &&
+          missingFields.length > 0 &&
+          !toolWasCalled &&
+          stopReason === "end_turn"
+        ) {
+          console.warn(
+            "[chat] WARNING: LLM returned end_turn with",
+            missingFields.length,
+            "missing fields — tool not called. text len:",
+            fullResponse.length
           );
         }
 

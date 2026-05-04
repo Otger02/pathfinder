@@ -1,10 +1,36 @@
-import { useRef, useEffect, FormEvent } from "react";
+import { useRef, useEffect, useState, FormEvent } from "react";
 import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
 import type { ChatMessage, ChatSubPhase } from "@/lib/types/chat-flow";
 import PathChips from "./PathChips";
 import MessageBubble from "./MessageBubble";
 import ProgressTabs from "./ProgressTabs";
+
+// Minimal Web Speech API typings (browser-vendor-prefixed, no global types)
+interface SpeechRecognitionResult {
+  transcript: string;
+}
+interface SpeechRecognitionEvent {
+  results: Array<Array<SpeechRecognitionResult>>;
+}
+interface SpeechRecognitionInstance {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((e: SpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+type SpeechRecognitionCtor = new () => SpeechRecognitionInstance;
+const SR_LANG_MAP: Record<string, string> = {
+  ca: "ca-ES",
+  es: "es-ES",
+  en: "en-US",
+  fr: "fr-FR",
+  ar: "ar-SA",
+};
 
 interface Source {
   id: string;
@@ -49,6 +75,8 @@ export default function ChatPhase({
   onSummaryCorrect: () => void;
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const [recording, setRecording] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -58,6 +86,35 @@ export default function ChatPhase({
     loading ||
     (mode === "collection" &&
       (chatSubPhase === "resum" || chatSubPhase === "document"));
+
+  function startVoiceInput() {
+    if (typeof window === "undefined") return;
+    const w = window as unknown as {
+      SpeechRecognition?: SpeechRecognitionCtor;
+      webkitSpeechRecognition?: SpeechRecognitionCtor;
+    };
+    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!SR) return;
+
+    if (recording && recognitionRef.current) {
+      recognitionRef.current.stop();
+      return;
+    }
+
+    const recognition = new SR();
+    recognition.lang = SR_LANG_MAP[lang] ?? "es-ES";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (e) => {
+      const transcript = e.results[0]?.[0]?.transcript ?? "";
+      if (transcript) onInputChange(transcript);
+    };
+    recognition.onend = () => setRecording(false);
+    recognition.onerror = () => setRecording(false);
+    recognitionRef.current = recognition;
+    setRecording(true);
+    recognition.start();
+  }
 
   return (
     <div className="animate-fade-in flex flex-col min-h-[60vh]">
@@ -148,6 +205,22 @@ export default function ChatPhase({
           aria-label={t(labels.inputPlaceholder, lang)}
           className="flex-1 px-4 py-3 text-base bg-white border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary disabled:opacity-50 shadow-sm"
         />
+        <button
+          type="button"
+          onClick={startVoiceInput}
+          disabled={inputDisabled}
+          aria-label={recording ? "Stop voice input" : "Start voice input"}
+          aria-pressed={recording}
+          className={`px-3 py-3 rounded-xl transition-colors disabled:opacity-50 shadow-sm border border-border ${
+            recording
+              ? "bg-danger text-white border-danger animate-pulse"
+              : "bg-white text-text-muted hover:bg-surface-alt"
+          }`}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+          </svg>
+        </button>
         <button
           type="submit"
           disabled={inputDisabled}
