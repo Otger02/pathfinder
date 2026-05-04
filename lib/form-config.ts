@@ -252,9 +252,22 @@ export const AUTH_FIELD_RULES: Partial<Record<string, AuthFieldRules>> = {
 
   // ── Arraigo sociolaboral ─────────────────────────────────────
   arraigo_sociolaboral: {
-    required:    ["tipoSolicitud", "empleador_nombre", "empleador_nifNie"],
-    recommended: ["empleador_actividad"],   // activated when hasEmpleador
-    optional:    ["empleador_localidad", "empleador_provincia", "empleador_telefono"],
+    required: [
+      "tipoSolicitud", "empleador_nombre", "empleador_nifNie",
+      // Personal fields required by EX-10 apartat 1
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
+    recommended: [
+      // Activated when hasEmpleador (EX-10 apartat 5)
+      "empleador_actividad",
+      "empleador_domicilio",
+      "empleador_localidad",
+      "empleador_provincia",
+      "empleador_codigoPostal",
+      "empleador_telefono",
+    ],
+    optional: ["email", "pisoDomicilio"],
   },
 
   // ── Arraigo socioformativo ───────────────────────────────────
