@@ -449,23 +449,27 @@ function ChatPageInner() {
 
     setConsentGiven(true);
 
-    // Record consent server-side
-    if (conversationId) {
-      fetch("/api/chat/consent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ conversation_id: conversationId }),
-      }).catch(() => {});
-    }
+    // Record consent server-side — WAIT for this before re-sending, otherwise
+    // the re-sent message arrives at the backend before consent_given is true
+    // in Supabase and hits the consent gate again.
+    const consentPromise = conversationId
+      ? fetch("/api/chat/consent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conversation_id: conversationId }),
+        }).catch(() => {})
+      : Promise.resolve();
 
-    // Queue the original message for re-send. The useEffect above will
-    // fire sendChatMessage as soon as loading goes false.
     const msgToResend = pendingMessage || lastSentTextRef.current;
     console.log("[consent] msgToResend:", msgToResend);
 
     if (msgToResend) {
       setPendingMessage(null);
-      setPendingResend(msgToResend);
+      // Only queue the re-send after consent is confirmed server-side
+      consentPromise.then(() => {
+        console.log("[consent] consent confirmed, queuing resend:", msgToResend);
+        setPendingResend(msgToResend);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId, pendingMessage]);
