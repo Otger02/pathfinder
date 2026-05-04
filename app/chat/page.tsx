@@ -134,11 +134,25 @@ function ChatPageInner() {
   // intercepts it with a consent_request. Re-sent after the user accepts.
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const lastSentTextRef = useRef<string>("");
+  // pendingResend is set by handleConsentAcceptInline and watched by a
+  // useEffect that fires sendChatMessage as soon as loading goes false.
+  const [pendingResend, setPendingResend] = useState<string | null>(null);
 
   // Keep ref in sync with state
   useEffect(() => {
     collectedDataRef.current = collectedData;
   }, [collectedData]);
+
+  // Fire the pending re-send as soon as the previous request finishes
+  useEffect(() => {
+    if (!loading && pendingResend) {
+      const msg = pendingResend;
+      setPendingResend(null);
+      sendChatMessage(msg);
+    }
+    // sendChatMessage is a stable function reference (declared below)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, pendingResend]);
 
   // Cleanup blob URLs on unmount
   useEffect(() => {
@@ -444,18 +458,14 @@ function ChatPageInner() {
       }).catch(() => {});
     }
 
-    // Re-send the message that triggered the consent prompt so the
-    // user doesn't have to retype it.
+    // Queue the original message for re-send. The useEffect above will
+    // fire sendChatMessage as soon as loading goes false.
     const msgToResend = pendingMessage || lastSentTextRef.current;
     console.log("[consent] msgToResend:", msgToResend);
 
     if (msgToResend) {
       setPendingMessage(null);
-      // Defer one tick so the consent card update flushes first
-      setTimeout(() => {
-        console.log("[consent] Sending deferred message:", msgToResend);
-        sendChatMessage(msgToResend);
-      }, 50);
+      setPendingResend(msgToResend);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId, pendingMessage]);

@@ -183,7 +183,31 @@ export async function POST(req: NextRequest) {
     const effectiveAuthSlugs = auth_slugs || [];
     const mode = requestMode || (effectiveAuthSlugs.length > 0 ? "collection" : "info");
 
-    // ── 2. Save user message (no PII in content) ─────────────────
+    // ── 2. Consent gate ──────────────────────────────────────────
+    // If consent has not been given yet, return immediately with
+    // consent_request and close the stream. Claude is NOT called.
+    // The client will re-send the same message after the user accepts,
+    // at which point consentGiven will be true and we proceed normally.
+    if (mode === "collection" && !consentGiven) {
+      const enc = new TextEncoder();
+      const consentStream = new ReadableStream({
+        start(ctrl) {
+          ctrl.enqueue(enc.encode(sseEvent({ type: "conversation_id", conversation_id: convId })));
+          ctrl.enqueue(enc.encode(sseEvent({ type: "consent_request" })));
+          ctrl.enqueue(enc.encode(sseEvent({ type: "done" })));
+          ctrl.close();
+        },
+      });
+      return new Response(consentStream, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
+      });
+    }
+
+    // ── 2.5. Save user message (no PII in content) ───────────────
     const { error: msgErr } = await supabase.from("messages").insert({
       conversation_id: convId,
       role: "user",
@@ -191,7 +215,7 @@ export async function POST(req: NextRequest) {
     });
     if (msgErr) throw new Error(`Save user message: ${msgErr.message}`);
 
-    // ── 2.5. SOS detection ──────────────────────────────────────
+    // ── 2.6. SOS detection ──────────────────────────────────────
     const sosResult = detectSos(message.trim());
     let sosEventId: string | null = null;
     if (sosResult.detected) {
@@ -425,13 +449,6 @@ export async function POST(req: NextRequest) {
                 sosEventId,
               })
             )
-          );
-        }
-
-        // Consent check for collection mode
-        if (mode === "collection" && !consentGiven) {
-          streamController.enqueue(
-            encoder.encode(sseEvent({ type: "consent_request" }))
           );
         }
 
