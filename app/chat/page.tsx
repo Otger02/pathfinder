@@ -422,6 +422,8 @@ function ChatPageInner() {
   // ── Collection mode handlers ─────────────────────────────────────
 
   const handleConsentAcceptInline = useCallback(() => {
+    console.log("[consent] handleConsentAcceptInline called, pendingMessage:", pendingMessage, "lastSentTextRef:", lastSentTextRef.current);
+
     // Mark consent card as accepted
     setMessages((prev) =>
       prev.map((m) =>
@@ -444,12 +446,15 @@ function ChatPageInner() {
 
     // Re-send the message that triggered the consent prompt so the
     // user doesn't have to retype it.
-    if (pendingMessage) {
-      const msg = pendingMessage;
+    const msgToResend = pendingMessage || lastSentTextRef.current;
+    console.log("[consent] msgToResend:", msgToResend);
+
+    if (msgToResend) {
       setPendingMessage(null);
       // Defer one tick so the consent card update flushes first
       setTimeout(() => {
-        sendChatMessage(msg);
+        console.log("[consent] Sending deferred message:", msgToResend);
+        sendChatMessage(msgToResend);
       }, 50);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
