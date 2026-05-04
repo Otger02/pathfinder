@@ -404,6 +404,10 @@ export async function POST(req: NextRequest) {
     let toolWasCalled = false;
     let stopReason: string | null = null;
     const contentBlockTypes: string[] = [];
+    // For the agentic follow-up after tool_use
+    let lastToolUseId = "";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let lastParsedToolInput: Record<string, any> = {};
 
     // Capture the toolChoiceUsed for the post-stream diagnostic
     const toolChoiceUsed =
@@ -524,6 +528,10 @@ export async function POST(req: NextRequest) {
                   try {
                     const extractedData = JSON.parse(toolUseJson) as Partial<PersonalData>;
 
+                    // Save for the agentic follow-up call
+                    lastToolUseId = toolUseId;
+                    lastParsedToolInput = extractedData as Record<string, unknown>;
+
                     // Merge with existing data
                     const newCollected = mergeExtractedData(
                       collectedData,
@@ -636,6 +644,83 @@ export async function POST(req: NextRequest) {
               })
             )
           );
+        }
+
+        // ── Agentic follow-up: tool was called but no text generated ──
+        // Send tool_result back to Claude so it can produce the next question.
+        if (toolWasCalled && fullResponse.length === 0 && lastToolUseId) {
+          const newMissingAfterTool = computeMissingFields(effectiveAuthSlugs, collectedData);
+          const missingStr = newMissingAfterTool.length > 0
+            ? `Missing fields: ${newMissingAfterTool.join(", ")}`
+            : "All required fields collected!";
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const followUpMessages: any[] = [
+            ...claudeMessages,
+            {
+              role: "assistant",
+              content: [{ type: "tool_use", id: lastToolUseId, name: "collect_personal_data", input: lastParsedToolInput }],
+            },
+            {
+              role: "user",
+              content: [{ type: "tool_result", tool_use_id: lastToolUseId, content: `Data saved. ${missingStr}` }],
+            },
+          ];
+
+          const followUpCtrl = new AbortController();
+          const followUpTimeout = setTimeout(() => followUpCtrl.abort(), 30_000);
+
+          try {
+            const followUpResp = await fetch(CLAUDE_URL, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": anthropicKey,
+                "anthropic-version": "2023-06-01",
+              },
+              body: JSON.stringify({
+                model: CLAUDE_MODEL,
+                max_tokens: CLAUDE_MAX_TOKENS,
+                system: systemPrompt,
+                messages: followUpMessages,
+                stream: true,
+              }),
+              signal: followUpCtrl.signal,
+            });
+
+            clearTimeout(followUpTimeout);
+
+            if (followUpResp.ok) {
+              const followUpReader = followUpResp.body!.getReader();
+              let followUpBuffer = "";
+              while (true) {
+                const { done, value } = await followUpReader.read();
+                if (done) break;
+                followUpBuffer += decoder.decode(value, { stream: true });
+                const followUpLines = followUpBuffer.split("\n");
+                followUpBuffer = followUpLines.pop() || "";
+                for (const line of followUpLines) {
+                  if (!line.startsWith("data: ")) continue;
+                  const jsonStr = line.slice(6).trim();
+                  if (jsonStr === "[DONE]") continue;
+                  try {
+                    const event = JSON.parse(jsonStr);
+                    if (event.type === "content_block_delta" && event.delta?.type === "text_delta") {
+                      const text = event.delta.text;
+                      fullResponse += text;
+                      streamController.enqueue(encoder.encode(sseEvent({ type: "text", text })));
+                    }
+                  } catch { /* skip */ }
+                }
+              }
+            } else {
+              console.error("[chat] Follow-up call failed:", await followUpResp.text());
+            }
+          } catch (err) {
+            console.error("[chat] Follow-up call error:", err);
+          } finally {
+            clearTimeout(followUpTimeout);
+          }
         }
 
         // Done
