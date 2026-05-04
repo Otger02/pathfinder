@@ -127,6 +127,31 @@ export async function fillExForm(
     }
   }
 
+  // ── Bridge: split "Carrer X 47" → street + number ──────────
+  for (const [key, numKey] of [["domicilio", "numeroDomicilio"], ["empleador_domicilio", "empleador_numero"]] as const) {
+    const val = personalData[key as keyof PersonalData] as string | undefined;
+    if (val && !(personalData as Record<string, unknown>)[numKey]) {
+      const m = val.match(/^(.*?)\s+(\d+[a-zA-Z]?)$/);
+      if (m) {
+        (personalData as Record<string, unknown>)[key] = m[1].trim();
+        (personalData as Record<string, unknown>)[numKey] = m[2];
+      }
+    }
+  }
+
+  // ── Bridge: mirror personal address → apartat 4 (notificacions) ──
+  if (!personalData.notif_nombre && personalData.nombre) {
+    const pd = personalData as Record<string, unknown>;
+    pd.notif_nombre = [personalData.nombre, personalData.primerApellido, personalData.segundoApellido].filter(Boolean).join(" ");
+    if (!pd.notif_domicilio) pd.notif_domicilio = personalData.domicilio;
+    if (!pd.notif_numero) pd.notif_numero = (personalData as Record<string, unknown>).numeroDomicilio;
+    if (!pd.notif_piso) pd.notif_piso = (personalData as Record<string, unknown>).pisoDomicilio;
+    if (!pd.notif_localidad) pd.notif_localidad = personalData.localidad;
+    if (!pd.notif_codigoPostal) pd.notif_codigoPostal = personalData.codigoPostal;
+    if (!pd.notif_provincia) pd.notif_provincia = personalData.provincia;
+    if (!pd.notif_telefono) pd.notif_telefono = personalData.telefono;
+  }
+
   // ── Fill text fields ────────────────────────────────────────
   for (const [pdfField, dataKey] of Object.entries(fieldMap.textFields)) {
     if (!dataKey) continue; // null = handled separately (e.g., date parts)

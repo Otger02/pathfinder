@@ -333,6 +333,7 @@ export async function POST(req: NextRequest) {
       subPhase: chatSubPhase,
       authSlugs: effectiveAuthSlugs,
       collectedFields,
+      collectedData,
       missingFields,
       contextBlock,
       treeNodeId: tree_node_id ?? undefined,
@@ -654,6 +655,39 @@ export async function POST(req: NextRequest) {
             ? `Missing fields: ${newMissingAfterTool.join(", ")}`
             : "All required fields collected!";
 
+          const justSaved = Object.keys(lastParsedToolInput).filter(
+            (k) => lastParsedToolInput[k] != null && lastParsedToolInput[k] !== ""
+          );
+
+          // Include ALL currently collected values in the tool_result so Claude
+          // cannot hallucinate or re-ask for fields already in memory.
+          const allCollectedStr = Object.entries(collectedData)
+            .filter(([, v]) => v !== null && v !== undefined && v !== "")
+            .map(([k, v]) => `${k}=${JSON.stringify(v)}`)
+            .join(", ");
+          const savedStr = justSaved.length > 0 ? `Saved this turn: ${justSaved.join(", ")}. ` : "";
+
+          // Rebuild system prompt with UPDATED collectedData so Claude knows
+          // which fields are already collected after this turn's tool call.
+          const updatedCollectedFields = Object.entries(collectedData)
+            .filter(([, v]) => v !== undefined && v !== null && v !== "")
+            .map(([k]) => k as PersonalDataField);
+          const followUpSystemPrompt = buildSystemPrompt({
+            situacioLegal: situacio_legal,
+            idioma: idioma || "es",
+            mode,
+            subPhase: chatSubPhase,
+            authSlugs: effectiveAuthSlugs,
+            collectedFields: updatedCollectedFields,
+            collectedData,
+            missingFields: newMissingAfterTool,
+            contextBlock,
+            treeNodeId: tree_node_id ?? undefined,
+            treeNodeText: tree_node_text ?? undefined,
+            treeNodeNote: tree_node_note ?? undefined,
+            treePath: tree_path,
+          });
+
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const followUpMessages: any[] = [
             ...claudeMessages,
@@ -663,7 +697,7 @@ export async function POST(req: NextRequest) {
             },
             {
               role: "user",
-              content: [{ type: "tool_result", tool_use_id: lastToolUseId, content: `Data saved. ${missingStr}` }],
+              content: [{ type: "tool_result", tool_use_id: lastToolUseId, content: `${savedStr}ALL data collected so far (DO NOT ASK FOR THESE AGAIN): ${allCollectedStr}. ${missingStr}` }],
             },
           ];
 
@@ -681,7 +715,7 @@ export async function POST(req: NextRequest) {
               body: JSON.stringify({
                 model: CLAUDE_MODEL,
                 max_tokens: CLAUDE_MAX_TOKENS,
-                system: systemPrompt,
+                system: followUpSystemPrompt,
                 messages: followUpMessages,
                 stream: true,
               }),

@@ -236,99 +236,151 @@ export interface AuthFieldRules {
 }
 
 export const AUTH_FIELD_RULES: Partial<Record<string, AuthFieldRules>> = {
-  // ── Arraigo segunda oportunidad ──────────────────────────────
+  // ── Shared base for ALL EX-10 types ─────────────────────────
+  // EX-10 apartat 1 requires these beyond BASE_REQUIRED.
+  // Each EX-10 slug spreads this and adds its own specific fields.
+
+  // ── Arraigo segunda oportunidad (art. 127.a) ─────────────────
   arraigo_segona_oportunitat: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    [],
+    optional:    ["email", "pisoDomicilio"],
   },
 
-  // ── Arraigo social ───────────────────────────────────────────
+  // ── Arraigo social (art. 127.c) ──────────────────────────────
   arraigo_social: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    ["familiar_nombre", "familiar_primerApellido", "familiar_vinculo"],
+    optional:    ["email", "pisoDomicilio"],
   },
 
-  // ── Arraigo sociolaboral ─────────────────────────────────────
+  // ── Arraigo sociolaboral (art. 127.b) ────────────────────────
   arraigo_sociolaboral: {
     required: [
       "tipoSolicitud", "empleador_nombre", "empleador_nifNie",
-      // Personal fields required by EX-10 apartat 1
       "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
       "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
     ],
     recommended: [
-      // Activated when hasEmpleador (EX-10 apartat 5)
-      "empleador_actividad",
-      "empleador_domicilio",
-      "empleador_localidad",
-      "empleador_provincia",
-      "empleador_codigoPostal",
-      "empleador_telefono",
+      "empleador_actividad", "empleador_domicilio", "empleador_localidad",
+      "empleador_provincia", "empleador_codigoPostal", "empleador_telefono",
     ],
     optional: ["email", "pisoDomicilio"],
   },
 
-  // ── Arraigo socioformativo ───────────────────────────────────
+  // ── Arraigo socioformatiu (art. 127.d) ───────────────────────
   arraigo_socioformatiu: {
-    required:    ["tipoSolicitud", "formacio_entitat", "formacio_nifCif"],
-    recommended: ["formacio_tipus", "formacio_modalitat", "formacio_duracio"], // activated when hasFormacion
-    optional:    [],
+    required: [
+      "tipoSolicitud", "formacio_entitat", "formacio_nifCif",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
+    recommended: ["formacio_tipus", "formacio_modalitat", "formacio_duracio"],
+    optional:    ["email", "pisoDomicilio"],
   },
 
-  // ── Arraigo familiar ─────────────────────────────────────────
+  // ── Arraigo familiar (art. 127.e) ────────────────────────────
   arraigo_familiar: {
-    required:    ["tipoSolicitud", "familiar_nombre", "familiar_primerApellido", "familiar_vinculo"],
-    recommended: ["familiar_sexo", "familiar_estadoCivil"],  // activated when hasFamiliar
-    optional:    ["familiar_fechaNacimiento", "familiar_paisNacimiento", "familiar_lugarNacimiento"],
+    required: [
+      "tipoSolicitud",
+      "familiar_nombre", "familiar_primerApellido", "familiar_vinculo",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
+    recommended: ["familiar_sexo", "familiar_estadoCivil"],
+    optional:    ["email", "pisoDomicilio", "familiar_fechaNacimiento", "familiar_paisNacimiento", "familiar_lugarNacimiento"],
   },
 
   // ── Razones humanitarias y similares ────────────────────────
+  // All share the same EX-10 apartat 1 personal fields.
   residencia_humanitaria: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    [],
+    optional:    ["email", "pisoDomicilio"],
   },
   colaboracio_autoritats_policials: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    [],
+    optional:    ["email", "pisoDomicilio"],
   },
   colaboracio_interes_public: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    [],
+    optional:    ["email", "pisoDomicilio"],
   },
   victima_violencia_genere: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    [],
+    optional:    ["email", "pisoDomicilio"],
   },
   victima_violencia_sexual: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    [],
+    optional:    ["email", "pisoDomicilio"],
   },
   colaboracio_contra_xarxes_admin: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    [],
+    optional:    ["email", "pisoDomicilio"],
   },
   colaboracio_contra_xarxes_policial: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    [],
+    optional:    ["email", "pisoDomicilio"],
   },
   victima_trata: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    [],
+    optional:    ["email", "pisoDomicilio"],
   },
   residencia_retorn_voluntari: {
-    required:    ["tipoSolicitud"],
+    required: [
+      "tipoSolicitud",
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
     recommended: [],
-    optional:    [],
+    optional:    ["email", "pisoDomicilio"],
   },
 };
 

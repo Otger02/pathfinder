@@ -191,6 +191,7 @@ export interface PromptBuilderOptions {
   subPhase?: ChatSubPhase;
   authSlugs?: string[];
   collectedFields?: PersonalDataField[];
+  collectedData?: Partial<Record<string, unknown>>;
   missingFields?: PersonalDataField[];
   contextBlock: string;
   treeNodeId?: string;
@@ -207,6 +208,7 @@ export function buildSystemPrompt(options: PromptBuilderOptions): string {
     subPhase = "conversa",
     authSlugs = [],
     collectedFields = [],
+    collectedData = {},
     missingFields = [],
     contextBlock,
     treeNodeText,
@@ -257,7 +259,11 @@ export function buildSystemPrompt(options: PromptBuilderOptions): string {
       const collectedList =
         collectedFields.length > 0
           ? collectedFields
-              .map((f) => `  ✓ ${FIELD_LABELS_ES[f] ?? f}`)
+              .map((f) => {
+                const val = collectedData[f];
+                const label = FIELD_LABELS_ES[f] ?? f;
+                return val ? `  ✓ ${label}: ${val}` : `  ✓ ${label}`;
+              })
               .join("\n")
           : "  (cap camp recollit encara)";
 
@@ -286,8 +292,8 @@ Regles de recollida:
 4. ⚠️ CRÍTIC TEXT+TOOL: SEMPRE que cridis collect_personal_data, genera SIMULTÀNIAMENT text en la teva resposta que: (a) confirmi breument les dades rebudes, (b) demani el PROPER CAMP PENDENT. Si ÚNICAMENT retornes la crida a la eina sense text, l'usuari veurà la pantalla buida i no sabrà que continuar.
 5. Si l'usuari fa una pregunta d'immigració, respon-la i després repren la recollida.
 6. ⚠️ CRÍTIC EXTRACCIÓ: Si l'usuari dona múltiples dades en un sol missatge, HAS D'EXTREURE TOTES EN UNA SOLA CRIDA. MAI facis múltiples crides. MAI ignoris dades que l'usuari ja ha donat.
-   EXEMPLE: si l'usuari diu "em dic Mamadou Diallo, sóc senegalès, passaport A12345678, treballo a Construccions Molina SL amb NIF B12345678, visc a Barcelona 08001", la teva crida HA D'INCLOURE:
-   { "nombre": "Mamadou", "primerApellido": "Diallo", "nacionalidad": "Senegalesa", "tipoDocumento": "pasaporte", "numeroDocumento": "A12345678", "empleador_nombre": "Construccions Molina SL", "empleador_nifNie": "B12345678", "localidad": "Barcelona", "codigoPostal": "08001" }
+   EXEMPLE: si l'usuari diu "em dic Mamadou Diallo, sóc senegalès, passaport A12345678, treballo a Restaurant El Sol SL amb NIF B98765432, visc a Barcelona 08001", la teva crida HA D'INCLOURE:
+   { "nombre": "Mamadou", "primerApellido": "Diallo", "nacionalidad": "Senegalesa", "tipoDocumento": "pasaporte", "numeroDocumento": "A12345678", "empleador_nombre": "Restaurant El Sol SL", "empleador_nifNie": "B98765432", "localidad": "Barcelona", "codigoPostal": "08001" }
 7. Mai inventis dades. Si no estàs segur d'un valor, demana confirmació.
 8. Sigues empàtic i professional. Recorda que l'usuari pot estar en una situació vulnerable.
 9. Si encara no tens cap camp recollit, comença presentant-te breument i preguntant el nom i la nacionalitat.
