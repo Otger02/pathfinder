@@ -46,10 +46,11 @@ export default async function CaseDetailPage({
   }
 
   // Auth client + RLS (auth.uid() = user_id) ensures we can only read our own.
+  // Schema doesn't expose updated_at yet — fall back to created_at via summary helpers.
   const { data: row, error } = await supabase
     .from("conversations")
     .select(
-      "id, language, auth_slugs, collected_data, chat_sub_phase, consent_given, created_at, updated_at"
+      "id, language, auth_slugs, collected_data, chat_sub_phase, consent_given, created_at"
     )
     .eq("id", id)
     .single();

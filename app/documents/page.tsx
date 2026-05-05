@@ -29,14 +29,15 @@ export default async function DocumentsPage({ searchParams }: DocumentsPageProps
   // Pull conversations the user can produce documents from: those with
   // at least one auth_slug. Without an auth_slug we have no form to fill
   // and no summary to render.
+  // NOTE: ordering by created_at — schema doesn't expose updated_at yet.
   const { data: rows } = await supabase
     .from("conversations")
     .select(
-      "id, language, auth_slugs, collected_data, chat_sub_phase, consent_given, created_at, updated_at"
+      "id, language, auth_slugs, collected_data, chat_sub_phase, consent_given, created_at"
     )
     .eq("user_id", user.id)
     .not("auth_slugs", "is", null)
-    .order("updated_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
     .limit(50);
 
   const conversations = (rows ?? []) as ConversationRow[];

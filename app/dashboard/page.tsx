@@ -32,13 +32,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   }
 
   // Pull the user's conversations, latest first.
+  // NOTE: ordering by created_at because the schema doesn't currently
+  // expose updated_at. summarizeConversation falls back to created_at
+  // when updated_at is missing.
   const { data: rows } = await supabase
     .from("conversations")
     .select(
-      "id, language, auth_slugs, collected_data, chat_sub_phase, consent_given, created_at, updated_at"
+      "id, language, auth_slugs, collected_data, chat_sub_phase, consent_given, created_at"
     )
     .eq("user_id", user.id)
-    .order("updated_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
     .limit(20);
 
   const conversations = (rows ?? []) as ConversationRow[];
