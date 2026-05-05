@@ -18,7 +18,8 @@
     "test:email": "npx tsx scripts/test-email-draft.ts",
     "test:e2e": "npx tsx scripts/test-chat-flow.ts",
     "test:arraigo": "npx tsx scripts/test-conversation-arraigo.ts",
-    "test": "npm run test:engine && npm run test:rules && npm run test:prompt && npm run test:email"
+    "test": "npm run test:engine && npm run test:rules && npm run test:prompt && npm run test:email",
+    "seed:otger": "tsx scripts/seed-otger.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
