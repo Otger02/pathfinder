@@ -18,7 +18,7 @@ export default function ProcessRow({
 
   return (
     <Link
-      href={`/chat?lang=${lang}&resume=${process.id}`}
+      href={`/cases/${process.id}?lang=${lang}`}
       className="row"
       aria-label={`${process.authLabel} — ${process.status}`}
     >

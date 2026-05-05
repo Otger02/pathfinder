@@ -104,7 +104,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
               return (
                 <li key={conv.id}>
                   <Link
-                    href={`/chat?resume=${conv.id}&lang=${convLang}`}
+                    href={`/cases/${conv.id}?lang=${convLang}`}
                     className="card block hover:shadow-md hover:border-primary/30 transition-all p-4 group"
                   >
                     <div className="flex items-start justify-between gap-3">
