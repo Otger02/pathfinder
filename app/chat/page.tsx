@@ -827,7 +827,7 @@ function ChatPageInner() {
       className={`mx-auto max-w-2xl px-4 sm:px-6 py-5 min-h-screen ${lang === "ar" ? "font-arabic" : "font-sans"}`}
     >
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-2 flex-wrap">
         <div className="flex items-center gap-2.5">
           <div className="logo-mark">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
@@ -836,31 +836,62 @@ function ChatPageInner() {
           </div>
           <h1 className="text-lg font-bold text-text">Pathfinder</h1>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex items-center gap-1.5">
           <LanguageSelector lang={lang} onLangChange={setLang} />
+
           {currentUser && (
             <>
-              <a
-                href={`/chat/history?lang=${lang}`}
-                className="icon-btn outlined hidden sm:inline-flex rounded-lg w-auto px-2.5 gap-1.5 text-xs"
+              {/* Vertical separator */}
+              <span
+                aria-hidden="true"
+                className="hidden sm:block h-6 w-px"
+                style={{ background: "var(--line)" }}
+              />
+
+              {/* Username chip — only the local-part of the email */}
+              <span
+                title={currentUser.email ?? undefined}
+                className="hidden sm:inline-flex items-center px-2 rounded-full text-xs font-medium select-none"
+                style={{
+                  height: 28,
+                  background: "var(--primary-soft)",
+                  color: "var(--primary-2)",
+                  maxWidth: 120,
+                }}
               >
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <span className="truncate">
+                  {(currentUser.email ?? "").split("@")[0] || "user"}
+                </span>
+              </span>
+
+              {/* Dashboard */}
+              <a
+                href={`/dashboard?lang=${lang}`}
+                title={t(labels.savedProcesses, lang)}
+                aria-label={t(labels.savedProcesses, lang)}
+                className="icon-btn outlined"
+                style={{ width: 32, height: 32, minHeight: 32 }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
-                {t(labels.historyTitle, lang)}
               </a>
+
+              {/* Logout */}
               <button
                 onClick={async () => {
                   await createBrowserSupabase().auth.signOut();
                   window.location.href = `/auth?lang=${lang}`;
                 }}
-                title={currentUser.email ?? "Logout"}
-                className="icon-btn outlined rounded-lg w-auto px-2.5 gap-1.5 text-xs"
+                title={t(labels.logout, lang)}
+                aria-label={t(labels.logout, lang)}
+                className="icon-btn outlined"
+                style={{ width: 32, height: 32, minHeight: 32 }}
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                 </svg>
-                <span className="hidden sm:inline max-w-[120px] truncate">{currentUser.email}</span>
               </button>
             </>
           )}
