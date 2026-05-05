@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
 
@@ -12,7 +13,11 @@ export default function QuickStats({
 }) {
   return (
     <div className="grid grid-cols-2 gap-3">
-      <div className="card flat">
+      <Link
+        href={`/documents?lang=${lang}`}
+        className="card flat block hover:shadow-md transition-shadow"
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
         <div className="flex items-center gap-3">
           <span
             className="row-icon"
@@ -43,7 +48,7 @@ export default function QuickStats({
             </div>
           </div>
         </div>
-      </div>
+      </Link>
 
       <div className="card flat">
         <div className="flex items-center gap-3">
