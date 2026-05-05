@@ -19,7 +19,8 @@ export const runtime = "nodejs";
 // ── Config ───────────────────────────────────────────────────────────
 const VOYAGE_MODEL = "voyage-multilingual-2";
 const VOYAGE_URL = "https://api.voyageai.com/v1/embeddings";
-const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
+const CLAUDE_MODEL_HAIKU = "claude-haiku-4-5-20251001";
+const CLAUDE_MODEL_SONNET = "claude-sonnet-4-5-20250929";
 const CLAUDE_URL = "https://api.anthropic.com/v1/messages";
 const CLAUDE_MAX_TOKENS = 2048;
 
@@ -365,8 +366,14 @@ export async function POST(req: NextRequest) {
     });
 
     // ── 9. Call Claude with streaming ───────────────────────────
+    // Use Sonnet for collection/conversa: complex tool calls with many fields
+    // risk truncation under Haiku's output budget.
+    const claudeModel =
+      mode === "collection" && chatSubPhase === "conversa"
+        ? CLAUDE_MODEL_SONNET
+        : CLAUDE_MODEL_HAIKU;
     const claudeBody: Record<string, unknown> = {
-      model: CLAUDE_MODEL,
+      model: claudeModel,
       max_tokens: CLAUDE_MAX_TOKENS,
       system: systemPrompt,
       messages: claudeMessages,
@@ -535,6 +542,7 @@ export async function POST(req: NextRequest) {
 
                   try {
                     const extractedData = JSON.parse(toolUseJson) as Partial<PersonalData>;
+                    console.log(`[chat] tool extracted ${Object.keys(extractedData).length} fields (${claudeModel}):`, Object.keys(extractedData).join(", "));
 
                     // Save for the agentic follow-up call
                     lastToolUseId = toolUseId;
@@ -721,7 +729,7 @@ export async function POST(req: NextRequest) {
                 "anthropic-version": "2023-06-01",
               },
               body: JSON.stringify({
-                model: CLAUDE_MODEL,
+                model: claudeModel,
                 max_tokens: CLAUDE_MAX_TOKENS,
                 system: followUpSystemPrompt,
                 messages: followUpMessages,
