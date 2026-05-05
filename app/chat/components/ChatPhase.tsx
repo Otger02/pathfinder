@@ -77,12 +77,23 @@ export default function ChatPhase({
   onDocToggle?: (slug: string, obtained: boolean) => void;
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const voiceSubmitPending = useRef(false);
   const [recording, setRecording] = useState(false);
+  const [srUnsupported, setSrUnsupported] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Auto-submit once input state reflects the voice transcript
+  useEffect(() => {
+    if (voiceSubmitPending.current && input.trim()) {
+      voiceSubmitPending.current = false;
+      formRef.current?.requestSubmit();
+    }
+  }, [input]);
 
   const inputDisabled =
     loading ||
@@ -96,7 +107,10 @@ export default function ChatPhase({
       webkitSpeechRecognition?: SpeechRecognitionCtor;
     };
     const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
-    if (!SR) return;
+    if (!SR) {
+      setSrUnsupported(true);
+      return;
+    }
 
     if (recording && recognitionRef.current) {
       recognitionRef.current.stop();
@@ -109,7 +123,10 @@ export default function ChatPhase({
     recognition.maxAlternatives = 1;
     recognition.onresult = (e) => {
       const transcript = e.results[0]?.[0]?.transcript ?? "";
-      if (transcript) onInputChange(transcript);
+      if (transcript) {
+        voiceSubmitPending.current = true;
+        onInputChange(transcript);
+      }
     };
     recognition.onend = () => setRecording(false);
     recognition.onerror = () => setRecording(false);
@@ -196,6 +213,7 @@ export default function ChatPhase({
 
       {/* Input form */}
       <form
+        ref={formRef}
         onSubmit={onSubmit}
         className="flex gap-2 sticky bottom-0 bg-surface-alt py-3 border-t border-border-light"
       >
@@ -208,20 +226,22 @@ export default function ChatPhase({
           aria-label={t(labels.inputPlaceholder, lang)}
           className="input flex-1"
         />
-        <button
-          type="button"
-          onClick={startVoiceInput}
-          disabled={inputDisabled}
-          aria-label={recording ? "Stop voice input" : "Start voice input"}
-          aria-pressed={recording}
-          className={`icon-btn outlined shrink-0 rounded-xl ${
-            recording ? "bg-danger! text-white! border-danger! animate-pulse" : ""
-          }`}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-          </svg>
-        </button>
+        {!srUnsupported && (
+          <button
+            type="button"
+            onClick={startVoiceInput}
+            disabled={inputDisabled}
+            aria-label={recording ? "Stop voice input" : "Start voice input"}
+            aria-pressed={recording}
+            className={`icon-btn outlined shrink-0 rounded-xl ${
+              recording ? "bg-danger! text-white! border-danger! animate-pulse" : ""
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+            </svg>
+          </button>
+        )}
         <button
           type="submit"
           disabled={inputDisabled}
