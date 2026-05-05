@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-// ── Mapping idioma del navegador → codi intern ─────────────────────
+// ── Mapping idioma del navegador → codi intern (fallback) ──────────
 const LANG_MAP: Record<string, string> = {
   es: "es",
   ca: "ca",
@@ -20,11 +20,77 @@ const LANG_MAP: Record<string, string> = {
   snk: "fr",
 };
 
-function detectLang(): string {
+function detectLangFromBrowser(): string {
   if (typeof navigator === "undefined") return "es";
   const nav = navigator.language?.split("-")[0]?.toLowerCase() ?? "es";
   return LANG_MAP[nav] ?? "es";
 }
+
+// ── Detecció per veu: keywords → codi ──────────────────────────────
+// "fr-*" indica llengües sense suport directe que mappegen a francès.
+const LANGUAGE_KEYWORDS: Record<string, string[]> = {
+  es: ["español", "espanol", "castellano"],
+  ca: ["català", "catala"],
+  en: ["english", "inglés", "ingles", "anglès", "angles"],
+  fr: ["français", "francais", "francés", "frances", "french"],
+  ar: ["عربية", "العربية", "arabic", "árabe", "arabe", "arabi"],
+  pt: ["português", "portugues", "portuguese"],
+  sw: ["kiswahili", "swahili"],
+  ur: ["اردو", "urdu"],
+  // Llengües africanes → fallback francès
+  "fr-wo": ["wolof", "ouolof"],
+  "fr-mn": ["mandinka", "mandinga", "mandingue"],
+  "fr-pu": ["pular", "pulaar", "fula", "fulani", "peul"],
+  "fr-so": ["soninké", "soninke", "soninkée"],
+};
+
+function normalize(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .trim();
+}
+
+function detectLanguageFromTranscript(transcript: string): string | null {
+  const normalized = normalize(transcript);
+  for (const [code, keywords] of Object.entries(LANGUAGE_KEYWORDS)) {
+    for (const keyword of keywords) {
+      if (normalized.includes(normalize(keyword))) {
+        return code.startsWith("fr-") ? "fr" : code;
+      }
+    }
+  }
+  return null;
+}
+
+// ── Web Speech API typings (vendor-prefixed, sense globals) ────────
+interface SpeechRecognitionResult {
+  transcript: string;
+}
+interface SpeechRecognitionResultList {
+  [index: number]: SpeechRecognitionResult[] & {
+    length: number;
+    item: (i: number) => SpeechRecognitionResult;
+  };
+  length: number;
+  isFinal?: boolean;
+}
+interface SpeechRecognitionEvent {
+  results: SpeechRecognitionResultList;
+}
+interface SpeechRecognitionInstance {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  maxAlternatives: number;
+  onresult: ((e: SpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+type SpeechRecognitionCtor = new () => SpeechRecognitionInstance;
 
 // ── Botons d'idioma ───────────────────────────────────────────────
 interface LangButton {
@@ -51,6 +117,23 @@ const FR_FALLBACK_LANGS: LangButton[] = [
   { code: "fr", label: "Soninké", flag: "🇲🇱" },
 ];
 
+// Llista d'idiomes amb endonims que es mostra durant l'escolta i a la
+// targeta de feedback. L'usuari ha de dir un d'aquests noms.
+const LANGUAGE_DISPLAY_NAMES = [
+  "Español",
+  "Català",
+  "English",
+  "Français",
+  "العربية",
+  "Português",
+  "Kiswahili",
+  "اردو",
+  "Wolof",
+  "Mandinka",
+  "Pular",
+  "Soninké",
+];
+
 // ── Salutacions multi-idioma ──────────────────────────────────────
 const GREETINGS: Array<{ text: string; rtl?: boolean }> = [
   { text: "Hola" },
@@ -67,39 +150,184 @@ const SUBTITLES = {
 
 const TAP_HINT = "Habla / Parla / Speak / تحدث";
 
+const LISTEN_PROMPTS = [
+  { text: "Di tu idioma", rtl: false },
+  { text: "Digues el teu idioma", rtl: false },
+  { text: "Say your language", rtl: false },
+  { text: "Dis ta langue", rtl: false },
+  { text: "قل لغتك", rtl: true },
+];
+
 // ── Page ──────────────────────────────────────────────────────────
 export default function OnboardingPage() {
   const router = useRouter();
-  const [micActive, setMicActive] = useState(false);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const langGridRef = useRef<HTMLDivElement | null>(null);
+
+  const [isListening, setIsListening] = useState(false);
+  const [notUnderstood, setNotUnderstood] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastTranscript, setLastTranscript] = useState<string | null>(null);
 
   function goToChat(lang: string) {
     router.push(`/chat?lang=${lang}`);
   }
 
-  async function handleMic() {
-    setError(null);
-    setMicActive(true);
-
-    try {
-      // Demana permís de micròfon. Si l'usuari accepta, considerem que ha
-      // confirmat la intenció de parlar i el redirigim al xat amb l'idioma
-      // detectat del navegador. La transcripció real es fa al xat (que
-      // ja té el seu propi flux de gravació SOS).
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((track) => track.stop());
-
-      const lang = detectLang();
-      // Petit delay per a feedback visual del pulse abans de redirigir
-      setTimeout(() => goToChat(lang), 350);
-    } catch {
-      setError("No s'ha pogut accedir al micròfon. Tria l'idioma manualment.");
-      setMicActive(false);
+  function stopRecognition() {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {
+        // already stopped
+      }
+      recognitionRef.current = null;
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
   }
 
+  function scrollToLangGrid() {
+    setTimeout(() => {
+      langGridRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 80);
+  }
+
+  async function startLanguageDetection() {
+    setError(null);
+    setNotUnderstood(false);
+    setLastTranscript(null);
+
+    if (typeof window === "undefined") return;
+    const w = window as unknown as {
+      SpeechRecognition?: SpeechRecognitionCtor;
+      webkitSpeechRecognition?: SpeechRecognitionCtor;
+    };
+    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+
+    if (!SR) {
+      // Fallback: detect from navigator.language and redirect immediately
+      setError(
+        "El teu navegador no suporta el reconeixement de veu. Tria l'idioma manualment."
+      );
+      scrollToLangGrid();
+      return;
+    }
+
+    // Demana permís de micròfon de manera explícita per a millor UX
+    // (sinó alguns navegadors fallen silenciosament al recognition.start()).
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach((t) => t.stop());
+    } catch {
+      setError("No s'ha pogut accedir al micròfon. Tria l'idioma manualment.");
+      scrollToLangGrid();
+      return;
+    }
+
+    const recognition = new SR();
+    // Lang base que captura la majoria de paraules llatines i cyril·les;
+    // l'àrab i urdú també arriben prou bé per al match per keyword.
+    recognition.lang = "es-ES";
+    recognition.interimResults = false;
+    recognition.continuous = false;
+    recognition.maxAlternatives = 5;
+
+    recognition.onresult = (event) => {
+      const firstResult = event.results[0] as unknown as Array<{
+        transcript: string;
+      }>;
+      const alternatives: string[] = [];
+      const len =
+        (firstResult as unknown as { length?: number }).length ??
+        firstResult.length ??
+        0;
+      for (let i = 0; i < len; i++) {
+        const alt = firstResult[i]?.transcript;
+        if (alt) alternatives.push(alt);
+      }
+
+      // Prova totes les alternatives
+      for (const alt of alternatives) {
+        const detected = detectLanguageFromTranscript(alt);
+        if (detected) {
+          setLastTranscript(alt);
+          stopRecognition();
+          // Petit delay per a feedback visual abans de redirigir
+          setTimeout(() => goToChat(detected), 250);
+          return;
+        }
+      }
+
+      // Cap match: mostra missatge i scroll als botons
+      setLastTranscript(alternatives[0] ?? null);
+      setNotUnderstood(true);
+      setIsListening(false);
+      stopRecognition();
+      scrollToLangGrid();
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+      stopRecognition();
+    };
+
+    recognition.onend = () => {
+      // Si onresult no ha disparat un match (`isListening` segueix true),
+      // mostrem el fallback "no entès".
+      setIsListening((prev) => {
+        if (prev) {
+          setNotUnderstood(true);
+          scrollToLangGrid();
+        }
+        return false;
+      });
+    };
+
+    recognitionRef.current = recognition;
+    setIsListening(true);
+
+    try {
+      recognition.start();
+    } catch {
+      setIsListening(false);
+      setError(
+        "No s'ha pogut iniciar el reconeixement de veu. Tria l'idioma manualment."
+      );
+      scrollToLangGrid();
+      return;
+    }
+
+    // Timeout de seguretat — 8 segons màxim
+    timeoutRef.current = setTimeout(() => {
+      stopRecognition();
+    }, 8000);
+  }
+
+  function cancelListening() {
+    stopRecognition();
+    setIsListening(false);
+  }
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopRecognition();
+    };
+  }, []);
+
+  // Si l'usuari clica "Toca per parlar" sense haver fet servir el navegador,
+  // detect from navigator.language i redirigeix (mantenim aquesta opció com a
+  // fallback ràpid si SpeechRecognition no està disponible).
+  void detectLangFromBrowser; // referenciat per evitar dead-code en el futur
+
   return (
-    <div className="min-h-screen flex flex-col bg-surface">
+    <div className="min-h-screen flex flex-col bg-surface relative">
       {/* ── Header amb logo ── */}
       <header className="px-4 sm:px-8 py-5 flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-md shrink-0">
@@ -157,16 +385,16 @@ export default function OnboardingPage() {
 
         {/* Big mic button */}
         <button
-          onClick={handleMic}
-          disabled={micActive}
+          onClick={startLanguageDetection}
+          disabled={isListening}
           aria-label="Toca per parlar"
           className={`relative w-32 h-32 sm:w-40 sm:h-40 rounded-full flex items-center justify-center shadow-lg transition-all disabled:cursor-wait ${
-            micActive
+            isListening
               ? "bg-primary-dark scale-95"
               : "bg-primary hover:bg-primary-dark hover:scale-105"
           }`}
         >
-          {micActive && (
+          {isListening && (
             <span className="absolute inset-0 rounded-full bg-primary opacity-60 animate-ping" />
           )}
           <svg
@@ -186,8 +414,21 @@ export default function OnboardingPage() {
         </button>
 
         <p className="mt-4 text-sm text-text-muted">
-          {micActive ? "Escoltant..." : TAP_HINT}
+          {isListening ? "Escoltant..." : TAP_HINT}
         </p>
+
+        {/* Not-understood card (shown after a failed detection) */}
+        {notUnderstood && (
+          <div className="mt-5 max-w-md mx-auto px-4 py-3 bg-warning-bg border border-accent-light rounded-xl text-warning-text text-sm leading-relaxed">
+            <p className="font-semibold mb-1">No t&apos;hem entès.</p>
+            {lastTranscript && (
+              <p className="text-xs italic opacity-80 mb-1">
+                Vam sentir: &ldquo;{lastTranscript}&rdquo;
+              </p>
+            )}
+            <p>Tria amb el dit a baix ↓</p>
+          </div>
+        )}
 
         {error && (
           <p className="mt-3 text-sm text-danger max-w-md leading-relaxed">
@@ -196,7 +437,7 @@ export default function OnboardingPage() {
         )}
 
         {/* ── Manual language grid ── */}
-        <div className="mt-12 w-full max-w-2xl">
+        <div ref={langGridRef} className="mt-12 w-full max-w-2xl scroll-mt-8">
           <p className="text-xs uppercase tracking-wider text-text-faint mb-3">
             o tria el teu idioma
           </p>
@@ -217,7 +458,7 @@ export default function OnboardingPage() {
 
           {/* Group B — fallback fr */}
           <p className="text-xs uppercase tracking-wider text-text-faint mt-6 mb-3">
-            Llengües d'Àfrica occidental (en francès)
+            Llengües d&apos;Àfrica occidental (en francès)
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {FR_FALLBACK_LANGS.map((l) => (
@@ -254,6 +495,90 @@ export default function OnboardingPage() {
           </a>
         </div>
       </footer>
+
+      {/* ── Listening overlay ─────────────────────────────────────── */}
+      {isListening && (
+        <div
+          className="fixed inset-0 z-[100] bg-text/80 backdrop-blur-sm flex items-center justify-center px-4 animate-fade-in"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Detectant idioma"
+        >
+          <div className="w-full max-w-lg bg-surface rounded-3xl p-6 sm:p-8 shadow-2xl text-center relative">
+            {/* Cancel button */}
+            <button
+              onClick={cancelListening}
+              aria-label="Cancel·lar"
+              className="absolute top-3 right-3 w-9 h-9 rounded-full text-text-muted hover:text-text hover:bg-surface-alt transition-colors flex items-center justify-center text-xl"
+            >
+              ✕
+            </button>
+
+            {/* Animated mic */}
+            <div className="relative mx-auto w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-primary flex items-center justify-center shadow-lg mb-5">
+              <span className="absolute inset-0 rounded-full bg-primary opacity-50 animate-ping" />
+              <span className="absolute inset-2 rounded-full bg-primary opacity-30 animate-pulse" />
+              <svg
+                className="w-12 h-12 sm:w-14 sm:h-14 text-white relative z-10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
+                />
+              </svg>
+            </div>
+
+            {/* Multi-language prompt */}
+            <h2 className="text-2xl sm:text-3xl font-bold text-text mb-3">
+              Di tu idioma
+            </h2>
+            <div className="flex flex-wrap justify-center items-baseline gap-x-3 gap-y-1 text-sm text-text-muted mb-5">
+              {LISTEN_PROMPTS.slice(1).map((p, i) => (
+                <span
+                  key={i}
+                  dir={p.rtl ? "rtl" : "ltr"}
+                  className={p.rtl ? "font-arabic" : ""}
+                >
+                  {p.text}
+                </span>
+              ))}
+            </div>
+
+            {/* Language names list — endonyms */}
+            <div className="border-t border-border-light pt-4">
+              <p className="text-xs uppercase tracking-wider text-text-faint mb-2">
+                Idiomes possibles
+              </p>
+              <div className="flex flex-wrap justify-center items-baseline gap-x-2 gap-y-1.5 text-base">
+                {LANGUAGE_DISPLAY_NAMES.map((name, i) => {
+                  const isArabic = /[؀-ۿ]/.test(name);
+                  return (
+                    <span key={name} className="flex items-baseline">
+                      <span
+                        dir={isArabic ? "rtl" : "ltr"}
+                        className={`font-medium text-text ${
+                          isArabic ? "font-arabic" : ""
+                        }`}
+                      >
+                        {name}
+                      </span>
+                      {i < LANGUAGE_DISPLAY_NAMES.length - 1 && (
+                        <span className="text-text-faint mx-1">·</span>
+                      )}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
