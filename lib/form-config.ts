@@ -382,6 +382,160 @@ export const AUTH_FIELD_RULES: Partial<Record<string, AuthFieldRules>> = {
     recommended: [],
     optional:    ["email", "pisoDomicilio"],
   },
+
+  // ── EX-02: Reagrupació familiar ──────────────────────────────
+  reagrupacio_familiar: {
+    required: ["estadoCivil", "familiar_nombre", "familiar_primerApellido", "familiar_vinculo", "familiar_sexo"],
+    recommended: ["familiar_estadoCivil", "familiar_fechaNacimiento", "familiar_paisNacimiento"],
+    optional: [],
+  },
+  renovacio_reagrupacio_familiar: {
+    required: ["estadoCivil", "familiar_nombre", "familiar_primerApellido", "familiar_vinculo", "familiar_sexo"],
+    recommended: ["familiar_estadoCivil", "familiar_fechaNacimiento", "familiar_paisNacimiento"],
+    optional: [],
+  },
+  reagrupacio_familiar_mobilitat_ue: {
+    required: ["estadoCivil", "familiar_nombre", "familiar_primerApellido", "familiar_vinculo", "familiar_sexo"],
+    recommended: ["familiar_estadoCivil", "familiar_fechaNacimiento", "familiar_paisNacimiento"],
+    optional: [],
+  },
+  residencia_independent_reagrupats: {
+    required: ["estadoCivil", "familiar_nombre", "familiar_primerApellido", "familiar_vinculo", "familiar_sexo"],
+    recommended: ["familiar_estadoCivil", "familiar_fechaNacimiento", "familiar_paisNacimiento"],
+    optional: [],
+  },
+
+  // ── EX-03: Treball compte aliè ──────────────────────────────
+  treball_compte_alie_inicial: {
+    required: ["empleador_nombre", "empleador_nifNie"],
+    recommended: ["empleador_actividad", "empleador_domicilio", "empleador_localidad", "empleador_provincia", "empleador_codigoPostal", "empleador_telefono"],
+    optional: [],
+  },
+  treball_compte_alie_renovacio: {
+    required: ["empleador_nombre", "empleador_nifNie"],
+    recommended: ["empleador_actividad", "empleador_domicilio", "empleador_localidad", "empleador_provincia", "empleador_codigoPostal", "empleador_telefono"],
+    optional: [],
+  },
+  treball_transfronter_alie: {
+    required: ["empleador_nombre", "empleador_nifNie"],
+    recommended: ["empleador_actividad", "empleador_domicilio", "empleador_localidad", "empleador_provincia", "empleador_codigoPostal", "empleador_telefono"],
+    optional: [],
+  },
+  treball_penats_regim_obert: {
+    required: ["empleador_nombre", "empleador_nifNie"],
+    recommended: ["empleador_actividad", "empleador_domicilio", "empleador_localidad", "empleador_provincia", "empleador_codigoPostal", "empleador_telefono"],
+    optional: [],
+  },
+  contractacio_no_residents_sne: {
+    required: ["empleador_nombre", "empleador_nifNie"],
+    recommended: ["empleador_actividad", "empleador_domicilio", "empleador_localidad", "empleador_provincia", "empleador_codigoPostal", "empleador_telefono"],
+    optional: [],
+  },
+
+  // ── EX-06: Temporada / GECCO ────────────────────────────────
+  treball_temporada: {
+    required: ["empleador_nombre", "empleador_nifNie"],
+    recommended: ["empleador_actividad", "empleador_domicilio", "empleador_localidad", "empleador_provincia", "empleador_codigoPostal", "empleador_telefono"],
+    optional: [],
+  },
+  gestio_colectiva_contractacions: {
+    required: ["empleador_nombre", "empleador_nifNie"],
+    recommended: ["empleador_actividad", "empleador_domicilio", "empleador_localidad", "empleador_provincia", "empleador_codigoPostal", "empleador_telefono"],
+    optional: [],
+  },
+  migracio_estable_gecco: {
+    required: ["empleador_nombre", "empleador_nifNie"],
+    recommended: ["empleador_actividad", "empleador_domicilio", "empleador_localidad", "empleador_provincia", "empleador_codigoPostal", "empleador_telefono"],
+    optional: [],
+  },
+  migracio_circular_gecco: {
+    required: ["empleador_nombre", "empleador_nifNie"],
+    recommended: ["empleador_actividad", "empleador_domicilio", "empleador_localidad", "empleador_provincia", "empleador_codigoPostal", "empleador_telefono"],
+    optional: [],
+  },
+
+  // ── EX-07: Treball compte propi ─────────────────────────────
+  treball_compte_propi_inicial: {
+    required: ["activitat_razonSocial", "activitat_nif", "activitat_actividad"],
+    recommended: ["activitat_domicilio", "activitat_localidad", "activitat_provincia", "activitat_codigoPostal", "activitat_telefono"],
+    optional: [],
+  },
+  treball_compte_propi_renovacio: {
+    required: ["activitat_razonSocial", "activitat_nif", "activitat_actividad"],
+    recommended: ["activitat_domicilio", "activitat_localidad", "activitat_provincia", "activitat_codigoPostal", "activitat_telefono"],
+    optional: [],
+  },
+  treball_transfronter_propi: {
+    required: ["activitat_razonSocial", "activitat_nif", "activitat_actividad"],
+    recommended: ["activitat_domicilio", "activitat_localidad", "activitat_provincia", "activitat_codigoPostal", "activitat_telefono"],
+    optional: [],
+  },
+
+  // ── EX-19: Familiar Ciutadà UE ──────────────────────────────
+  targeta_familiar_ciutada_ue: {
+    required: ["estadoCivil", "ciudadanoUE_nombre", "ciudadanoUE_primerApellido"],
+    recommended: ["ciudadanoUE_nie", "ciudadanoUE_nacionalidad"],
+    optional: [],
+  },
+  targeta_permanent_familiar_ue: {
+    required: ["estadoCivil", "ciudadanoUE_nombre", "ciudadanoUE_primerApellido"],
+    recommended: ["ciudadanoUE_nie", "ciudadanoUE_nacionalidad"],
+    optional: [],
+  },
+
+  // ── EX-24: Familiar d'espanyol ──────────────────────────────
+  residencia_familiar_espanyol: {
+    required: ["estadoCivil", "espanyol_nombre", "espanyol_primerApellido"],
+    recommended: ["espanyol_dni", "espanyol_sexo", "espanyol_estadoCivil"],
+    optional: [],
+  },
+  residencia_independent_familiar_espanyol: {
+    required: ["estadoCivil", "espanyol_nombre", "espanyol_primerApellido"],
+    recommended: ["espanyol_dni", "espanyol_sexo", "espanyol_estadoCivil"],
+    optional: [],
+  },
+
+  // ── EX-25: Menors ────────────────────────────────────────────
+  menor_acompanyat_nascut_espanya: {
+    required: ["tutor_nombre", "tutor_dniNiePas", "tutor_relacionMenor"],
+    recommended: ["tutor_domicilio", "tutor_localidad", "tutor_telefono"],
+    optional: [],
+  },
+  menor_acompanyat_no_nascut_espanya: {
+    required: ["tutor_nombre", "tutor_dniNiePas", "tutor_relacionMenor"],
+    recommended: ["tutor_domicilio", "tutor_localidad", "tutor_telefono"],
+    optional: [],
+  },
+  desplacament_menor_medic: {
+    required: ["tutor_nombre", "tutor_dniNiePas", "tutor_relacionMenor"],
+    recommended: ["tutor_domicilio", "tutor_localidad", "tutor_telefono"],
+    optional: [],
+  },
+  desplacament_menor_vacances: {
+    required: ["tutor_nombre", "tutor_dniNiePas", "tutor_relacionMenor"],
+    recommended: ["tutor_domicilio", "tutor_localidad", "tutor_telefono"],
+    optional: [],
+  },
+  desplacament_menor_escolaritzacio: {
+    required: ["tutor_nombre", "tutor_dniNiePas", "tutor_relacionMenor"],
+    recommended: ["tutor_domicilio", "tutor_localidad", "tutor_telefono"],
+    optional: [],
+  },
+  menor_no_acompanyat: {
+    required: ["tutor_nombre", "tutor_dniNiePas", "tutor_relacionMenor"],
+    recommended: ["tutor_domicilio", "tutor_localidad", "tutor_telefono"],
+    optional: [],
+  },
+  renovacio_menor_no_acompanyat_majoria: {
+    required: ["tutor_nombre", "tutor_dniNiePas", "tutor_relacionMenor"],
+    recommended: ["tutor_domicilio", "tutor_localidad", "tutor_telefono"],
+    optional: [],
+  },
+  menor_excepcional_majoria_edat: {
+    required: ["tutor_nombre", "tutor_dniNiePas", "tutor_relacionMenor"],
+    recommended: ["tutor_domicilio", "tutor_localidad", "tutor_telefono"],
+    optional: [],
+  },
 };
 
 // ── Context detection ────────────────────────────────────────────────────
@@ -390,6 +544,10 @@ export interface CollectionContext {
   hasFamiliar: boolean;
   hasEmpleador: boolean;
   hasFormacion: boolean;
+  hasActivitat: boolean;
+  hasCiudadanoUE: boolean;
+  hasEspanyol: boolean;
+  hasTutor: boolean;
 }
 
 export function detectContext(collected: Partial<Record<string, unknown>>): CollectionContext {
@@ -406,6 +564,22 @@ export function detectContext(collected: Partial<Record<string, unknown>>): Coll
       (collected.formacio_entitat as string)?.trim() ||
       ((collected.formacio_tipus as string[])?.length ?? 0) > 0
     ),
+    hasActivitat: !!(
+      (collected.activitat_razonSocial as string)?.trim() ||
+      (collected.activitat_nif as string)?.trim()
+    ),
+    hasCiudadanoUE: !!(
+      (collected.ciudadanoUE_nombre as string)?.trim() ||
+      (collected.ciudadanoUE_primerApellido as string)?.trim()
+    ),
+    hasEspanyol: !!(
+      (collected.espanyol_nombre as string)?.trim() ||
+      (collected.espanyol_primerApellido as string)?.trim()
+    ),
+    hasTutor: !!(
+      (collected.tutor_nombre as string)?.trim() ||
+      (collected.tutor_dniNiePas as string)?.trim()
+    ),
   };
 }
 
@@ -420,6 +594,10 @@ export function isRecommendedActive(
   if (field.startsWith("familiar_")) return ctx.hasFamiliar;
   if (field.startsWith("empleador_")) return ctx.hasEmpleador;
   if (field.startsWith("formacio_")) return ctx.hasFormacion;
+  if (field.startsWith("activitat_")) return ctx.hasActivitat;
+  if (field.startsWith("ciudadanoUE_")) return ctx.hasCiudadanoUE;
+  if (field.startsWith("espanyol_")) return ctx.hasEspanyol;
+  if (field.startsWith("tutor_")) return ctx.hasTutor;
   return false;
 }
 

@@ -84,7 +84,7 @@ export default function SummaryCard({
 }) {
   return (
     <div className="flex justify-start mb-3">
-      <div className="max-w-[85%] px-4 py-4 bg-white border border-border-light ltr:border-l-4 rtl:border-r-4 border-l-accent border-r-accent rounded-2xl rounded-bl-sm rtl:rounded-bl-2xl rtl:rounded-br-sm shadow-sm">
+      <div className="card accent bubble-card max-w-[85%]">
         <h3 className="text-lg font-bold text-text mb-3">
           {t(labels.summaryTitle, lang)}
         </h3>
@@ -127,16 +127,10 @@ export default function SummaryCard({
           </div>
         ) : (
           <div className="flex gap-3 mt-3">
-            <button
-              onClick={onCorrect}
-              className="flex-1 px-4 py-2.5 text-sm font-medium text-primary border border-primary rounded-xl hover:bg-primary/10 transition-colors"
-            >
+            <button onClick={onCorrect} className="btn btn-quiet btn-pill flex-1">
               {t(labels.correctData, lang)}
             </button>
-            <button
-              onClick={onConfirm}
-              className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary-dark transition-colors"
-            >
+            <button onClick={onConfirm} className="btn btn-pill flex-1">
               {t(labels.confirmData, lang)}
             </button>
           </div>

@@ -77,14 +77,14 @@ export interface ConsentRequestEvent {
 
 // ── Client-side message types ───────────────────────────────────────
 
-export type CardType = "consent" | "summary" | "document" | "email_draft";
+export type CardType = "consent" | "summary" | "document" | "email_draft" | "doc_checklist";
 
 /** Unified chat message type — replaces local Message interfaces */
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   cardType?: CardType;
-  cardData?: ConsentCardData | SummaryCardData | DocumentCardData | EmailDraftCardData;
+  cardData?: ConsentCardData | SummaryCardData | DocumentCardData | EmailDraftCardData | DocChecklistCardData;
 }
 
 export interface ConsentCardData {
@@ -108,4 +108,9 @@ export interface EmailDraftCardData {
   subject: string;
   body: string;
   mailtoUrl: string;
+}
+
+export interface DocChecklistCardData {
+  authSlugs: string[];
+  documentsObtained: string[];
 }

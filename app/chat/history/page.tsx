@@ -26,13 +26,13 @@ function phaseLabel(phase: string, lang: Lang): string {
   return map[phase]?.[lang] ?? map[phase]?.es ?? phase;
 }
 
-function phaseColor(phase: string): string {
+function phaseChipClass(phase: string): string {
   return {
-    conversa: "bg-surface-alt text-text-muted",
-    resum: "bg-amber-50 text-amber-700",
-    document: "bg-emerald-50 text-emerald-700",
-    enviament: "bg-primary/10 text-primary",
-  }[phase] ?? "bg-surface-alt text-text-muted";
+    conversa: "chip",
+    resum: "chip warn",
+    document: "chip success",
+    enviament: "chip solid",
+  }[phase] ?? "chip";
 }
 
 export default async function HistoryPage({ searchParams }: PageProps) {
@@ -59,7 +59,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
   return (
     <div className="min-h-screen bg-surface">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-border-light px-4 py-3 flex items-center justify-between">
+      <div className="appbar px-4 flex items-center justify-between" style={{ height: 56 }}>
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
@@ -84,7 +84,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
             <p className="text-text-muted text-sm mb-6">{t(labels.historyEmpty, lang)}</p>
             <Link
               href={`/chat?lang=${lang}`}
-              className="inline-block px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary-dark transition-colors"
+              className="inline-block btn btn-pill text-sm"
             >
               {t(labels.historyStartNew, lang)}
             </Link>
@@ -105,7 +105,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
                 <li key={conv.id}>
                   <Link
                     href={`/chat?resume=${conv.id}&lang=${convLang}`}
-                    className="block rounded-2xl bg-white border border-border shadow-sm hover:shadow-md hover:border-primary/30 transition-all p-4 group"
+                    className="card block hover:shadow-md hover:border-primary/30 transition-all p-4 group"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -127,7 +127,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2">
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${phaseColor(phase)}`}>
+                        <span className={phaseChipClass(phase)}>
                           {phaseLabel(phase, convLang)}
                         </span>
                         <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
@@ -146,7 +146,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
           <div className="mt-8 text-center">
             <Link
               href={`/chat?lang=${lang}`}
-              className="inline-block px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary-dark transition-colors"
+              className="inline-block btn btn-pill text-sm"
             >
               {t(labels.historyStartNew, lang)}
             </Link>

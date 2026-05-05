@@ -89,7 +89,7 @@ export default function SosOverlay({
 
   return (
     <div
-      className="fixed inset-0 z-[9999] bg-white overflow-auto"
+      className="sos-screen"
       dir={lang === "ar" ? "rtl" : "ltr"}
       role="dialog"
       aria-modal="true"
@@ -138,7 +138,7 @@ export default function SosOverlay({
         )}
 
         {/* Tabs */}
-        <div className="flex gap-0.5 mb-4" role="tablist">
+        <div className="flex gap-0.5 mb-4 rounded-xl overflow-hidden border border-border" role="tablist">
           {(
             [
               { id: "emergency", label: labels.emergency },
@@ -152,10 +152,10 @@ export default function SosOverlay({
               role="tab"
               aria-selected={view === tab.id}
               onClick={() => onViewChange(tab.id)}
-              className={`flex-1 px-2 py-3 text-[15px] font-semibold transition-colors ${
+              className={`flex-1 px-2 py-3 text-[15px] font-semibold transition-colors min-h-[44px] ${
                 view === tab.id
                   ? "bg-danger text-white"
-                  : "bg-surface text-text hover:bg-gray-200"
+                  : "bg-surface text-text hover:bg-surface-alt"
               }`}
             >
               {t(tab.label, lang)}

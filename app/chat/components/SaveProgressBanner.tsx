@@ -19,16 +19,13 @@ export default function SaveProgressBanner({ lang, onDismiss }: Props) {
           <p className="mt-0.5 text-xs text-text-muted leading-relaxed">{t(labels.saveProgressBody, lang)}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <a
-            href={authUrl}
-            className="px-4 py-2 text-sm font-semibold bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors whitespace-nowrap"
-          >
+          <a href={authUrl} className="btn btn-pill">
             {t(labels.saveProgressCta, lang)}
           </a>
           <button
             type="button"
             onClick={onDismiss}
-            className="text-xs text-text-muted hover:text-text transition-colors whitespace-nowrap"
+            className="btn btn-quiet btn-pill text-xs"
           >
             {t(labels.saveProgressDismiss, lang)}
           </button>

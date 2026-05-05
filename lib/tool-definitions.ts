@@ -162,6 +162,184 @@ export const COLLECT_PERSONAL_DATA_TOOL = {
         type: "string",
         description: "Teléfono del empleador",
       },
+
+      // ── Familiar (arraigo familiar) ───────────────────────────
+      familiar_nombre: {
+        type: "string",
+        description: "Nombre del familiar residente en España",
+      },
+      familiar_primerApellido: {
+        type: "string",
+        description: "Primer apellido del familiar",
+      },
+      familiar_segundoApellido: {
+        type: "string",
+        description: "Segundo apellido del familiar",
+      },
+      familiar_vinculo: {
+        type: "string",
+        description: "Vínculo / parentesco con el familiar (hijo, hermano, cónyuge, etc.)",
+      },
+      familiar_sexo: {
+        type: "string",
+        enum: ["H", "M"],
+        description: "Sexo del familiar: H (hombre) o M (mujer)",
+      },
+      familiar_estadoCivil: {
+        type: "string",
+        enum: ["soltero", "casado", "divorciado", "viudo", "pareja_hecho"],
+        description: "Estado civil del familiar",
+      },
+      familiar_fechaNacimiento: {
+        type: "string",
+        description: "Fecha de nacimiento del familiar (YYYY-MM-DD)",
+      },
+      familiar_paisNacimiento: {
+        type: "string",
+        description: "País de nacimiento del familiar",
+      },
+      familiar_lugarNacimiento: {
+        type: "string",
+        description: "Lugar de nacimiento del familiar",
+      },
+
+      // ── Formació (arraigo socioformatiu) ──────────────────────
+      formacio_entitat: {
+        type: "string",
+        description: "Nombre de la entidad o centro de formación",
+      },
+      formacio_nifCif: {
+        type: "string",
+        description: "NIF/CIF de la entidad de formación",
+      },
+      formacio_tipus: {
+        type: "array",
+        items: { type: "string" },
+        description:
+          "Tipo(s) de formación: educacio_secundaria, certificat_professional, ensenyances_obligatories_adults, formacio_serveis_empleo",
+      },
+      formacio_modalitat: {
+        type: "array",
+        items: { type: "string" },
+        description: "Modalidad(es): presencial, a_distancia, mixta",
+      },
+      formacio_duracio: {
+        type: "string",
+        description: "Duración del curso (ej: '6 meses', '200 horas')",
+      },
+
+      // ── Documents obtained ────────────────────────────────────
+      documents_obtained: {
+        type: "array",
+        items: { type: "string" },
+        description:
+          "Slugs of documents the user confirms they have or have already obtained. " +
+          "Valid slugs: passaport_vigent, foto_carnet, model_790, empadronament_2_anys, empadronament_3_anys, " +
+          "antecedents_penals_espanya, antecedents_penals_origen, contracte_treball, vida_laboral_empleador, " +
+          "informe_arraigo_social, matricula_curs, documentacio_vincle_familiar, resolucio_denegacio.",
+      },
+
+      // ── Activitat compte propi (EX-07) ────────────────────────
+      activitat_razonSocial: {
+        type: "string",
+        description: "Razón social o nombre de la actividad por cuenta propia",
+      },
+      activitat_nif: {
+        type: "string",
+        description: "NIF de la actividad o empresa propia",
+      },
+      activitat_actividad: {
+        type: "string",
+        description: "Descripción de la actividad económica propia",
+      },
+      activitat_domicilio: {
+        type: "string",
+        description: "Dirección del centro de actividad propia",
+      },
+      activitat_localidad: {
+        type: "string",
+        description: "Localidad del centro de actividad propia",
+      },
+      activitat_provincia: {
+        type: "string",
+        description: "Provincia del centro de actividad propia",
+      },
+      activitat_codigoPostal: {
+        type: "string",
+        description: "Código postal del centro de actividad propia",
+      },
+      activitat_telefono: {
+        type: "string",
+        description: "Teléfono de la actividad propia",
+      },
+
+      // ── Ciutadà UE (EX-19) ───────────────────────────────────
+      ciudadanoUE_nombre: {
+        type: "string",
+        description: "Nombre del ciudadano de la UE del que es familiar",
+      },
+      ciudadanoUE_primerApellido: {
+        type: "string",
+        description: "Primer apellido del ciudadano UE",
+      },
+      ciudadanoUE_nie: {
+        type: "string",
+        description: "NIE/pasaporte del ciudadano UE",
+      },
+      ciudadanoUE_nacionalidad: {
+        type: "string",
+        description: "Nacionalidad del ciudadano UE",
+      },
+
+      // ── Familiar d'espanyol (EX-24) ───────────────────────────
+      espanyol_nombre: {
+        type: "string",
+        description: "Nombre del ciudadano español del que es familiar",
+      },
+      espanyol_primerApellido: {
+        type: "string",
+        description: "Primer apellido del ciudadano español",
+      },
+      espanyol_dni: {
+        type: "string",
+        description: "DNI del ciudadano español",
+      },
+      espanyol_sexo: {
+        type: "string",
+        enum: ["H", "M"],
+        description: "Sexo del ciudadano español: H (hombre) o M (mujer)",
+      },
+      espanyol_estadoCivil: {
+        type: "string",
+        enum: ["soltero", "casado", "divorciado", "viudo", "pareja_hecho"],
+        description: "Estado civil del ciudadano español",
+      },
+
+      // ── Tutor / Entitat menor (EX-25) ─────────────────────────
+      tutor_nombre: {
+        type: "string",
+        description: "Nombre del tutor o entidad responsable del menor",
+      },
+      tutor_dniNiePas: {
+        type: "string",
+        description: "DNI/NIE/pasaporte del tutor",
+      },
+      tutor_relacionMenor: {
+        type: "string",
+        description: "Relación del tutor con el menor (padre, madre, tutor legal, entidad, etc.)",
+      },
+      tutor_domicilio: {
+        type: "string",
+        description: "Domicilio del tutor",
+      },
+      tutor_localidad: {
+        type: "string",
+        description: "Localidad del tutor",
+      },
+      tutor_telefono: {
+        type: "string",
+        description: "Teléfono del tutor",
+      },
     },
     required: [] as string[],
   },

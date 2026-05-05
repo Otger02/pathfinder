@@ -112,14 +112,14 @@ function AuthPageInner() {
               required
               autoFocus
               placeholder="nom@exemple.com"
-              className="w-full px-4 py-3 text-base bg-white border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+              className="input"
             />
           </div>
           {error && <p className="text-sm text-danger">{error}</p>}
           <button
             type="submit"
             disabled={loading || !email}
-            className="w-full px-5 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-50"
+            className="btn btn-block"
           >
             {loading ? "..." : t(labels.authMagicLinkBtn, lang)}
           </button>
@@ -140,7 +140,7 @@ function AuthPageInner() {
               required
               autoFocus
               placeholder="nom@exemple.com"
-              className="w-full px-4 py-3 text-base bg-white border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+              className="input"
             />
           </div>
           <div>
@@ -153,14 +153,14 @@ function AuthPageInner() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full px-4 py-3 text-base bg-white border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+              className="input"
             />
           </div>
           {error && <p className="text-sm text-danger">{error}</p>}
           <button
             type="submit"
             disabled={loading || !email || !password}
-            className="w-full px-5 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-50"
+            className="btn btn-block"
           >
             {loading ? "..." : t(labels.authSignInBtn, lang)}
           </button>
@@ -172,7 +172,7 @@ function AuthPageInner() {
         <button
           type="button"
           onClick={() => { setMode(mode === "magic" ? "password" : "magic"); setError(null); }}
-          className="text-sm text-primary hover:underline"
+          className="text-sm text-primary hover:underline min-h-[auto]"
         >
           {mode === "magic" ? t(labels.authSwitchToPassword, lang) : t(labels.authSwitchToMagic, lang)}
         </button>

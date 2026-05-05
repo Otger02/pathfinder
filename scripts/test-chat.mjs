@@ -138,7 +138,20 @@ async function main() {
       }
     }
 
-    if (result.missing?.length === 0) break;
+  if (result.missing?.length === 0) {
+      console.log("\n[→] All personal data collected. Triggering document phase...");
+      // Confirm summary → switches subPhase to "document"
+      await sendTurn("__CONFIRM_SUMMARY__", convId);
+
+      // Ask about documents
+      const docResult = await sendTurn(
+        "Quins documents necessito per a l'arraigo sociolaboral? Ja tinc el passaport i l'empadronament de 2 anys.",
+        convId
+      );
+      if (docResult.botText) console.log(`\n[BOT - DOCUMENTS]: ${docResult.botText}`);
+      if (docResult.collected) lastCollected = docResult.collected;
+      break;
+    }
   }
 
   console.log(`\n${"═".repeat(60)}`);

@@ -56,6 +56,7 @@ export default function ChatPhase({
   onConsentDecline,
   onSummaryConfirm,
   onSummaryCorrect,
+  onDocToggle,
 }: {
   messages: ChatMessage[];
   sources: Source[];
@@ -73,6 +74,7 @@ export default function ChatPhase({
   onConsentDecline: () => void;
   onSummaryConfirm: () => void;
   onSummaryCorrect: () => void;
+  onDocToggle?: (slug: string, obtained: boolean) => void;
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
@@ -154,6 +156,7 @@ export default function ChatPhase({
             onConsentDecline={onConsentDecline}
             onSummaryConfirm={onSummaryConfirm}
             onSummaryCorrect={onSummaryCorrect}
+            onDocToggle={onDocToggle}
           />
         ))}
         <div ref={messagesEndRef} />
@@ -194,7 +197,7 @@ export default function ChatPhase({
       {/* Input form */}
       <form
         onSubmit={onSubmit}
-        className="flex gap-2 sticky bottom-0 bg-surface py-3 border-t border-border-light"
+        className="flex gap-2 sticky bottom-0 bg-surface-alt py-3 border-t border-border-light"
       >
         <input
           type="text"
@@ -203,7 +206,7 @@ export default function ChatPhase({
           placeholder={t(labels.inputPlaceholder, lang)}
           disabled={inputDisabled}
           aria-label={t(labels.inputPlaceholder, lang)}
-          className="flex-1 px-4 py-3 text-base bg-white border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary disabled:opacity-50 shadow-sm"
+          className="input flex-1"
         />
         <button
           type="button"
@@ -211,10 +214,8 @@ export default function ChatPhase({
           disabled={inputDisabled}
           aria-label={recording ? "Stop voice input" : "Start voice input"}
           aria-pressed={recording}
-          className={`px-3 py-3 rounded-xl transition-colors disabled:opacity-50 shadow-sm border border-border ${
-            recording
-              ? "bg-danger text-white border-danger animate-pulse"
-              : "bg-white text-text-muted hover:bg-surface-alt"
+          className={`icon-btn outlined shrink-0 rounded-xl ${
+            recording ? "bg-danger! text-white! border-danger! animate-pulse" : ""
           }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
@@ -224,7 +225,7 @@ export default function ChatPhase({
         <button
           type="submit"
           disabled={inputDisabled}
-          className="px-5 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-50 shadow-sm"
+          className="btn shrink-0"
         >
           {loading ? "..." : t(labels.sendButton, lang)}
         </button>

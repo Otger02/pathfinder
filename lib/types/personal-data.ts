@@ -252,6 +252,9 @@ export interface PersonalData {
   hijosEscolarizacion: boolean | null;
   consentimientoDehu: boolean;
 
+  // ── Document checklist ─────────────────────────────────────
+  documents_obtained: string[]; // slugs of docs the user confirms they have
+
   // ── Legacy fields (backwards compat — old camelCase) ───────
   /** @deprecated Use representanteDniNiePas */
   representanteNie: string;
@@ -349,6 +352,7 @@ export const EMPTY_PERSONAL_DATA: PersonalData = {
   autoritzacioTitular: "", autoritzacioTitularDni: "", autoritzacioTitularTitol: "",
   tipoSolicitud: "",
   hijosEscolarizacion: null, consentimientoDehu: false,
+  documents_obtained: [],
   representanteNie: "", repPresentacionNombre: "", repPresentacionDniNiePas: "",
   repPresentacionDomicilio: "", repPresentacionNumero: "", repPresentacionPiso: "",
   repPresentacionLocalidad: "", repPresentacionCodigoPostal: "",

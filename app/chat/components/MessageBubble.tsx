@@ -4,6 +4,7 @@ import ConsentCard from "./ConsentCard";
 import SummaryCard from "./SummaryCard";
 import DocumentCard from "./DocumentCard";
 import EmailDraftCard from "./EmailDraftCard";
+import DocChecklistCard from "./DocChecklistCard";
 import type { Lang } from "@/lib/i18n";
 import type {
   ChatMessage,
@@ -11,6 +12,7 @@ import type {
   SummaryCardData,
   DocumentCardData,
   EmailDraftCardData,
+  DocChecklistCardData,
 } from "@/lib/types/chat-flow";
 
 export default function MessageBubble({
@@ -22,6 +24,7 @@ export default function MessageBubble({
   onConsentDecline,
   onSummaryConfirm,
   onSummaryCorrect,
+  onDocToggle,
 }: {
   message: ChatMessage;
   isLast: boolean;
@@ -31,6 +34,7 @@ export default function MessageBubble({
   onConsentDecline?: () => void;
   onSummaryConfirm?: () => void;
   onSummaryCorrect?: () => void;
+  onDocToggle?: (slug: string, obtained: boolean) => void;
 }) {
   const isUser = message.role === "user";
 
@@ -85,13 +89,24 @@ export default function MessageBubble({
           />
         );
       }
+      case "doc_checklist": {
+        const data = message.cardData as DocChecklistCardData | undefined;
+        return (
+          <DocChecklistCard
+            authSlugs={data?.authSlugs ?? []}
+            documentsObtained={data?.documentsObtained ?? []}
+            lang={lang}
+            onToggle={onDocToggle}
+          />
+        );
+      }
     }
   }
 
   if (isUser) {
     return (
       <div className="flex justify-end mb-3">
-        <div className="max-w-[85%] px-4 py-3 bg-primary text-white rounded-2xl rounded-br-sm rtl:rounded-br-2xl rtl:rounded-bl-sm text-base shadow-sm">
+        <div className="bubble from-user">
           {message.content}
         </div>
       </div>
@@ -100,7 +115,7 @@ export default function MessageBubble({
 
   return (
     <div className="flex justify-start mb-3">
-      <div className="max-w-[85%] px-4 py-3 bg-white border border-border-light rounded-2xl rounded-bl-sm rtl:rounded-bl-2xl rtl:rounded-br-sm text-base shadow-sm">
+      <div className="bubble from-bot">
         {message.content ? (
           <ReactMarkdown
             components={{

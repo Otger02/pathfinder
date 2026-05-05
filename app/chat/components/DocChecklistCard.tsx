@@ -5,19 +5,19 @@ import { t, labels } from "@/lib/i18n";
 
 function WhoObtainsBadge({ who, lang }: { who: DocWhoObtains; lang: Lang }) {
   const labelKey =
-    who === "employer" ? labels.whoObtainsEmployer
-    : who === "authority" ? labels.whoObtainsAuthority
+    who === "employer"        ? labels.whoObtainsEmployer
+    : who === "authority"     ? labels.whoObtainsAuthority
     : who === "training_entity" ? labels.whoObtainsTraining
     : labels.whoObtainsApplicant;
 
-  const colorClass =
-    who === "employer" ? "bg-amber-50 text-amber-700 border-amber-200"
-    : who === "authority" ? "bg-blue-50 text-blue-700 border-blue-200"
-    : who === "training_entity" ? "bg-purple-50 text-purple-700 border-purple-200"
-    : "bg-primary/5 text-primary border-primary/20";
+  const chipClass =
+    who === "employer"         ? "chip warn"
+    : who === "authority"      ? "chip info"
+    : who === "training_entity"? "chip gold"
+    : "chip solid";
 
   return (
-    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border ${colorClass}`}>
+    <span className={chipClass}>
       {t(labelKey, lang)}
     </span>
   );
@@ -45,7 +45,7 @@ export default function DocChecklistCard({
 
   return (
     <div className="flex justify-start mb-3">
-      <div className="max-w-[85%] w-full px-4 py-4 bg-white border border-border-light ltr:border-l-4 rtl:border-r-4 border-l-primary border-r-primary rounded-2xl rounded-bl-sm rtl:rounded-bl-2xl rtl:rounded-br-sm shadow-sm">
+      <div className="card accent bubble-card max-w-[85%] w-full">
         <h3 className="text-base font-bold text-text mb-3">
           {t(labels.docChecklistTitle, lang)}
         </h3>

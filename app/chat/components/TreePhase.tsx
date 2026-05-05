@@ -50,11 +50,7 @@ export default function TreePhase({
                 <button
                   key={`${currentNode.id}-${i}`}
                   onClick={() => onOptionClick(opt, currentNode)}
-                  className={`w-full px-4 py-3.5 text-left text-[15px] rounded-xl cursor-pointer transition-all ${
-                    isSos
-                      ? "bg-danger-light border-2 border-danger hover:bg-red-100 shadow-sm"
-                      : "bg-white border border-border-light hover:border-primary hover:shadow-sm"
-                  }`}
+                  className={`tree-node ${isSos ? "urgent" : ""}`}
                 >
                   {isSos && "🆘 "}
                   {opt.text}
@@ -79,7 +75,7 @@ export default function TreePhase({
 
           <button
             onClick={onStartChat}
-            className="px-6 py-3.5 text-base font-semibold bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors mt-2 shadow-sm"
+            className="btn mt-2"
           >
             {t(labels.talkToAssistant, lang)}
           </button>
@@ -89,7 +85,7 @@ export default function TreePhase({
       {path.length > 0 && isQuestion && (
         <button
           onClick={onReset}
-          className="mt-4 px-3 py-1.5 text-sm text-text-muted bg-transparent border border-border rounded hover:bg-surface transition-colors"
+          className="btn btn-ghost btn-pill mt-4 text-sm"
         >
           {"← "}
           {t(labels.backToStart, lang)}

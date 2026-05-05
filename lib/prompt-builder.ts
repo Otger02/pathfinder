@@ -12,6 +12,7 @@
 
 import type { PersonalDataField } from "./types/personal-data";
 import type { ChatSubPhase } from "./types/chat-flow";
+import { getDocsForAuth, getMissingDocs } from "./doc-config";
 
 // ── Language map for prompt generation ──────────────────────────────
 
@@ -313,12 +314,48 @@ Presenta un resum clar i organitzat de les dades recollides.
 Demana confirmació: "Són correctes aquestes dades? Si vols corregir alguna cosa, digues-m'ho."
 NO repeteixis els números de document complets al resum — usa només els últims 4 dígits.`);
     } else if (subPhase === "document") {
+      const obtained = (collectedData.documents_obtained as string[] | undefined) ?? [];
+      const allDocs = getDocsForAuth(authSlugs);
+      const missingDocs = getMissingDocs(authSlugs, obtained);
+
+      const checklistLines = allDocs.map((doc) => {
+        const have = obtained.includes(doc.slug);
+        return have
+          ? `  ✅ ${doc.nameCa}`
+          : `  ⬜ ${doc.nameCa}`;
+      });
+
+      const checklistBlock =
+        allDocs.length > 0
+          ? checklistLines.join("\n")
+          : "  (cap document requerit per aquesta autorització)";
+
+      const missingBlock =
+        missingDocs.length > 0
+          ? missingDocs
+              .map((d) => `  • ${d.nameCa}${d.validity ? ` — ${d.validity}` : ""}${d.whoObtains === "employer" ? " (l'ha d'aportar l'empresa)" : d.whoObtains === "authority" ? " (emès per l'administració)" : ""}`)
+              .join("\n")
+          : "  ✅ Tots els documents confirmats!";
+
       parts.push(`
 
-INSTRUCCIÓ DOCUMENTS:
-Els documents s'estan generant o ja estan llestos.
-Explica a l'usuari que pot descarregar els PDFs.
-Indica que els formularis són orientatius i cal revisar-los abans de presentar-los.`);
+INSTRUCCIÓ DOCUMENTS NECESSARIS:
+L'usuari ha completat les dades personals. Ara cal recollir la documentació física.
+
+Llista de documents per a ${authSlugs.join(", ")}:
+${checklistBlock}
+
+Documents pendents:
+${missingBlock}
+
+Regles:
+1. Explica breument cada document pendent i on aconseguir-lo.
+2. Quan l'usuari confirmi que té un document, crida collect_personal_data amb documents_obtained actualitzat.
+   IMPORTANT: inclou SEMPRE els slugs ja obtinguts més el nou (no perdi els anteriors).
+   Exemple: si tenia ["passaport_vigent"] i ara confirma empadronament, envia ["passaport_vigent","empadronament_2_anys"].
+3. Quan TOTS els documents estiguin confirmats, passa a l'explicació de com presentar la sol·licitud.
+4. Pots recomanar que comencin pels documents que tarden més (antecedents penals estrangers, informe d'arrelament).
+5. Usa l'eina collect_personal_data per actualitzar documents_obtained — mai perdis els slugs ja confirmats.`);
     } else if (subPhase === "enviament") {
       parts.push(`
 

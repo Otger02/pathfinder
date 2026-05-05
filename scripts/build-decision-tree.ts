@@ -1,133 +1,117 @@
-/**
- * scripts/build-decision-tree.ts
- *
- * Reads data/decision-tree.json (nested schema: id/tipus/pregunta/opcions[].node)
- * and enriches result nodes with a `slugs: string[]` field looked up from the
- * SLUGS map below.
- *
- * SLUGS is keyed by node id and lists the authorization slugs (from
- * lib/form-config.ts AUTH_TO_EX) that the result node should activate when
- * the user clicks "talk to the assistant". An empty list — or a missing
- * entry — leaves the node in info-only mode (no slot-filling).
- *
- * Run:  npx tsx scripts/build-decision-tree.ts
- */
+import { writeFileSync } from "fs"
+import { join } from "path"
+import type { DecisionNode, DecisionTree } from "@/lib/types/decision-tree"
 
-import { readFileSync, writeFileSync } from "fs";
-import { join } from "path";
-
-// ── Inline types (matching the nested schema currently in main repo) ──────
-
-interface I18nText {
-  es?: string;
-  en?: string;
-  ar?: string;
-  fr?: string;
-  ca?: string;
-}
-
-interface DecisionNodeNested {
-  id: string;
-  tipus: "questio" | "resultat" | string;
-  pregunta?: I18nText;
-  missatge?: I18nText;
-  opcions?: Array<{
-    id: string;
-    text: I18nText;
-    sos?: boolean;
-    node: DecisionNodeNested;
-  }>;
-  autoritzacions?: Array<{ slug: string; prioritat: number; nota: I18nText }>;
-  recursos_urgents?: Array<{ nom: string; telefon: string; disponibilitat: string }>;
-  nota_legal?: I18nText;
-  slugs?: string[];
-}
-
-// ── Configuration ─────────────────────────────────────────────────────────
-
-const RESULT_TYPES = new Set(["resultat", "result", "block", "sos1", "sos2", "sos3"]);
-
-/**
- * Node-id → authorization slug(s). Populate based on legal validation.
- * Empty for nodes that are pure dead-ends.
- */
+// Slugs per node resultat — basats en AUTH_TO_EX de lib/form-config.ts
 const SLUGS: Record<string, string[]> = {
-  // (omplir manualment després de mapejar cada result-node a AUTH_TO_EX)
-};
+  // B1 — sense papers
+  "b1-r-menor":             ["menor_no_acompanyat"],
+  "b1-r-menor-excepcional": ["menor_excepcional_majoria_edat"],
+  "b1-r-reg":               [],
+  "b1-r-laboral":           ["arraigo_sociolaboral"],
+  "b1-r-formatiu":          ["arraigo_socioformatiu"],
+  "b1-r-social":            ["arraigo_social"],
+  "b1-r-familiar":          ["arraigo_social"],
+  "b1-r-familiar-espanyol": ["residencia_familiar_espanyol"],
+  "b1-r-familiar-ue":       ["arraigo_familiar"],
+  "b1-r-sense":             [],
+  "b1-r-aviat":             [],
+  "b1-r-gairebe":           ["arraigo_social"],
+  "b1-block-a":             [],
+  "b1-block-a-wait":        [],
+  "b1-block-b":             [],
+  "b1-block-c":             [],
+  "b1-block-d":             [],
+  "b1-sos1-doc":            [],
+  "b1-p8":                  [],
+  "b1-sos2":                [],
+  // B2 — amb autorització
+  "b2-r-ok":                ["treball_compte_alie_renovacio", "treball_compte_propi_renovacio", "renovacio_residencia_no_lucrativa"],
+  "b2-r-urgent":            ["treball_compte_alie_renovacio", "treball_compte_propi_renovacio"],
+  "b2-r-critic":            ["treball_compte_alie_renovacio"],
+  "b2-r-ld":                ["residencia_llarga_duracio_nacional"],
+  "b2-r-caducada-recent":   ["treball_compte_alie_renovacio"],
+  "b2-r-caducada-mitja":    ["arraigo_social", "arraigo_sociolaboral"],
+  "b2-r-caducada-llarga":   ["arraigo_social", "arraigo_sociolaboral"],
+  "b2-r-2a-op":             ["arraigo_segona_oportunitat"],
+  "b2-r-antiga":            ["arraigo_social"],
+  "b2-r-identificar":       [],
+  // B3 — ciutadà UE
+  "b3-r-curta":             [],
+  "b3-r-registre":          ["certificat_registre_ciutada_ue"],
+  "b3-r-permanent":         ["certificat_registre_ciutada_ue"],
+  "b3-r-treball":           ["certificat_registre_ciutada_ue"],
+  "b3-r-familia":           ["targeta_familiar_ciutada_ue"],
+  "b3-r-estudis":           ["certificat_registre_ciutada_ue"],
+  "b3-r-serveis":           ["certificat_registre_ciutada_ue"],
+  "b3-r-familiar-ue":       ["targeta_familiar_ciutada_ue"],
+  "b3-r-familiar-altres":   [],
+  "b3-r-familiar-espanyol": ["residencia_familiar_espanyol"],
+  // B4 — asil
+  "b4-r-frontera":          [],
+  "b4-r-cie":               [],
+  "b4-r-com-sol":           [],
+  "b4-r-fora-termini":      [],
+  "b4-r-espera-admissio":   [],
+  "b4-r-espera-resolucio":  [],
+  "b4-r-tarjeta-roja":      [],
+  "b4-r-reg-ext":           [],
+  "b4-r-reexamen":          [],
+  "b4-r-recurs":            [],
+  "b4-r-denegat-antic":     ["arraigo_social"],
+  "b4-r-resolucio-positiva":[],
+}
 
-// ── Main ──────────────────────────────────────────────────────────────────
+const RESULT_TYPES = new Set(["result", "block", "sos1", "sos2", "sos3"])
+
+function addSlugs(nodes: DecisionNode[]): DecisionNode[] {
+  return nodes.map(node => {
+    if (RESULT_TYPES.has(node.type)) {
+      return { ...node, slugs: SLUGS[node.id] ?? [] }
+    }
+    return node
+  })
+}
 
 async function main() {
-  console.log("Iniciant build-decision-tree...");
+  const { default: currentTree } = await import("../data/decision-tree.json", {
+    assert: { type: "json" }
+  })
 
-  const treePath = join(process.cwd(), "data", "decision-tree.json");
-  console.log("Llegint:", treePath);
-
-  const raw = readFileSync(treePath, "utf-8");
-  const currentTree = JSON.parse(raw) as DecisionNodeNested | { branches: Record<string, DecisionNodeNested[]> };
-
-  // Detect schema and walk all nodes
-  let schema: "nested" | "flat";
-  let allNodes: DecisionNodeNested[];
-
-  if ("branches" in currentTree && currentTree.branches) {
-    schema = "flat";
-    const flat = currentTree as { branches: Record<string, DecisionNodeNested[]> };
-    console.log("Schema: FLAT — branques trobades:", Object.keys(flat.branches));
-    allNodes = Object.values(flat.branches).flat();
-  } else {
-    schema = "nested";
-    const nested = currentTree as DecisionNodeNested;
-    console.log("Schema: NESTED — root id:", nested.id);
-    allNodes = [];
-    const walk = (n: DecisionNodeNested) => {
-      allNodes.push(n);
-      if (n.opcions) for (const o of n.opcions) if (o.node) walk(o.node);
-    };
-    walk(nested);
-  }
-
-  console.log("Total nodes recorreguts:", allNodes.length);
-
-  let resultLikeNodes = 0;
-  let nodesEnriched = 0;
-  let nodesUntouched = 0;
-  const unknownIds: string[] = [];
-
-  for (const node of allNodes) {
-    if (!RESULT_TYPES.has(node.tipus)) continue;
-    resultLikeNodes++;
-    const slugs = SLUGS[node.id];
-    if (slugs === undefined) {
-      unknownIds.push(node.id);
-      nodesUntouched++;
-      continue;
+  const tree: DecisionTree = {
+    version: "2.0.0",
+    lastUpdated: new Date().toISOString().split("T")[0],
+    legalBasis: (currentTree as any).legalBasis ?? [],
+    branches: {
+      b1: addSlugs((currentTree as any).branches.b1),
+      b2: addSlugs((currentTree as any).branches.b2),
+      b3: addSlugs((currentTree as any).branches.b3),
+      b4: addSlugs((currentTree as any).branches.b4),
     }
-    node.slugs = slugs;
-    nodesEnriched++;
   }
 
-  console.log();
-  console.log("── Resum ──");
-  console.log("  Schema:                ", schema);
-  console.log("  Total nodes:           ", allNodes.length);
-  console.log("  Nodes result-like:     ", resultLikeNodes);
-  console.log("  Nodes enriquits:       ", nodesEnriched);
-  console.log("  Nodes sense entrada:   ", nodesUntouched);
-  if (unknownIds.length > 0) {
-    console.log("  ⚠ Ids sense slugs (omple SLUGS):");
-    for (const id of unknownIds) console.log("     -", id);
-  }
+  // Validació
+  const allIds = new Set(Object.values(tree.branches).flat().map(n => n.id))
+  const broken = Object.values(tree.branches).flat().flatMap(n =>
+    n.opts.filter(o => o.next && !allIds.has(o.next)).map(o => `${n.id} → ${o.next}`)
+  )
+  const missingSlug = Object.values(tree.branches).flat()
+    .filter(n => RESULT_TYPES.has(n.type) && !("slugs" in n))
+    .map(n => n.id)
 
-  writeFileSync(treePath, JSON.stringify(currentTree, null, 2) + "\n", "utf-8");
-  console.log();
-  console.log("Escrit:", treePath);
-  console.log(
-    `Mida: ${(JSON.stringify(currentTree).length / 1024).toFixed(1)} KB`
-  );
+  console.log(`Nodes: ${allIds.size}`)
+  console.log(`Broken refs: ${broken.length}`)
+  console.log(`Missing slugs: ${missingSlug.length}`)
+  if (broken.length) broken.forEach(b => console.error("  BROKEN:", b))
+  if (missingSlug.length) missingSlug.forEach(m => console.error("  NO SLUG:", m))
+
+  if (broken.length === 0 && missingSlug.length === 0) {
+    const outPath = join(process.cwd(), "data", "decision-tree.json")
+    writeFileSync(outPath, JSON.stringify(tree, null, 2), "utf-8")
+    console.log(`✓ Escrit a ${outPath}`)
+  } else {
+    process.exit(1)
+  }
 }
 
-main().catch((err) => {
-  console.error("ERROR:", err);
-  process.exit(1);
-});
+main()

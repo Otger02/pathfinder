@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_Arabic } from "next/font/google";
+import { Manrope, Instrument_Serif, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-instrument-serif",
   display: "swap",
 });
 
@@ -40,7 +47,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
-      <body className={`${inter.variable} ${notoArabic.variable} font-sans`}>
+      <body className={`${manrope.variable} ${instrumentSerif.variable} ${notoArabic.variable}`}>
         {children}
         <script
           dangerouslySetInnerHTML={{
