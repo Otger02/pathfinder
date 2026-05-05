@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
+import { createAuthServerClient } from "@/lib/supabase-server";
 import { detectSos } from "@/lib/sos";
 import { buildSystemPrompt } from "@/lib/prompt-builder";
 import { COLLECT_PERSONAL_DATA_TOOL } from "@/lib/tool-definitions";
@@ -110,6 +111,11 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServiceClient();
 
+    // Get authenticated user (nullable — anonymous sessions work unchanged)
+    const supabaseAuth = await createAuthServerClient();
+    const { data: { user } } = await supabaseAuth.auth.getUser();
+    const userId = user?.id ?? null;
+
     // ── Sentinel: __CONFIRM_SUMMARY__ ───────────────────────────
     if (message.trim() === "__CONFIRM_SUMMARY__" && conversation_id) {
       await supabase
@@ -145,6 +151,7 @@ export async function POST(req: NextRequest) {
         user_code: "web-anonymous",
         language: idioma || "es",
         country: "ES",
+        ...(userId ? { user_id: userId } : {}),
       };
       if (auth_slugs && auth_slugs.length > 0) {
         insertData.auth_slugs = auth_slugs;
@@ -576,6 +583,7 @@ export async function POST(req: NextRequest) {
                     const updateData: Record<string, unknown> = {
                       collected_data: newCollected,
                       chat_sub_phase: chatSubPhase,
+                      ...(userId ? { user_id: userId } : {}),
                     };
                     // Set 24h TTL on first data collection
                     if (Object.keys(collectedData).length > 0) {

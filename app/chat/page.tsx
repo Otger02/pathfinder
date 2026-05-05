@@ -13,6 +13,7 @@ import type {
   SummaryCardData,
   DocumentCardData,
   EmailDraftCardData,
+  DocChecklistCardData,
 } from "@/lib/types/chat-flow";
 import type { DecisionNode, DecisionTree } from "@/lib/types/decision-tree";
 import {
@@ -27,7 +28,10 @@ import ChatPhase from "./components/ChatPhase";
 import FormPhase from "./components/FormPhase";
 import ConsentModal from "./components/ConsentModal";
 import SosOverlay from "./components/SosOverlay";
+import SaveProgressBanner from "./components/SaveProgressBanner";
 import { RecordingEngine } from "@/lib/recording-engine";
+import { createBrowserSupabase } from "@/lib/supabase-browser";
+import type { User } from "@supabase/supabase-js";
 
 interface RecursUrgent {
   nom: string;
@@ -81,6 +85,7 @@ export default function ChatPage() {
 function ChatPageInner() {
   const searchParams = useSearchParams();
   const initialLang = (searchParams.get("lang") as Lang) || "es";
+  const resumeId = searchParams.get("resume");
 
   const [lang, setLang] = useState<Lang>(initialLang);
   const [nodeMap, setNodeMap] = useState<Map<string, DecisionNode> | null>(null);
@@ -129,6 +134,19 @@ function ChatPageInner() {
   const [consentGiven, setConsentGiven] = useState(false);
   const [showConsent, setShowConsent] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
+
+  // Auth state
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [showSaveBanner, setShowSaveBanner] = useState(false);
+
+  useEffect(() => {
+    const supabase = createBrowserSupabase();
+    supabase.auth.getUser().then(({ data: { user } }) => setCurrentUser(user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Pending message: stores the user's first message when the backend
   // intercepts it with a consent_request. Re-sent after the user accepts.
@@ -225,6 +243,41 @@ function ChatPageInner() {
       .catch(() => setPhase("chat"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Resume a saved conversation from /chat/history
+  useEffect(() => {
+    if (!resumeId) return;
+    fetch(`/api/conversations/${resumeId}`)
+      .then((r) => r.json())
+      .then((conv) => {
+        if (!conv?.id) return;
+        setConversationId(conv.id);
+        const loadedData = (conv.collected_data as Record<string, string>) || {};
+        setCollectedData(loadedData);
+        collectedDataRef.current = loadedData;
+        if (conv.auth_slugs?.length > 0) {
+          setAuthSlugs(conv.auth_slugs);
+          setMode("collection");
+        }
+        if (conv.chat_sub_phase) {
+          setChatSubPhase(conv.chat_sub_phase as ChatSubPhase);
+        }
+        if (conv.language) {
+          setLang(conv.language as Lang);
+        }
+        setMessages([
+          {
+            role: "assistant",
+            content: conv.chat_sub_phase === "enviament" || conv.chat_sub_phase === "document"
+              ? t(labels.dataConfirmed, conv.language as Lang || lang)
+              : t(labels.collectIntro, conv.language as Lang || lang),
+          },
+        ]);
+        setPhase("chat");
+      })
+      .catch(() => {/* resume failed — stay on tree */ });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resumeId]);
 
   // Re-translate currentNode when lang changes mid-navigation
   useEffect(() => {
@@ -392,6 +445,15 @@ function ChatPageInner() {
               setCollectedData(event.collected);
               setCompletionPct(event.completionPct);
               collectedDataRef.current = event.collected;
+              // Live-update the doc checklist card if documents_obtained changed
+              const newObtained = (event.collected.documents_obtained as string[]) ?? [];
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.cardType === "doc_checklist"
+                    ? { ...m, cardData: { ...(m.cardData as DocChecklistCardData), documentsObtained: newObtained } }
+                    : m
+                )
+              );
             } else if (event.type === "phase_change") {
               setChatSubPhase(event.phase);
               if (event.phase === "resum") {
@@ -517,7 +579,54 @@ function ChatPageInner() {
     ]);
   }, [lang]);
 
+  const handleDocToggle = useCallback(async (slug: string, obtained: boolean) => {
+    // Optimistic update
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.cardType === "doc_checklist"
+          ? {
+              ...m,
+              cardData: {
+                ...(m.cardData as DocChecklistCardData),
+                documentsObtained: obtained
+                  ? [...(m.cardData as DocChecklistCardData).documentsObtained, slug]
+                  : (m.cardData as DocChecklistCardData).documentsObtained.filter((s) => s !== slug),
+              },
+            }
+          : m
+      )
+    );
+    // Persist to Supabase
+    if (conversationId) {
+      if (obtained) {
+        await fetch("/api/chat/documents", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conversation_id: conversationId, documents_obtained: [slug] }),
+        });
+      } else {
+        await fetch("/api/chat/documents", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conversation_id: conversationId, slug }),
+        });
+      }
+    }
+  }, [conversationId]);
+
   async function handleAutoGeneratePdfs() {
+    // Inject doc checklist card before the document loader
+    const docsObtained = (collectedDataRef.current?.documents_obtained as unknown as string[]) ?? [];
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content: "",
+        cardType: "doc_checklist",
+        cardData: { authSlugs, documentsObtained: docsObtained } as DocChecklistCardData,
+      },
+    ]);
+
     // Inject loading document card
     setMessages((prev) => [
       ...prev,
@@ -594,6 +703,11 @@ function ChatPageInner() {
 
       // Transition to enviament
       await handleTransitionToEnviament();
+
+      // Show save-progress banner for unauthenticated users
+      if (!currentUser && !sessionStorage.getItem("save_banner_dismissed")) {
+        setShowSaveBanner(true);
+      }
     } catch (err) {
       console.error("PDF generation failed:", err);
       setMessages((prev) =>
@@ -722,7 +836,35 @@ function ChatPageInner() {
           </div>
           <h1 className="text-lg font-bold text-text">Pathfinder</h1>
         </div>
-        <LanguageSelector lang={lang} onLangChange={setLang} />
+        <div className="flex items-center gap-2">
+          <LanguageSelector lang={lang} onLangChange={setLang} />
+          {currentUser && (
+            <>
+              <a
+                href={`/chat/history?lang=${lang}`}
+                className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-text-muted hover:text-text border border-border-light rounded-lg hover:bg-surface-alt transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {t(labels.historyTitle, lang)}
+              </a>
+              <button
+                onClick={async () => {
+                  await createBrowserSupabase().auth.signOut();
+                  window.location.href = `/auth?lang=${lang}`;
+                }}
+                title={currentUser.email ?? "Logout"}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-text-muted hover:text-text border border-border-light rounded-lg hover:bg-surface-alt transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                </svg>
+                <span className="hidden sm:inline max-w-[120px] truncate">{currentUser.email}</span>
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <hr className="my-3 border-border-light" />
@@ -763,11 +905,22 @@ function ChatPageInner() {
           onConsentDecline={handleConsentDeclineInline}
           onSummaryConfirm={handleSummaryConfirm}
           onSummaryCorrect={handleSummaryCorrect}
+          onDocToggle={handleDocToggle}
         />
       )}
 
-      {/* ── PHASE 3: Form (info-mode backward compat) ──────── */}
-      {phase === "form" && (
+      {/* Save progress banner (shown after PDF gen for anonymous users) */}
+      {showSaveBanner && phase === "chat" && (
+        <SaveProgressBanner
+          lang={lang}
+          onDismiss={() => {
+            sessionStorage.setItem("save_banner_dismissed", "1");
+            setShowSaveBanner(false);
+          }}
+        />
+      )}
+
+      {/* ── PHASE 3: Form (info-mode backward compat) ──────── */}      {phase === "form" && (
         <FormPhase
           lang={lang}
           data={personalData}
