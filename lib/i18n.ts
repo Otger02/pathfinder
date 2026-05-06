@@ -1072,4 +1072,11 @@ export const labels = {
     fr: "Aucune donnée collectée pour l'instant.",
     ar: "لم يتم جمع أي بيانات بعد.",
   },
+  loginButton: {
+    ca: "Iniciar sessió",
+    es: "Iniciar sesión",
+    en: "Sign in",
+    fr: "Se connecter",
+    ar: "تسجيل الدخول",
+  },
 } satisfies Record<string, I18nText>;

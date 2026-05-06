@@ -23,6 +23,7 @@ import {
   ROOT_NODE_ID,
 } from "@/lib/tree-i18n";
 import LanguageSelector from "./components/LanguageSelector";
+import UserMenu from "@/app/dashboard/components/UserMenu";
 import TreePhase from "./components/TreePhase";
 import ChatPhase from "./components/ChatPhase";
 import FormPhase from "./components/FormPhase";
@@ -837,63 +838,18 @@ function ChatPageInner() {
           <h1 className="text-lg font-bold text-text">Pathfinder</h1>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <LanguageSelector lang={lang} onLangChange={setLang} />
-
-          {currentUser && (
-            <>
-              {/* Vertical separator */}
-              <span
-                aria-hidden="true"
-                className="hidden sm:block h-6 w-px"
-                style={{ background: "var(--line)" }}
-              />
-
-              {/* Username chip — only the local-part of the email */}
-              <span
-                title={currentUser.email ?? undefined}
-                className="hidden sm:inline-flex items-center px-2 rounded-full text-xs font-medium select-none"
-                style={{
-                  height: 28,
-                  background: "var(--primary-soft)",
-                  color: "var(--primary-2)",
-                  maxWidth: 120,
-                }}
-              >
-                <span className="truncate">
-                  {(currentUser.email ?? "").split("@")[0] || "user"}
-                </span>
-              </span>
-
-              {/* Dashboard */}
-              <a
-                href={`/dashboard?lang=${lang}`}
-                title={t(labels.savedProcesses, lang)}
-                aria-label={t(labels.savedProcesses, lang)}
-                className="icon-btn outlined"
-                style={{ width: 32, height: 32, minHeight: 32 }}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-              </a>
-
-              {/* Logout */}
-              <button
-                onClick={async () => {
-                  await createBrowserSupabase().auth.signOut();
-                  window.location.href = `/auth?lang=${lang}`;
-                }}
-                title={t(labels.logout, lang)}
-                aria-label={t(labels.logout, lang)}
-                className="icon-btn outlined"
-                style={{ width: 32, height: 32, minHeight: 32 }}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-                </svg>
-              </button>
-            </>
+          {currentUser ? (
+            <UserMenu email={currentUser.email ?? ""} lang={lang} />
+          ) : (
+            <a
+              href={`/auth?lang=${lang}`}
+              className="btn btn-ghost btn-sm"
+              style={{ minHeight: 32 }}
+            >
+              {t(labels.loginButton, lang)}
+            </a>
           )}
         </div>
       </div>

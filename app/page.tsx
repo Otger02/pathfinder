@@ -364,27 +364,39 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-surface relative">
       {/* ── Header amb logo ── */}
-      <header className="px-4 sm:px-8 py-5 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-md shrink-0">
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.8}
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"
-            />
+      <header className="px-4 sm:px-8 py-5 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-md shrink-0">
+            <svg
+              className="w-6 h-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"
+              />
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-text leading-none">Pathfinder</span>
+            <span className="text-xs text-text-muted">Fundació Tierra Digna</span>
+          </div>
+        </div>
+
+        {/* Login button — shown only to anonymous visitors (auth check
+            in the useEffect above redirects authenticated users to /dashboard
+            before this header even renders). */}
+        <a href="/auth?returnTo=/dashboard" className="btn btn-tonal btn-pill">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H2.25" />
           </svg>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-lg font-bold text-text leading-none">Pathfinder</span>
-          <span className="text-xs text-text-muted">Fundació Tierra Digna</span>
-        </div>
+          Iniciar sessió
+        </a>
       </header>
 
       {/* ── Hero ── */}

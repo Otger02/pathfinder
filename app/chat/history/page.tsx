@@ -4,6 +4,8 @@ import { createAuthServerClient } from "@/lib/supabase-server";
 import { createServiceClient } from "@/lib/supabase";
 import { t, labels } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
+import UserMenu from "@/app/dashboard/components/UserMenu";
+import DashboardLangSelector from "@/app/dashboard/components/DashboardLangSelector";
 
 interface PageProps {
   searchParams: Promise<{ lang?: string }>;
@@ -57,24 +59,34 @@ export default async function HistoryPage({ searchParams }: PageProps) {
   const convs = conversations ?? [];
 
   return (
-    <div className="min-h-screen bg-surface">
-      {/* Header */}
-      <div className="appbar px-4 flex items-center justify-between" style={{ height: 56 }}>
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c-.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+    <div className="min-h-screen" style={{ background: "var(--bg)" }}>
+      <header className="appbar">
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/dashboard?lang=${lang}`}
+            className="icon-btn"
+            aria-label={t(labels.backToDashboard, lang)}
+            title={t(labels.backToDashboard, lang)}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </Link>
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
+            style={{ background: "var(--primary)" }}
+          >
+            <svg className="w-5 h-5" style={{ color: "var(--on-primary)" }} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
             </svg>
           </div>
-          <span className="font-bold text-text">Pathfinder</span>
+          <span className="font-semibold" style={{ color: "var(--ink)" }}>Pathfinder</span>
         </div>
-        <Link
-          href={`/chat?lang=${lang}`}
-          className="text-sm text-text-muted hover:text-text transition-colors"
-        >
-          ← {t(labels.backToChat, lang)}
-        </Link>
-      </div>
+
+        <DashboardLangSelector lang={lang} />
+
+        <UserMenu email={user.email ?? ""} lang={lang} />
+      </header>
 
       <div className="max-w-2xl mx-auto px-4 py-8">
         <h1 className="text-xl font-bold text-text mb-6">{t(labels.historyTitle, lang)}</h1>
