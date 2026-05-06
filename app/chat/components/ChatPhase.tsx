@@ -58,6 +58,8 @@ export default function ChatPhase({
   onSummaryCorrect,
   onDocToggle,
   onSubPhaseChange,
+  error,
+  onErrorDismiss,
 }: {
   messages: ChatMessage[];
   sources: Source[];
@@ -77,6 +79,8 @@ export default function ChatPhase({
   onSummaryCorrect: () => void;
   onDocToggle?: (slug: string, obtained: boolean) => void;
   onSubPhaseChange?: (phase: ChatSubPhase) => void;
+  error?: string | null;
+  onErrorDismiss?: () => void;
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -141,6 +145,56 @@ export default function ChatPhase({
 
   return (
     <div className="animate-fade-in flex flex-col min-h-[60vh]">
+      {/* Transient error banner */}
+      {error && (
+        <div
+          className="card flat mb-3 flex items-start gap-3"
+          role="alert"
+          style={{
+            background: "var(--danger-soft)",
+            borderColor: "var(--danger)",
+            borderInlineStartWidth: 4,
+            padding: 12,
+          }}
+        >
+          <svg
+            className="w-5 h-5 shrink-0 mt-0.5"
+            style={{ color: "var(--danger)" }}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.8}
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.732 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+            />
+          </svg>
+          <p className="text-sm flex-1" style={{ color: "var(--danger-2)" }}>
+            {error}
+          </p>
+          {onErrorDismiss && (
+            <button
+              onClick={onErrorDismiss}
+              aria-label="Dismiss"
+              className="text-sm leading-none"
+              style={{
+                color: "var(--ink-3)",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                minHeight: 24,
+                padding: 4,
+              }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Progress tabs for collection mode */}
       {mode === "collection" && (
         <ProgressTabs

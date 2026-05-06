@@ -147,6 +147,15 @@ export async function POST(req: NextRequest) {
     let chatSubPhase: ChatSubPhase = "conversa";
     let consentGiven = false;
 
+    // Build the tree-meta sub-object once — written into collected_data so
+    // CaseDetail's PathTimeline can show how the user reached this node.
+    const treeMeta: Record<string, unknown> = {};
+    if (Array.isArray(tree_path) && tree_path.length > 0) {
+      treeMeta._tree_path = tree_path;
+    }
+    if (tree_node_id) treeMeta._tree_node_id = tree_node_id;
+    if (tree_node_text) treeMeta._tree_node_text = tree_node_text;
+
     if (!convId) {
       const insertData: Record<string, unknown> = {
         user_code: "web-anonymous",
@@ -156,6 +165,13 @@ export async function POST(req: NextRequest) {
       };
       if (auth_slugs && auth_slugs.length > 0) {
         insertData.auth_slugs = auth_slugs;
+      }
+      // Seed collected_data with the tree meta so future resumes have it
+      // even if no slot-filling tool calls run before the user navigates
+      // away.
+      if (Object.keys(treeMeta).length > 0) {
+        insertData.collected_data = treeMeta;
+        collectedData = treeMeta as Partial<PersonalData>;
       }
       const { data, error } = await supabase
         .from("conversations")
@@ -177,6 +193,15 @@ export async function POST(req: NextRequest) {
         collectedData = (conv.collected_data as Partial<PersonalData>) || {};
         chatSubPhase = (conv.chat_sub_phase as ChatSubPhase) || "conversa";
         consentGiven = conv.consent_given || false;
+        // Backfill tree meta for legacy conversations created before we
+        // started persisting it. Existing fields take precedence so we
+        // never overwrite a known-good _tree_node_id.
+        if (Object.keys(treeMeta).length > 0) {
+          collectedData = {
+            ...(treeMeta as Partial<PersonalData>),
+            ...collectedData,
+          };
+        }
         // If client sends auth_slugs, update them
         if (auth_slugs && auth_slugs.length > 0 && (!conv.auth_slugs || conv.auth_slugs.length === 0)) {
           await supabase

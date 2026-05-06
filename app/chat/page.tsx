@@ -104,6 +104,10 @@ function ChatPageInner() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  // Transient error banner shown at the top of the chat phase. Set to a
+  // string when something we can't recover from happens (PDF regen
+  // failed, email draft API down, etc.); the user can dismiss it.
+  const [chatError, setChatError] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [sources, setSources] = useState<Source[]>([]);
   const abortRef = useRef<AbortController | null>(null);
@@ -322,6 +326,77 @@ function ChatPageInner() {
 
         setMessages(hydrated);
         setPhase("chat");
+
+        // Regenerate the downloadable PDF cards for resumed cases that
+        // already reached the document/enviament phases. The PDFs are
+        // produced server-side via /api/documents/regenerate (which
+        // pulls personalData from the conversation by id) so we don't
+        // re-send PII over the wire. URLs are local blobs that live
+        // for this tab session; for permanent downloads the user goes
+        // to /documents which regenerates fresh on click.
+        if (
+          (loadedSubPhase === "document" || loadedSubPhase === "enviament") &&
+          loadedAuthSlugs.length > 0
+        ) {
+          // Inject a loading DocumentCard right away so the user sees
+          // something is happening.
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: "",
+              cardType: "document",
+              cardData: { documents: [], loading: true } as DocumentCardData,
+            },
+          ]);
+
+          (async () => {
+            const docs: Array<{ name: string; url: string }> = [];
+            // Summary PDF first
+            const formIds = ["summary"];
+            for (const slug of loadedAuthSlugs) {
+              for (const form of getFormsForAuth(slug)) formIds.push(form.id);
+            }
+
+            for (const formId of formIds) {
+              try {
+                const resp = await fetch("/api/documents/regenerate", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    conversation_id: conv.id,
+                    formId,
+                    lang: loadedLang,
+                    inline: false,
+                  }),
+                });
+                if (!resp.ok) continue;
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                const baseName =
+                  formId === "summary"
+                    ? `pathfinder-resumen-${loadedAuthSlugs[0]}`
+                    : `pathfinder-${formId}`;
+                docs.push({ name: `${baseName}.pdf`, url });
+              } catch {
+                // skip this PDF; user can still grab it from /documents
+              }
+            }
+
+            setGeneratedDocs(docs);
+            // Replace the loading DocumentCard with the populated one.
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.cardType === "document"
+                  ? {
+                      ...m,
+                      cardData: { documents: docs, loading: false } as DocumentCardData,
+                    }
+                  : m
+              )
+            );
+          })();
+        }
 
         // Email draft is async — fire it after the initial paint so the
         // chat is interactive immediately and the email card slots in
@@ -883,7 +958,14 @@ function ChatPageInner() {
         }),
       });
 
-      if (!resp.ok) return;
+      if (!resp.ok) {
+        setChatError(
+          lang === "ca"
+            ? "No s'ha pogut generar l'esborrany del correu. Torna-ho a provar des de Documents."
+            : "No se ha podido generar el borrador del correo. Inténtalo desde Documentos."
+        );
+        return;
+      }
       const emailData = (await resp.json()) as EmailDraftCardData;
 
       setChatSubPhase("enviament");
@@ -1056,6 +1138,8 @@ function ChatPageInner() {
           onSummaryCorrect={handleSummaryCorrect}
           onDocToggle={handleDocToggle}
           onSubPhaseChange={handleSubPhaseChange}
+          error={chatError}
+          onErrorDismiss={() => setChatError(null)}
         />
       )}
 
