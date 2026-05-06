@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import TypingIndicator from "./TypingIndicator";
 import ConsentCard from "./ConsentCard";
 import SummaryCard from "./SummaryCard";
@@ -118,11 +119,13 @@ export default function MessageBubble({
       <div className="bubble from-bot">
         {message.content ? (
           <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
             components={{
               p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
               strong: ({ children }) => (
                 <strong className="font-semibold">{children}</strong>
               ),
+              em: ({ children }) => <em className="italic">{children}</em>,
               ul: ({ children }) => (
                 <ul className="list-disc ltr:ml-4 rtl:mr-4 mb-2">{children}</ul>
               ),
@@ -148,6 +151,58 @@ export default function MessageBubble({
               ),
               h3: ({ children }) => (
                 <h3 className="font-semibold text-base mb-1">{children}</h3>
+              ),
+              // GFM table support
+              table: ({ children }) => (
+                <div className="my-2 overflow-x-auto">
+                  <table
+                    className="w-full text-xs border-collapse"
+                    style={{ borderColor: "var(--line)" }}
+                  >
+                    {children}
+                  </table>
+                </div>
+              ),
+              thead: ({ children }) => (
+                <thead style={{ background: "var(--surface)" }}>{children}</thead>
+              ),
+              tbody: ({ children }) => <tbody>{children}</tbody>,
+              tr: ({ children }) => (
+                <tr style={{ borderBottom: "1px solid var(--line)" }}>{children}</tr>
+              ),
+              th: ({ children }) => (
+                <th
+                  className="text-left font-semibold px-2 py-1.5"
+                  style={{
+                    color: "var(--ink)",
+                    borderBottom: "1px solid var(--line-2)",
+                  }}
+                >
+                  {children}
+                </th>
+              ),
+              td: ({ children }) => (
+                <td className="align-top px-2 py-1.5" style={{ color: "var(--ink-2)" }}>
+                  {children}
+                </td>
+              ),
+              hr: () => (
+                <hr
+                  className="my-3"
+                  style={{ borderColor: "var(--line)" }}
+                />
+              ),
+              code: ({ children }) => (
+                <code
+                  className="px-1 py-0.5 rounded text-[0.85em]"
+                  style={{
+                    background: "var(--surface)",
+                    color: "var(--primary-2)",
+                    fontFamily: "var(--font-mono)",
+                  }}
+                >
+                  {children}
+                </code>
               ),
             }}
           >
