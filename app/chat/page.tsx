@@ -571,6 +571,24 @@ function ChatPageInner() {
     await handleAutoGeneratePdfs();
   }, [conversationId, authSlugs, lang]);
 
+  const handleSubPhaseChange = useCallback(
+    (phase: ChatSubPhase) => {
+      setChatSubPhase(phase);
+      // Persist to the backend so the next /api/chat call respects it.
+      if (conversationId) {
+        fetch(`/api/conversations/${conversationId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_sub_phase: phase }),
+        }).catch(() => {
+          // best-effort; the next message will still apply the local
+          // chat_sub_phase via the chat route's own logic.
+        });
+      }
+    },
+    [conversationId]
+  );
+
   const handleSummaryCorrect = useCallback(() => {
     setChatSubPhase("conversa");
     // Inject a system message directing the bot to ask what to correct
@@ -909,6 +927,7 @@ function ChatPageInner() {
           onSummaryConfirm={handleSummaryConfirm}
           onSummaryCorrect={handleSummaryCorrect}
           onDocToggle={handleDocToggle}
+          onSubPhaseChange={handleSubPhaseChange}
         />
       )}
 

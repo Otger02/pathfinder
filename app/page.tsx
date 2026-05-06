@@ -170,23 +170,20 @@ export default function OnboardingPage() {
   const [notUnderstood, setNotUnderstood] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastTranscript, setLastTranscript] = useState<string | null>(null);
-  const [authChecking, setAuthChecking] = useState(true);
-
   // If the user is already authenticated, send them to /dashboard.
-  // Anonymous visitors continue to see the landing.
+  // Anonymous visitors keep seeing the landing — we render immediately
+  // (no placeholder) so the mic button and SpeechRecognition setup work
+  // exactly like in the original landing.
   useEffect(() => {
     let cancelled = false;
     const supabase = createBrowserSupabase();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (cancelled) return;
-      if (user) {
-        const browserLang = (typeof navigator !== "undefined"
+      if (cancelled || !user) return;
+      const browserLang =
+        (typeof navigator !== "undefined"
           ? navigator.language?.split("-")[0]?.toLowerCase()
           : "ca") || "ca";
-        router.replace(`/dashboard?lang=${browserLang}`);
-      } else {
-        setAuthChecking(false);
-      }
+      router.replace(`/dashboard?lang=${browserLang}`);
     });
     return () => {
       cancelled = true;
@@ -348,18 +345,6 @@ export default function OnboardingPage() {
   // detect from navigator.language i redirigeix (mantenim aquesta opció com a
   // fallback ràpid si SpeechRecognition no està disponible).
   void detectLangFromBrowser; // referenciat per evitar dead-code en el futur
-
-  // While we wait for the auth check we render an empty surface to avoid
-  // flashing the landing page when the user is going to be redirected to
-  // /dashboard anyway.
-  if (authChecking) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ background: "var(--bg)" }}
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-surface relative">

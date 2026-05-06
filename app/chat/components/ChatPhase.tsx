@@ -57,6 +57,7 @@ export default function ChatPhase({
   onSummaryConfirm,
   onSummaryCorrect,
   onDocToggle,
+  onSubPhaseChange,
 }: {
   messages: ChatMessage[];
   sources: Source[];
@@ -75,6 +76,7 @@ export default function ChatPhase({
   onSummaryConfirm: () => void;
   onSummaryCorrect: () => void;
   onDocToggle?: (slug: string, obtained: boolean) => void;
+  onSubPhaseChange?: (phase: ChatSubPhase) => void;
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -95,10 +97,12 @@ export default function ChatPhase({
     }
   }, [input]);
 
-  const inputDisabled =
-    loading ||
-    (mode === "collection" &&
-      (chatSubPhase === "resum" || chatSubPhase === "document"));
+  // Input is only disabled while a request is in flight. Previously we
+  // also disabled it during 'resum' and 'document' phases, but that left
+  // resumed conversations stuck — once the user reached resum/document,
+  // re-entering the chat could not unblock them. The user can now click
+  // the Datos tab to navigate back to conversa.
+  const inputDisabled = loading;
 
   function startVoiceInput() {
     if (typeof window === "undefined") return;
@@ -143,6 +147,7 @@ export default function ChatPhase({
           activeSubPhase={chatSubPhase}
           completionPct={completionPct}
           lang={lang}
+          onSubPhaseChange={onSubPhaseChange}
         />
       )}
 
