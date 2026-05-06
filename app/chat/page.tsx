@@ -256,24 +256,51 @@ function ChatPageInner() {
         const loadedData = (conv.collected_data as Record<string, string>) || {};
         setCollectedData(loadedData);
         collectedDataRef.current = loadedData;
-        if (conv.auth_slugs?.length > 0) {
-          setAuthSlugs(conv.auth_slugs);
+        const loadedAuthSlugs: string[] = conv.auth_slugs ?? [];
+        if (loadedAuthSlugs.length > 0) {
+          setAuthSlugs(loadedAuthSlugs);
           setMode("collection");
         }
-        if (conv.chat_sub_phase) {
-          setChatSubPhase(conv.chat_sub_phase as ChatSubPhase);
-        }
-        if (conv.language) {
-          setLang(conv.language as Lang);
-        }
-        setMessages([
-          {
+        const loadedSubPhase: ChatSubPhase =
+          (conv.chat_sub_phase as ChatSubPhase) || "conversa";
+        setChatSubPhase(loadedSubPhase);
+        const loadedLang: Lang = (conv.language as Lang) || lang;
+        if (conv.language) setLang(loadedLang);
+
+        // Hydrate message history from the database. If the conversation
+        // had nothing logged yet (rare — e.g. consent_request only), fall
+        // back to a welcome line.
+        const history: Array<{ role: string; content: string }> =
+          Array.isArray(conv.messages) ? conv.messages : [];
+        const hydrated: ChatMessage[] = history.map((m) => ({
+          role: m.role === "user" ? "user" : "assistant",
+          content: m.content,
+        }));
+
+        if (hydrated.length === 0) {
+          hydrated.push({
             role: "assistant",
-            content: conv.chat_sub_phase === "enviament" || conv.chat_sub_phase === "document"
-              ? t(labels.dataConfirmed, conv.language as Lang || lang)
-              : t(labels.collectIntro, conv.language as Lang || lang),
-          },
-        ]);
+            content: t(labels.collectIntro, loadedLang),
+          });
+        }
+
+        // If the previous flow reached a milestone phase, re-inject the
+        // matching card so the user can act on it (confirm summary,
+        // download docs, send email) without restarting from scratch.
+        if (loadedSubPhase === "resum" && loadedAuthSlugs.length > 0) {
+          hydrated.push({
+            role: "assistant",
+            content: "",
+            cardType: "summary",
+            cardData: {
+              collected: loadedData,
+              authSlugs: loadedAuthSlugs,
+              confirmed: false,
+            } as SummaryCardData,
+          });
+        }
+
+        setMessages(hydrated);
         setPhase("chat");
       })
       .catch(() => {/* resume failed — stay on tree */ });

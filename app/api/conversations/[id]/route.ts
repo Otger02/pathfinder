@@ -27,7 +27,17 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  return NextResponse.json(data);
+  // Also pull the message history so the chat can hydrate on resume
+  // (so the user sees the assistant summary they got the previous turn,
+  // not just a 'Datos confirmados' welcome line).
+  const { data: messages } = await supabase
+    .from("messages")
+    .select("role, content, created_at")
+    .eq("conversation_id", id)
+    .order("created_at", { ascending: true })
+    .limit(60);
+
+  return NextResponse.json({ ...data, messages: messages ?? [] });
 }
 
 /**
