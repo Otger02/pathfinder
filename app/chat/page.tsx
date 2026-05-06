@@ -7,6 +7,7 @@ import { t, labels } from "@/lib/i18n";
 import type { PersonalData, PersonalDataField } from "@/lib/types/personal-data";
 import { EMPTY_PERSONAL_DATA } from "@/lib/types/personal-data";
 import { getFormsForAuth } from "@/lib/form-config";
+import { getDocsForAuth } from "@/lib/doc-config";
 import type {
   ChatMessage,
   ChatSubPhase,
@@ -324,10 +325,15 @@ function ChatPageInner() {
 
         // Email draft is async — fire it after the initial paint so the
         // chat is interactive immediately and the email card slots in
-        // when ready. Only relevant when the previous flow reached the
-        // 'enviament' phase.
+        // when ready. We do this for both 'document' and 'enviament':
+        // if the user has all docs ticked already, the draft is what
+        // they need to act on next; if they don't, having the email
+        // card pre-loaded means the moment they tick the last one (or
+        // click the Envío tab) the draft is right there. Only fires
+        // when we have a valid provincia in collected_data — that's
+        // the routing key for the subdelegation address.
         if (
-          loadedSubPhase === "enviament" &&
+          (loadedSubPhase === "document" || loadedSubPhase === "enviament") &&
           loadedAuthSlugs.length > 0 &&
           loadedData.provincia
         ) {
@@ -668,8 +674,25 @@ function ChatPageInner() {
           // chat_sub_phase via the chat route's own logic.
         });
       }
+
+      // When the user manually clicks the 'Envío' tab and we don't have
+      // an email card yet, generate it now so the user gets the draft
+      // they expect to see in this phase.
+      if (phase === "enviament" && authSlugs.length > 0) {
+        let alreadyHasEmailCard = false;
+        setMessages((prev) => {
+          alreadyHasEmailCard = prev.some((m) => m.cardType === "email_draft");
+          return prev;
+        });
+        if (!alreadyHasEmailCard) {
+          handleTransitionToEnviament();
+        }
+      }
     },
-    [conversationId]
+    // handleTransitionToEnviament is stable enough — it only reads
+    // collectedDataRef and authSlugs which we already depend on.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [conversationId, authSlugs]
   );
 
   const handleSummaryCorrect = useCallback(() => {
@@ -682,22 +705,21 @@ function ChatPageInner() {
   }, [lang]);
 
   const handleDocToggle = useCallback(async (slug: string, obtained: boolean) => {
-    // Optimistic update
+    // Optimistic update — and capture the new obtained list in a local
+    // var so we can detect 'all confirmed' below without waiting for a
+    // re-render.
+    let newObtained: string[] = [];
     setMessages((prev) =>
-      prev.map((m) =>
-        m.cardType === "doc_checklist"
-          ? {
-              ...m,
-              cardData: {
-                ...(m.cardData as DocChecklistCardData),
-                documentsObtained: obtained
-                  ? [...(m.cardData as DocChecklistCardData).documentsObtained, slug]
-                  : (m.cardData as DocChecklistCardData).documentsObtained.filter((s) => s !== slug),
-              },
-            }
-          : m
-      )
+      prev.map((m) => {
+        if (m.cardType !== "doc_checklist") return m;
+        const cd = m.cardData as DocChecklistCardData;
+        newObtained = obtained
+          ? [...cd.documentsObtained, slug]
+          : cd.documentsObtained.filter((s) => s !== slug);
+        return { ...m, cardData: { ...cd, documentsObtained: newObtained } };
+      })
     );
+
     // Persist to Supabase
     if (conversationId) {
       if (obtained) {
@@ -714,7 +736,30 @@ function ChatPageInner() {
         });
       }
     }
-  }, [conversationId]);
+
+    // Auto-advance to 'enviament' when the user has just ticked the last
+    // pending document. We only fire on a positive toggle so unticking
+    // doesn't trigger anything unexpected.
+    if (obtained && authSlugs.length > 0) {
+      const allDocs = getDocsForAuth(authSlugs);
+      const isAllChecked =
+        allDocs.length > 0 &&
+        allDocs.every((d) => newObtained.includes(d.slug));
+      const alreadyHasEmailCard = (() => {
+        // Read from latest state via the functional setMessages dance
+        let found = false;
+        setMessages((prev) => {
+          found = prev.some((m) => m.cardType === "email_draft");
+          return prev;
+        });
+        return found;
+      })();
+      if (isAllChecked && !alreadyHasEmailCard) {
+        await handleTransitionToEnviament();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, authSlugs]);
 
   async function handleAutoGeneratePdfs() {
     // Inject doc checklist card before the document loader
