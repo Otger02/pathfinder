@@ -285,23 +285,79 @@ function ChatPageInner() {
         }
 
         // If the previous flow reached a milestone phase, re-inject the
-        // matching card so the user can act on it (confirm summary,
-        // download docs, send email) without restarting from scratch.
-        if (loadedSubPhase === "resum" && loadedAuthSlugs.length > 0) {
-          hydrated.push({
-            role: "assistant",
-            content: "",
-            cardType: "summary",
-            cardData: {
-              collected: loadedData,
-              authSlugs: loadedAuthSlugs,
-              confirmed: false,
-            } as SummaryCardData,
-          });
+        // matching cards so the user can act on them (confirm summary,
+        // tick documents, open email) without restarting from scratch.
+        if (loadedAuthSlugs.length > 0) {
+          if (loadedSubPhase === "resum") {
+            hydrated.push({
+              role: "assistant",
+              content: "",
+              cardType: "summary",
+              cardData: {
+                collected: loadedData,
+                authSlugs: loadedAuthSlugs,
+                confirmed: false,
+              } as SummaryCardData,
+            });
+          } else if (
+            loadedSubPhase === "document" ||
+            loadedSubPhase === "enviament"
+          ) {
+            // Doc checklist: shows the physical-paperwork list with
+            // ticks for what the user has already obtained.
+            const docsObtained =
+              (loadedData.documents_obtained as unknown as string[]) ?? [];
+            hydrated.push({
+              role: "assistant",
+              content: "",
+              cardType: "doc_checklist",
+              cardData: {
+                authSlugs: loadedAuthSlugs,
+                documentsObtained: docsObtained,
+              } as DocChecklistCardData,
+            });
+          }
         }
 
         setMessages(hydrated);
         setPhase("chat");
+
+        // Email draft is async — fire it after the initial paint so the
+        // chat is interactive immediately and the email card slots in
+        // when ready. Only relevant when the previous flow reached the
+        // 'enviament' phase.
+        if (
+          loadedSubPhase === "enviament" &&
+          loadedAuthSlugs.length > 0 &&
+          loadedData.provincia
+        ) {
+          fetch("/api/email/draft", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              personalData: loadedData,
+              authSlug: loadedAuthSlugs[0],
+              provincia: loadedData.provincia,
+              lang: loadedLang,
+            }),
+          })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((emailData: EmailDraftCardData | null) => {
+              if (!emailData) return;
+              setMessages((prev) => [
+                ...prev,
+                {
+                  role: "assistant",
+                  content: "",
+                  cardType: "email_draft",
+                  cardData: emailData,
+                },
+              ]);
+            })
+            .catch(() => {
+              // best-effort; the user can still resend from /documents
+            });
+        }
       })
       .catch(() => {/* resume failed — stay on tree */ });
     // eslint-disable-next-line react-hooks/exhaustive-deps
