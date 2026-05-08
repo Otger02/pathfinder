@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
 import { createAuthServerClient } from "@/lib/supabase-server";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 import { detectSos } from "@/lib/sos";
 import { buildSystemPrompt } from "@/lib/prompt-builder";
 import { COLLECT_PERSONAL_DATA_TOOL } from "@/lib/tool-definitions";
@@ -75,6 +76,15 @@ function sseEvent(data: Record<string, unknown>): string {
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: each chat call costs real money (Claude + Voyage). 20/min/IP.
+    const ip = getClientIp(req);
+    const limit = checkRateLimit(ip, {
+      windowMs: 60_000,
+      max: 20,
+      keyPrefix: "chat",
+    });
+    if (!limit.allowed) return rateLimitResponse(limit);
+
     const body = await req.json();
     const {
       message,

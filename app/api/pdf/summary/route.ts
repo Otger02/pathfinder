@@ -2,10 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
 import { generateSummaryPdf } from "@/lib/pdf/summary-generator";
 import { getFormsForAuth } from "@/lib/form-config";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 import type { PersonalData } from "@/lib/types/personal-data";
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const limit = checkRateLimit(ip, {
+      windowMs: 60_000,
+      max: 10,
+      keyPrefix: "pdf-summary",
+    });
+    if (!limit.allowed) return rateLimitResponse(limit);
+
     const body = await req.json();
     const { personalData, authorizationSlug, lang = "es" } = body as {
       personalData: PersonalData;

@@ -1,11 +1,20 @@
 import { createServiceClient } from "@/lib/supabase";
 import { generateEmailDraft } from "@/lib/email/draft-generator";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 import type { Lang } from "@/lib/sos";
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
+    const ip = getClientIp(req);
+    const limit = checkRateLimit(ip, {
+      windowMs: 60_000,
+      max: 10,
+      keyPrefix: "email-draft",
+    });
+    if (!limit.allowed) return rateLimitResponse(limit);
+
     const { personalData, authSlug, provincia, lang } = (await req.json()) as {
       personalData?: Record<string, string>;
       authSlug?: string;

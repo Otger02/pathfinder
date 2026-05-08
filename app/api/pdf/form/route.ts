@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fillExForm } from "@/lib/pdf/form-filler";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 import type { ExFormId } from "@/lib/form-config";
 import type { PersonalData } from "@/lib/types/personal-data";
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const limit = checkRateLimit(ip, {
+      windowMs: 60_000,
+      max: 10,
+      keyPrefix: "pdf-form",
+    });
+    if (!limit.allowed) return rateLimitResponse(limit);
+
     const body = await req.json();
     const { personalData, exFormId, authSlug, flatten } = body as {
       personalData: Partial<PersonalData>;
