@@ -1,10 +1,17 @@
 import { createServiceClient } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/admin-auth";
 import { createHash } from "crypto";
 import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
+  // Integrity verification exposes hashes and chunk metadata — admin only.
+  const admin = await requireAdmin();
+  if (!admin) {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const recordingId = req.nextUrl.searchParams.get("recordingId");
   if (!recordingId) {
     return Response.json({ error: "recordingId is required" }, { status: 400 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 
@@ -10,6 +10,17 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // Surface the "forbidden" message when the middleware redirects an
+  // authenticated-but-non-admin user back here.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error") === "forbidden") {
+      setError(
+        "Aquest compte no té permisos d'administrador. Si creus que es tracta d'un error, contacta amb la Fundació."
+      );
+    }
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

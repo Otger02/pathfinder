@@ -35,8 +35,28 @@ export async function middleware(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   // /admin is protected — /admin/login is the only bypass
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login" && !user) {
-    return NextResponse.redirect(new URL("/admin/login", req.url));
+  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    if (!user) {
+      return NextResponse.redirect(new URL("/admin/login", req.url));
+    }
+    // Verify admin role: a logged-in user is not enough — the user must
+    // have an active row in `admin_users`. Regular Pathfinder users have
+    // Supabase Auth accounts too (case dashboard) and must NOT see /admin.
+    //
+    // One indexed lookup per /admin/* navigation. Acceptable: admin pages
+    // are low-traffic and the lookup hits the partial index on user_id
+    // WHERE active = true. A revoked admin keeps access for at most one
+    // page navigation, which the user has accepted as a reasonable trade.
+    const { data: adminRow } = await supabase
+      .from("admin_users")
+      .select("active")
+      .eq("user_id", user.id)
+      .single();
+    if (!adminRow?.active) {
+      return NextResponse.redirect(
+        new URL("/admin/login?error=forbidden", req.url)
+      );
+    }
   }
 
   // /chat/history is protected
