@@ -1,0 +1,12 @@
+node_modules
+.next
+.env*
+scripts/
+*.log
+knowledge/
+docs/
+.claude/
+public/forms/test-*.pdf
+supabase/.temp/
+*.tsbuildinfo
+.vscode/
