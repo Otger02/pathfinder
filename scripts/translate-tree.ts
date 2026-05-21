@@ -159,19 +159,54 @@ async function main() {
       name:
         "àrab estàndard modern (MSA), comprensible per a parlants del Magrib i el Sahel",
     },
+    { code: "pt", name: "portuguès europeu estàndard" },
+    {
+      code: "sw",
+      name:
+        "swahili estàndard (kiswahili sanifu), comprensible a l'Àfrica oriental",
+    },
+    {
+      code: "ur",
+      name:
+        "urdú estàndard modern, comprensible a Pakistan i a parlants migrants",
+    },
   ];
 
-  const translations: Record<string, Record<string, NodeTranslation>> = {};
+  // Merge with any existing translations so we don't waste tokens re-translating
+  // languages that are already complete. To force a retranslate of a specific
+  // language, delete its key from data/tree-translations.json first.
+  let translations: Record<string, Record<string, NodeTranslation>> = {};
+  if (existsSync(outPath)) {
+    try {
+      translations = JSON.parse(readFileSync(outPath, "utf-8"));
+      console.log(
+        `  Existing translations: ${Object.keys(translations).join(", ") || "(none)"}`
+      );
+    } catch {
+      console.warn("  Could not parse existing translations file; starting fresh");
+      translations = {};
+    }
+  }
 
   for (const lang of LANGS) {
-    console.log(`\n── Traduint a ${lang.code} (${lang.name.split(",")[0]}) ──`);
-    translations[lang.code] = {};
+    const existing = translations[lang.code] ?? {};
+    const missing = allNodes.filter((n) => !existing[n.id]);
+    if (missing.length === 0) {
+      console.log(
+        `\n── ${lang.code}: complete (${allNodes.length} nodes) — skipping ──`
+      );
+      continue;
+    }
+    console.log(
+      `\n── Traduint a ${lang.code} (${lang.name.split(",")[0]}) — ${missing.length}/${allNodes.length} nodes ──`
+    );
+    translations[lang.code] = existing;
 
-    // Batches of 15 nodes
+    // Batches of 15 nodes — only over the missing subset
     const BATCH_SIZE = 15;
     const batches: DecisionNode[][] = [];
-    for (let i = 0; i < allNodes.length; i += BATCH_SIZE) {
-      batches.push(allNodes.slice(i, i + BATCH_SIZE));
+    for (let i = 0; i < missing.length; i += BATCH_SIZE) {
+      batches.push(missing.slice(i, i + BATCH_SIZE));
     }
 
     for (let i = 0; i < batches.length; i++) {
@@ -197,9 +232,17 @@ async function main() {
     console.log(
       `  ✓ Total ${lang.code}: ${Object.keys(translations[lang.code]).length} nodes`
     );
+
+    // Persist progress after each language so a rate-limit / network failure
+    // doesn't lose finished work.
+    writeFileSync(
+      outPath,
+      JSON.stringify(translations, null, 2) + "\n",
+      "utf-8"
+    );
   }
 
-  // Write output
+  // Final write (idempotent if last lang already wrote)
   writeFileSync(
     outPath,
     JSON.stringify(translations, null, 2) + "\n",
