@@ -1,3 +1,6 @@
+// @ts-check
+const { withSentryConfig } = require("@sentry/nextjs");
+
 /** @type {import('next').NextConfig} */
 const SECURITY_HEADERS = [
   {
@@ -25,7 +28,8 @@ const SECURITY_HEADERS = [
       "media-src 'self' blob:",
       // Supabase REST + Realtime; Anthropic + Voyage are server-side only but
       // listed defensively in case future browser-side use is added.
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://api.voyageai.com",
+      // *.sentry.io for client-side error reporting (Sentry tunnel or direct).
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://api.voyageai.com https://*.sentry.io",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -55,4 +59,13 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withSentryConfig(nextConfig, {
+  // Sourcemaps — uploaded to Sentry, stripped from the public bundle.
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  // Hides sourcemaps from the browser bundle.
+  hideSourceMaps: true,
+  // Disables the Sentry telemetry for build-time analytics.
+  telemetry: false,
+});

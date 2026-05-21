@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { fillExForm } from "@/lib/pdf/form-filler";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 import { PdfFormSchema, badRequestFromZod } from "@/lib/validation/schemas";
@@ -43,8 +44,8 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (err) {
-    // Log only message — stack traces can include personalData values
-    // (pdf-lib propagates input through error context).
+    // Capture to Sentry but log only message — stack traces can include personalData values.
+    Sentry.captureException(err);
     console.error(
       "[pdf/form] error:",
       err instanceof Error ? err.message : "unknown error"

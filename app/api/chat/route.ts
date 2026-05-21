@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { createServiceClient } from "@/lib/supabase";
 import { createAuthServerClient } from "@/lib/supabase-server";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
@@ -829,6 +830,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Internal error";
+    Sentry.captureException(err);
     console.error("Chat API error:", message);
     return Response.json({ error: message }, { status: 500 });
   }
