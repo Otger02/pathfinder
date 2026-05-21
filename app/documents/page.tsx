@@ -6,6 +6,7 @@ import { t, labels } from "@/lib/i18n";
 import type { ConversationRow } from "@/app/dashboard/lib/dashboard-data";
 import UserMenu from "@/app/dashboard/components/UserMenu";
 import DashboardLangSelector from "@/app/dashboard/components/DashboardLangSelector";
+import SosButton from "@/app/components/SosButton";
 import { buildDocumentGroups } from "./lib/build-document-list";
 import DocumentsView from "./components/DocumentsView";
 
@@ -108,6 +109,8 @@ export default async function DocumentsPage({ searchParams }: DocumentsPageProps
 
         <DocumentsView groups={groups} lang={lang} />
       </main>
+
+      <SosButton lang={lang} />
     </div>
   );
 }

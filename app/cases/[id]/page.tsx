@@ -11,6 +11,7 @@ import { computeMissingFields } from "@/lib/collection-engine";
 import { buildDocumentGroups } from "@/app/documents/lib/build-document-list";
 import UserMenu from "@/app/dashboard/components/UserMenu";
 import DashboardLangSelector from "@/app/dashboard/components/DashboardLangSelector";
+import SosButton from "@/app/components/SosButton";
 
 import CaseHeader from "./components/CaseHeader";
 import ProgressCard from "./components/ProgressCard";
@@ -171,6 +172,8 @@ export default async function CaseDetailPage({
 
         <DeleteCaseButton conversationId={conv.id} lang={lang} />
       </main>
+
+      <SosButton lang={lang} />
     </div>
   );
 }

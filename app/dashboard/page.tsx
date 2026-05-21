@@ -13,6 +13,7 @@ import ProcessRow from "./components/ProcessRow";
 import QuickStats from "./components/QuickStats";
 import UserMenu from "./components/UserMenu";
 import DashboardLangSelector from "./components/DashboardLangSelector";
+import SosButton from "@/app/components/SosButton";
 
 interface DashboardPageProps {
   searchParams: Promise<{ lang?: string }>;
@@ -201,6 +202,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </div>
         </div>
       </main>
+
+      <SosButton lang={lang} />
     </div>
   );
 }
