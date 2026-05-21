@@ -141,7 +141,10 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("[regenerate] error:", err);
+    console.error(
+      "[regenerate] error:",
+      err instanceof Error ? err.message : "unknown error"
+    );
     return NextResponse.json(
       { error: "Failed to regenerate document" },
       { status: 500 }

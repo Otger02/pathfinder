@@ -43,9 +43,14 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("Form fill error:", err instanceof Error ? err.stack : err);
+    // Log only message — stack traces can include personalData values
+    // (pdf-lib propagates input through error context).
+    console.error(
+      "[pdf/form] error:",
+      err instanceof Error ? err.message : "unknown error"
+    );
     return NextResponse.json(
-      { error: "Failed to fill form", detail: err instanceof Error ? err.message : String(err) },
+      { error: "Failed to fill form" },
       { status: 500 }
     );
   }
