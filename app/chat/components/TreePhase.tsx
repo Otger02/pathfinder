@@ -1,6 +1,7 @@
 import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
 import type { DecisionNode } from "@/lib/types/decision-tree";
+import { urgentResourcesForSosLevel } from "@/lib/urgent-resources";
 import PathChips from "./PathChips";
 
 export default function TreePhase({
@@ -27,6 +28,13 @@ export default function TreePhase({
     currentNode.type === "sos1" ||
     currentNode.type === "sos2" ||
     currentNode.type === "sos3";
+  const isSosResult =
+    currentNode.type === "sos1" ||
+    currentNode.type === "sos2" ||
+    currentNode.type === "sos3";
+  const urgentResources = isSosResult
+    ? urgentResourcesForSosLevel(currentNode.type as "sos1" | "sos2" | "sos3")
+    : [];
 
   return (
     <div
@@ -71,7 +79,36 @@ export default function TreePhase({
             </p>
           )}
 
-          {/* TODO: slugs — resoldre autoritzacions i recursos urgents des de data/catalogs.json */}
+          {urgentResources.length > 0 && (
+            <div
+              className="card mb-3"
+              style={{
+                background: "var(--danger-soft)",
+                borderColor: "var(--danger)",
+                borderInlineStartWidth: 4,
+              }}
+            >
+              <div className="div-label mb-2" style={{ color: "var(--danger)" }}>
+                🆘 {t(labels.urgentResourcesTitle, lang)}
+              </div>
+              <ul className="space-y-2">
+                {urgentResources.map((r) => (
+                  <li key={r.name} className="text-sm">
+                    <div className="font-medium">{r.name}</div>
+                    {r.phone && (
+                      <a
+                        href={`tel:${r.phone}`}
+                        className="text-primary hover:underline"
+                      >
+                        {r.phone}
+                      </a>
+                    )}
+                    <div className="text-text-muted text-xs">{r.description}</div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <button
             onClick={onStartChat}

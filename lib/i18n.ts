@@ -42,6 +42,7 @@ export const labels = {
     fr: "Parler à l'assistant",
     ca: "Parlar amb l'assistent",
   },
+  urgentResourcesTitle: { es: "Recursos urgentes", en: "Urgent resources", ar: "موارد عاجلة", fr: "Ressources urgentes", ca: "Recursos urgents" },
   youIndicated: {
     es: "Has indicado",
     en: "You indicated",
