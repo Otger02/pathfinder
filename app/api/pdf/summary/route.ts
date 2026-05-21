@@ -3,6 +3,7 @@ import { createServiceClient } from "@/lib/supabase";
 import { generateSummaryPdf } from "@/lib/pdf/summary-generator";
 import { getFormsForAuth } from "@/lib/form-config";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
+import { PdfSummarySchema, badRequestFromZod } from "@/lib/validation/schemas";
 import type { PersonalData } from "@/lib/types/personal-data";
 
 export async function POST(req: NextRequest) {
@@ -15,19 +16,11 @@ export async function POST(req: NextRequest) {
     });
     if (!limit.allowed) return rateLimitResponse(limit);
 
-    const body = await req.json();
-    const { personalData, authorizationSlug, lang = "es" } = body as {
-      personalData: PersonalData;
-      authorizationSlug: string;
-      lang: string;
-    };
-
-    if (!personalData || !authorizationSlug) {
-      return NextResponse.json(
-        { error: "Missing personalData or authorizationSlug" },
-        { status: 400 }
-      );
-    }
+    const rawBody = await req.json();
+    const parsedBody = PdfSummarySchema.safeParse(rawBody);
+    if (!parsedBody.success) return badRequestFromZod(parsedBody.error);
+    const { personalData: rawPersonal, authorizationSlug, lang = "es" } = parsedBody.data;
+    const personalData = rawPersonal as unknown as PersonalData;
 
     // Fetch authorization info from Supabase
     const supabase = createServiceClient();

@@ -1,6 +1,7 @@
 import { createServiceClient } from "@/lib/supabase";
 import { generateEmailDraft } from "@/lib/email/draft-generator";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
+import { EmailDraftSchema, badRequestFromZod } from "@/lib/validation/schemas";
 import type { Lang } from "@/lib/sos";
 
 export const runtime = "nodejs";
@@ -15,19 +16,15 @@ export async function POST(req: Request) {
     });
     if (!limit.allowed) return rateLimitResponse(limit);
 
-    const { personalData, authSlug, provincia, lang } = (await req.json()) as {
-      personalData?: Record<string, string>;
-      authSlug?: string;
-      provincia?: string;
+    const raw = await req.json();
+    const parsed = EmailDraftSchema.safeParse(raw);
+    if (!parsed.success) return badRequestFromZod(parsed.error);
+    const { personalData, authSlug, provincia, lang } = parsed.data as {
+      personalData: Record<string, string>;
+      authSlug: string;
+      provincia: string;
       lang?: string;
     };
-
-    if (!personalData || !authSlug || !provincia) {
-      return Response.json(
-        { error: "personalData, authSlug, and provincia are required" },
-        { status: 400 }
-      );
-    }
 
     // Fetch authorization name from Supabase
     const supabase = createServiceClient();

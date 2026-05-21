@@ -1,16 +1,14 @@
 import { createServiceClient } from "@/lib/supabase";
+import { ConsentRequestSchema, badRequestFromZod } from "@/lib/validation/schemas";
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
-    const { conversation_id } = (await req.json()) as {
-      conversation_id?: string;
-    };
-
-    if (!conversation_id) {
-      return Response.json({ error: "conversation_id required" }, { status: 400 });
-    }
+    const raw = await req.json();
+    const parsed = ConsentRequestSchema.safeParse(raw);
+    if (!parsed.success) return badRequestFromZod(parsed.error);
+    const { conversation_id } = parsed.data;
 
     const supabase = createServiceClient();
     const { error } = await supabase

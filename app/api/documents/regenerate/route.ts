@@ -4,6 +4,7 @@ import { createAuthServerClient } from "@/lib/supabase-server";
 import { fillExForm } from "@/lib/pdf/form-filler";
 import { generateSummaryPdf } from "@/lib/pdf/summary-generator";
 import { getFormsForAuth, type ExFormId } from "@/lib/form-config";
+import { RegenerateDocumentSchema, badRequestFromZod } from "@/lib/validation/schemas";
 import type { PersonalData } from "@/lib/types/personal-data";
 
 function extractTexts(items: unknown, lang: string): string[] {
@@ -24,25 +25,15 @@ function extractTexts(items: unknown, lang: string): string[] {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const rawBody = await req.json();
+    const parsedBody = RegenerateDocumentSchema.safeParse(rawBody);
+    if (!parsedBody.success) return badRequestFromZod(parsedBody.error);
     const {
       conversation_id,
       formId,
       lang = "ca",
       inline,
-    } = body as {
-      conversation_id?: string;
-      formId?: string;
-      lang?: string;
-      inline?: boolean;
-    };
-
-    if (!conversation_id || !formId) {
-      return NextResponse.json(
-        { error: "conversation_id and formId are required" },
-        { status: 400 }
-      );
-    }
+    } = parsedBody.data;
 
     // 1. Authenticated user — RLS will prevent reading other users' rows.
     const auth = await createAuthServerClient();

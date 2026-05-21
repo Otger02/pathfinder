@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fillExForm } from "@/lib/pdf/form-filler";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
+import { PdfFormSchema, badRequestFromZod } from "@/lib/validation/schemas";
 import type { ExFormId } from "@/lib/form-config";
 import type { PersonalData } from "@/lib/types/personal-data";
 
@@ -14,20 +15,15 @@ export async function POST(req: NextRequest) {
     });
     if (!limit.allowed) return rateLimitResponse(limit);
 
-    const body = await req.json();
-    const { personalData, exFormId, authSlug, flatten } = body as {
+    const rawBody = await req.json();
+    const parsed = PdfFormSchema.safeParse(rawBody);
+    if (!parsed.success) return badRequestFromZod(parsed.error);
+    const { personalData, exFormId, authSlug, flatten } = parsed.data as {
       personalData: Partial<PersonalData>;
       exFormId: ExFormId;
       authSlug?: string;
       flatten?: boolean;
     };
-
-    if (!personalData || !exFormId) {
-      return NextResponse.json(
-        { error: "Missing personalData or exFormId" },
-        { status: 400 }
-      );
-    }
 
     const pdfBytes = await fillExForm(exFormId, personalData, authSlug, flatten);
 

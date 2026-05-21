@@ -1,20 +1,20 @@
 import { createServiceClient } from "@/lib/supabase";
+import { DocumentsObtainedSchema, badRequestFromZod } from "@/lib/validation/schemas";
+import { z } from "zod";
+
+const DeleteDocSchema = z.object({
+  conversation_id: z.string().uuid(),
+  slug: z.string().max(120),
+});
 
 export const runtime = "nodejs";
 
 export async function PATCH(req: Request) {
   try {
-    const { conversation_id, documents_obtained } = (await req.json()) as {
-      conversation_id?: string;
-      documents_obtained?: string[];
-    };
-
-    if (!conversation_id) {
-      return Response.json({ error: "conversation_id required" }, { status: 400 });
-    }
-    if (!Array.isArray(documents_obtained)) {
-      return Response.json({ error: "documents_obtained must be an array" }, { status: 400 });
-    }
+    const raw = await req.json();
+    const parsed = DocumentsObtainedSchema.safeParse(raw);
+    if (!parsed.success) return badRequestFromZod(parsed.error);
+    const { conversation_id, documents_obtained } = parsed.data;
 
     const supabase = createServiceClient();
 
@@ -48,14 +48,10 @@ export async function PATCH(req: Request) {
 // Also support DELETE to un-mark a document
 export async function DELETE(req: Request) {
   try {
-    const { conversation_id, slug } = (await req.json()) as {
-      conversation_id?: string;
-      slug?: string;
-    };
-
-    if (!conversation_id || !slug) {
-      return Response.json({ error: "conversation_id and slug required" }, { status: 400 });
-    }
+    const raw = await req.json();
+    const parsed = DeleteDocSchema.safeParse(raw);
+    if (!parsed.success) return badRequestFromZod(parsed.error);
+    const { conversation_id, slug } = parsed.data;
 
     const supabase = createServiceClient();
 

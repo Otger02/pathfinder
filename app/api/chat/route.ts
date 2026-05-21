@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
 import { createAuthServerClient } from "@/lib/supabase-server";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
+import { ChatRequestSchema, badRequestFromZod } from "@/lib/validation/schemas";
 import { detectSos } from "@/lib/sos";
 import { buildSystemPrompt } from "@/lib/prompt-builder";
 import { COLLECT_PERSONAL_DATA_TOOL } from "@/lib/tool-definitions";
@@ -85,7 +86,9 @@ export async function POST(req: NextRequest) {
     });
     if (!limit.allowed) return rateLimitResponse(limit);
 
-    const body = await req.json();
+    const rawBody = await req.json();
+    const parsed = ChatRequestSchema.safeParse(rawBody);
+    if (!parsed.success) return badRequestFromZod(parsed.error);
     const {
       message,
       conversation_id,
@@ -97,22 +100,7 @@ export async function POST(req: NextRequest) {
       tree_node_text,
       tree_node_note,
       tree_path,
-    } = body as {
-      message?: string;
-      conversation_id?: string;
-      situacio_legal?: string;
-      idioma?: string;
-      auth_slugs?: string[];
-      mode?: "info" | "collection";
-      tree_node_id?: string | null;
-      tree_node_text?: string | null;
-      tree_node_note?: string | null;
-      tree_path?: string[];
-    };
-
-    if (!message || typeof message !== "string" || message.trim().length === 0) {
-      return Response.json({ error: "message is required" }, { status: 400 });
-    }
+    } = parsed.data;
 
     const voyageKey = process.env.VOYAGE_API_KEY;
     const anthropicKey = process.env.ANTHROPIC_API_KEY;
