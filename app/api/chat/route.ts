@@ -18,6 +18,10 @@ import type { ChatSubPhase } from "@/lib/types/chat-flow";
 // Node.js runtime (not Edge) — needed for tool_use stream parsing + crypto
 export const runtime = "nodejs";
 
+// Diagnostic logs are gated to non-production to avoid noisy stdout in deploy.
+const isDev = process.env.NODE_ENV !== "production";
+const debug = (...args: unknown[]) => { if (isDev) console.log(...args); };
+
 // ── Config ───────────────────────────────────────────────────────────
 const VOYAGE_MODEL = "voyage-multilingual-2";
 const VOYAGE_URL = "https://api.voyageai.com/v1/embeddings";
@@ -334,7 +338,7 @@ export async function POST(req: NextRequest) {
       (chatSubPhase === "resum" || chatSubPhase === "document") &&
       missingFields.length > 0
     ) {
-      console.log(
+      debug(
         "[chat] reset subPhase→conversa  was=",
         chatSubPhase,
         " missing=",
@@ -346,7 +350,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 6.6. Diagnostic log per turn ──────────────────────────────
-    console.log("[chat]", {
+    debug("[chat]", {
       convId: typeof convId === "string" ? convId.slice(0, 8) : null,
       mode,
       subPhase: chatSubPhase,
@@ -565,7 +569,7 @@ export async function POST(req: NextRequest) {
 
                   try {
                     const extractedData = JSON.parse(toolUseJson) as Partial<PersonalData>;
-                    console.log(`[chat] tool extracted ${Object.keys(extractedData).length} fields (${claudeModel}):`, Object.keys(extractedData).join(", "));
+                    debug(`[chat] tool extracted ${Object.keys(extractedData).length} fields (${claudeModel}):`, Object.keys(extractedData).join(", "));
 
                     // Save for the agentic follow-up call
                     lastToolUseId = toolUseId;
@@ -655,7 +659,7 @@ export async function POST(req: NextRequest) {
         }
 
         // ── Post-stream diagnostics ─────────────────────────────
-        console.log("[chat] stop_reason:", stopReason, "content blocks:", contentBlockTypes, "tool_called:", toolWasCalled, "tool_choice:", toolChoiceUsed?.type);
+        debug("[chat] stop_reason:", stopReason, "content blocks:", contentBlockTypes, "tool_called:", toolWasCalled, "tool_choice:", toolChoiceUsed?.type);
         if (
           mode === "collection" &&
           missingFields.length > 0 &&
