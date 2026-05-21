@@ -58,6 +58,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     .slice(0, 5);
 
   const documentsCount = countDocumentsObtained(conversations);
+  const pendingCount = summaries.filter((s) => s.status === "paused").length;
   const userName = user.email?.split("@")[0] ?? "";
 
   return (
@@ -119,7 +120,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         {/* Quick stats */}
         <QuickStats
           documentsGenerated={documentsCount}
-          upcomingDeadlines={0}
+          upcomingDeadlines={pendingCount}
           lang={lang}
         />
 

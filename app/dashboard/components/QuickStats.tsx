@@ -8,7 +8,7 @@ export default function QuickStats({
   lang,
 }: {
   documentsGenerated: number;
-  upcomingDeadlines: number; // 0 for now — placeholder until we wire deadlines
+  upcomingDeadlines: number; // count of paused cases — proxy for "pending action"
   lang: Lang;
 }) {
   return (
