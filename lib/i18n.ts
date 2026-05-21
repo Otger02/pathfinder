@@ -797,6 +797,27 @@ export const labels = {
     fr: "Processus récents",
     ar: "العمليات الأخيرة",
   },
+  viewAllCases: {
+    ca: "Veure'ls tots",
+    es: "Ver todos",
+    en: "View all",
+    fr: "Voir tout",
+    ar: "عرض الكل",
+  },
+  casesAllTitle: {
+    ca: "Tots els meus casos",
+    es: "Todos mis casos",
+    en: "All my cases",
+    fr: "Tous mes dossiers",
+    ar: "جميع حالاتي",
+  },
+  casesAllEmpty: {
+    ca: "Encara no tens cap cas. Comença una conversa per crear-ne un.",
+    es: "Aún no tienes ningún caso. Inicia una conversación para crear uno.",
+    en: "You don't have any cases yet. Start a conversation to create one.",
+    fr: "Vous n'avez pas encore de dossier. Commencez une conversation pour en créer un.",
+    ar: "ليس لديك أي حالات بعد. ابدأ محادثة لإنشاء واحدة.",
+  },
   newProcess: {
     ca: "Nou procés",
     es: "Nuevo proceso",

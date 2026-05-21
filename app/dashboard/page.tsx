@@ -126,7 +126,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         {/* Recent processes */}
         {recent.length > 0 && (
           <section>
-            <div className="div-label mb-2">{t(labels.recentProcesses, lang)}</div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="div-label">{t(labels.recentProcesses, lang)}</div>
+              <Link
+                href={`/cases?lang=${lang}`}
+                className="text-sm hover:underline"
+                style={{ color: "var(--primary)" }}
+              >
+                {t(labels.viewAllCases, lang)} →
+              </Link>
+            </div>
             <div
               className="card flat overflow-hidden"
               style={{ padding: 0 }}
