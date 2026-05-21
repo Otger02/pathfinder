@@ -37,4 +37,5 @@ simulate-profiles.ts
 # Playwright + temp artifacts
 test-results/
 playwright-report/
+e2e/.auth/
 tree-es-tmp.json
