@@ -17,7 +17,7 @@ import { z } from "zod";
 
 const Uuid = z.string().uuid("Must be a valid UUID");
 const SafeShortString = z.string().max(255);
-const LangCode = z.enum(["ca", "es", "en", "fr", "ar", "pt", "sw", "ur"]);
+const LangCode = z.enum(["ca", "es", "en", "fr", "ar"]);
 
 // ── /api/chat ────────────────────────────────────────────────────
 

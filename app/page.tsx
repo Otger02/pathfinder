@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 
 // ── Mapping idioma del navegador → codi intern (fallback) ──────────
+// pt/sw/ur tenen tree translations però encara no UI translations,
+// per això no apareixen al selector ni s'autodetecten.
 const LANG_MAP: Record<string, string> = {
   es: "es",
   ca: "ca",
   fr: "fr",
   ar: "ar",
-  pt: "pt",
-  sw: "sw",
-  ur: "ur",
   en: "en",
   // Fallbacks: llengües d'Àfrica occidental que el francès cobreix raonablement
   wo: "fr",
@@ -35,9 +34,6 @@ const LANGUAGE_KEYWORDS: Record<string, string[]> = {
   en: ["english", "inglés", "ingles", "anglès", "angles"],
   fr: ["français", "francais", "francés", "frances", "french"],
   ar: ["عربية", "العربية", "arabic", "árabe", "arabe", "arabi"],
-  pt: ["português", "portugues", "portuguese"],
-  sw: ["kiswahili", "swahili"],
-  ur: ["اردو", "urdu"],
   // Llengües africanes → fallback francès
   "fr-wo": ["wolof", "ouolof"],
   "fr-mn": ["mandinka", "mandinga", "mandingue"],
@@ -105,9 +101,6 @@ const PRIMARY_LANGS: LangButton[] = [
   { code: "ca", label: "Català", flag: "🏴" },
   { code: "fr", label: "Français", flag: "🇫🇷" },
   { code: "ar", label: "العربية", flag: "🇲🇦" },
-  { code: "pt", label: "Português", flag: "🇵🇹" },
-  { code: "sw", label: "Kiswahili", flag: "🇹🇿" },
-  { code: "ur", label: "اردو", flag: "🇵🇰" },
   { code: "en", label: "English", flag: "🇬🇧" },
 ];
 
@@ -126,9 +119,6 @@ const LANGUAGE_DISPLAY_NAMES = [
   "English",
   "Français",
   "العربية",
-  "Português",
-  "Kiswahili",
-  "اردو",
   "Wolof",
   "Mandinka",
   "Pular",
