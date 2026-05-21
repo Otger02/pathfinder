@@ -6,7 +6,7 @@ import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 
-type Mode = "magic" | "password";
+type Mode = "magic" | "password" | "reset";
 
 function AuthPageInner() {
   const searchParams = useSearchParams();
@@ -26,6 +26,20 @@ function AuthPageInner() {
   const callbackUrl = typeof window !== "undefined"
     ? `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(returnTo)}&lang=${lang}`
     : `/auth/callback?returnTo=${encodeURIComponent(returnTo)}&lang=${lang}`;
+
+  const resetRedirectUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/auth/reset?lang=${lang}`
+    : `/auth/reset?lang=${lang}`;
+
+  async function handleResetPassword(e: FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    await supabase.auth.resetPasswordForEmail(email, { redirectTo: resetRedirectUrl });
+    // Always show success — don't reveal whether the email exists.
+    setSent(true);
+    setLoading(false);
+  }
 
   async function handleMagicLink(e: FormEvent) {
     e.preventDefault();
@@ -66,6 +80,8 @@ function AuthPageInner() {
   }
 
   if (sent) {
+    const sentTitleLabel = mode === "reset" ? labels.authResetSentTitle : labels.authMagicSentTitle;
+    const sentTextLabel = mode === "reset" ? labels.authResetSentText : labels.authMagicSentText;
     return (
       <div className="mx-auto max-w-md px-6 py-16 text-center">
         <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
@@ -73,8 +89,8 @@ function AuthPageInner() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
           </svg>
         </div>
-        <h1 className="text-xl font-bold text-text mb-2">{t(labels.authMagicSentTitle, lang)}</h1>
-        <p className="text-text-muted text-sm leading-relaxed">{t(labels.authMagicSentText, lang)}</p>
+        <h1 className="text-xl font-bold text-text mb-2">{t(sentTitleLabel, lang)}</h1>
+        <p className="text-text-muted text-sm leading-relaxed">{t(sentTextLabel, lang)}</p>
         <p className="mt-4 text-xs text-text-muted opacity-60">{email}</p>
       </div>
     );
@@ -95,8 +111,12 @@ function AuthPageInner() {
         <span className="text-lg font-bold text-text">Pathfinder</span>
       </div>
 
-      <h1 className="text-2xl font-bold text-text mb-2">{t(labels.authTitle, lang)}</h1>
-      <p className="text-text-muted text-sm mb-8 leading-relaxed">{t(labels.authSubtitle, lang)}</p>
+      <h1 className="text-2xl font-bold text-text mb-2">
+        {mode === "reset" ? t(labels.authResetTitle, lang) : t(labels.authTitle, lang)}
+      </h1>
+      <p className="text-text-muted text-sm mb-8 leading-relaxed">
+        {mode === "reset" ? t(labels.authResetSubtitle, lang) : t(labels.authSubtitle, lang)}
+      </p>
 
       {/* Magic link form */}
       {mode === "magic" && (
@@ -164,19 +184,67 @@ function AuthPageInner() {
           >
             {loading ? "..." : t(labels.authSignInBtn, lang)}
           </button>
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => { setMode("reset"); setError(null); setPassword(""); }}
+              className="text-sm text-text-muted hover:text-primary hover:underline min-h-[auto]"
+            >
+              {t(labels.authForgotPassword, lang)}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Reset password form */}
+      {mode === "reset" && (
+        <form onSubmit={handleResetPassword} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-text mb-1.5">
+              {t(labels.authEmail, lang)}
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoFocus
+              placeholder="nom@exemple.com"
+              className="input"
+            />
+          </div>
+          {error && <p className="text-sm text-danger">{error}</p>}
+          <button
+            type="submit"
+            disabled={loading || !email}
+            className="btn btn-block"
+          >
+            {loading ? "..." : t(labels.authResetSendBtn, lang)}
+          </button>
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => { setMode("password"); setError(null); }}
+              className="text-sm text-text-muted hover:text-primary hover:underline min-h-[auto]"
+            >
+              {t(labels.authResetBackToSignIn, lang)}
+            </button>
+          </div>
         </form>
       )}
 
       {/* Mode toggle */}
-      <div className="mt-4 text-center">
-        <button
-          type="button"
-          onClick={() => { setMode(mode === "magic" ? "password" : "magic"); setError(null); }}
-          className="text-sm text-primary hover:underline min-h-[auto]"
-        >
-          {mode === "magic" ? t(labels.authSwitchToPassword, lang) : t(labels.authSwitchToMagic, lang)}
-        </button>
-      </div>
+      {mode !== "reset" && (
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => { setMode(mode === "magic" ? "password" : "magic"); setError(null); }}
+            className="text-sm text-primary hover:underline min-h-[auto]"
+          >
+            {mode === "magic" ? t(labels.authSwitchToPassword, lang) : t(labels.authSwitchToMagic, lang)}
+          </button>
+        </div>
+      )}
 
       {/* Divider + skip */}
       <div className="mt-10 pt-6 border-t border-border-light text-center">
