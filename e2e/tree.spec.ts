@@ -1,37 +1,37 @@
 /**
  * Tree navigation — unauthenticated flow (the decision tree is public).
- * Tests the path from homepage → tree → consent → chat.
  */
 import { test, expect } from "@playwright/test";
 
 test.describe("Decision tree", () => {
-  test("homepage renders with language options", async ({ page }) => {
+  test("homepage loads without error", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("/");
-    // Should have a visible heading or the tree start node
-    await expect(page.locator("h1, h2, [class*=display]").first()).toBeVisible();
+    // Just verify the body rendered; the home page is a voice-detection landing.
+    await expect(page.locator("body")).toBeVisible();
+    expect(errors).toEqual([]);
   });
 
   test("tree page loads and shows first node", async ({ page }) => {
     await page.goto("/chat?lang=ca");
-    // Either the tree UI or the chat interface should appear
-    await expect(
-      page.locator("[class*=tree], [class*=chat], button, a").first()
-    ).toBeVisible({ timeout: 10_000 });
+    // The tree-node class is used for each option button on the decision tree.
+    await expect(page.locator(".tree-node").first()).toBeVisible({ timeout: 10_000 });
   });
 
   test("mobile: tree node buttons are tap-friendly (≥44px)", async ({ page }) => {
     await page.goto("/chat?lang=ca");
-    // Wait for interactive elements
-    await page.waitForSelector("button", { timeout: 10_000 });
+    await page.locator(".tree-node").first().waitFor({ timeout: 10_000 });
 
-    const buttons = page.locator("button:visible");
-    const count = await buttons.count();
+    const nodes = page.locator(".tree-node");
+    const count = await nodes.count();
+    expect(count).toBeGreaterThan(0);
 
-    for (let i = 0; i < Math.min(count, 5); i++) {
-      const box = await buttons.nth(i).boundingBox();
+    for (let i = 0; i < count; i++) {
+      const box = await nodes.nth(i).boundingBox();
       if (box) {
         // WCAG 2.5.5: minimum 44×44 px touch target
-        expect(box.height, `Button ${i} height`).toBeGreaterThanOrEqual(44);
+        expect(box.height, `Tree node ${i} height`).toBeGreaterThanOrEqual(44);
       }
     }
   });
