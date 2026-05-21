@@ -6,7 +6,7 @@
  * and returns the filled PDF as Uint8Array.
  */
 
-import { PDFDocument, PDFForm } from "pdf-lib";
+import { PDFDocument, PDFForm, StandardFonts, type PDFFont } from "pdf-lib";
 import { readFileSync } from "fs";
 import { join } from "path";
 import type { ExFormId } from "@/lib/form-config";
@@ -18,6 +18,8 @@ import {
   EX_10_TIPO_SOLICITUD_CHECKBOXES,
   EX_10_TIPO_DOC_CHECKBOXES,
   EX_10_CONSENTIMIENTO_CHECKBOX,
+  EX_10_FORMACIO_TIPUS_COORDS,
+  EX_10_FORMACIO_MODALITAT_COORDS,
   resolveCircunstanciaCheckbox,
   resolveTipoSolicitudCheckbox,
 } from "@/lib/forms/ex-10";
@@ -78,6 +80,64 @@ function fillEx10Checkboxes(
   // 4. CONSENTIMIENTO Dehú: marked by default unless explicitly opted out
   if (personalData.consentimientoDehu !== false) {
     safeCheck(EX_10_CONSENTIMIENTO_CHECKBOX);
+  }
+}
+
+/**
+ * Apartat 6 of the EX-10 — formació centre.
+ *
+ * The "tipus de formació" and "modalitat" boxes in this section are NOT
+ * AcroForm interactive checkboxes; they're flat graphics baked into the
+ * PDF template. We mark them by overlaying an "X" glyph at the recorded
+ * coordinates using pdf-lib's drawText.
+ *
+ * Coordinates are in PDF points with origin at the page's bottom-left
+ * (see EX_10_FORMACIO_*_COORDS in lib/forms/ex-10.ts). The PDF is paginated
+ * starting at 1 in the spec; pdf-lib's getPage() is 0-indexed, so we
+ * subtract one before lookup.
+ */
+async function drawEx10FormacioMarks(
+  pdf: PDFDocument,
+  personalData: Partial<PersonalData>
+): Promise<void> {
+  const tipus = personalData.formacio_tipus ?? [];
+  const modalitat = personalData.formacio_modalitat ?? [];
+  if (tipus.length === 0 && modalitat.length === 0) return;
+
+  let font: PDFFont;
+  try {
+    font = await pdf.embedFont(StandardFonts.Helvetica);
+  } catch {
+    return; // shouldn't happen with a standard font, but stay defensive
+  }
+
+  const stamp = (
+    coord: { page: number; x: number; y: number }
+  ) => {
+    try {
+      const page = pdf.getPage(coord.page - 1);
+      page.drawText("X", {
+        x: coord.x,
+        y: coord.y,
+        size: 11,
+        font,
+      });
+    } catch {
+      // Page index might be out of range for an unexpected template revision
+    }
+  };
+
+  for (const key of tipus) {
+    const coord = EX_10_FORMACIO_TIPUS_COORDS[
+      key as keyof typeof EX_10_FORMACIO_TIPUS_COORDS
+    ];
+    if (coord) stamp(coord);
+  }
+  for (const key of modalitat) {
+    const coord = EX_10_FORMACIO_MODALITAT_COORDS[
+      key as keyof typeof EX_10_FORMACIO_MODALITAT_COORDS
+    ];
+    if (coord) stamp(coord);
   }
 }
 
@@ -338,6 +398,8 @@ export async function fillExForm(
   // ── EX-10 specific: headers + defaults that the generic loop can't do ─
   if (exFormId === "EX-10") {
     fillEx10Checkboxes(form, personalData, authSlug);
+    // Apartat 6 (formació) has graphical-only checkboxes — overlay X via drawText.
+    await drawEx10FormacioMarks(pdf, personalData);
   }
 
   // ── Flatten if requested ────────────────────────────────────
