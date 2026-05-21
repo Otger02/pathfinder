@@ -17,6 +17,8 @@
     "test:prompt": "npx tsx scripts/test-prompt-builder.ts",
     "test:email": "npx tsx scripts/test-email-draft.ts",
     "test:e2e": "npx tsx scripts/test-chat-flow.ts",
+    "test:playwright": "playwright test",
+    "test:playwright:ui": "playwright test --ui",
     "test:arraigo": "npx tsx scripts/test-conversation-arraigo.ts",
     "test": "npm run test:engine && npm run test:rules && npm run test:prompt && npm run test:email",
     "seed:otger": "npx tsx scripts/seed-otger.ts"
@@ -40,6 +42,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@types/node": "25.6.0",
     "@types/react": "19.2.14",
     "eslint": "^8.0.0",

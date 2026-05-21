@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope, Instrument_Serif, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 
@@ -33,13 +33,20 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // Prevents the virtual keyboard from obscuring the chat input on mobile.
+  interactiveWidget: "resizes-content",
+};
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#2a7d6e" />
