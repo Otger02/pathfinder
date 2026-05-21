@@ -23,6 +23,7 @@ knowledge/sources/
 tsconfig.tsbuildinfo
 test-filled.pdf
 test-payload.json
+public/forms/*.pdf
 all-form-fields.txt
 ex10-fields.txt
 field-positions-all.txt
