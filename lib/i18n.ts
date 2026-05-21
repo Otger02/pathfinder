@@ -1079,4 +1079,57 @@ export const labels = {
     fr: "Se connecter",
     ar: "تسجيل الدخول",
   },
+
+  // ── Case notes ──────────────────────────────────────────────
+  notesTitle: {
+    ca: "Notes personals",
+    es: "Notas personales",
+    en: "Personal notes",
+    fr: "Notes personnelles",
+    ar: "ملاحظات شخصية",
+  },
+  notesEmpty: {
+    ca: "Encara no has afegit cap nota.",
+    es: "Aún no has añadido ninguna nota.",
+    en: "You haven't added any notes yet.",
+    fr: "Tu n'as encore ajouté aucune note.",
+    ar: "لم تقم بإضافة أي ملاحظات بعد.",
+  },
+  notesPlaceholder: {
+    ca: "Escriu una nota per a aquest cas...",
+    es: "Escribe una nota para este caso...",
+    en: "Write a note for this case...",
+    fr: "Écris une note pour ce dossier...",
+    ar: "اكتب ملاحظة لهذه القضية...",
+  },
+  notesAdd: {
+    ca: "Afegir nota",
+    es: "Añadir nota",
+    en: "Add note",
+    fr: "Ajouter une note",
+    ar: "إضافة ملاحظة",
+  },
+  notesDelete: {
+    ca: "Esborrar",
+    es: "Borrar",
+    en: "Delete",
+    fr: "Supprimer",
+    ar: "حذف",
+  },
+
+  // ── SOS button ──────────────────────────────────────────────
+  sosButton: {
+    ca: "SOS",
+    es: "SOS",
+    en: "SOS",
+    fr: "SOS",
+    ar: "نجدة",
+  },
+  sosButtonAriaLabel: {
+    ca: "Botó SOS — obrir recursos d'emergència",
+    es: "Botón SOS — abrir recursos de emergencia",
+    en: "SOS button — open emergency resources",
+    fr: "Bouton SOS — ouvrir les ressources d'urgence",
+    ar: "زر النجدة — افتح موارد الطوارئ",
+  },
 } satisfies Record<string, I18nText>;

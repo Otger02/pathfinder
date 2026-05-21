@@ -17,6 +17,7 @@ import ProgressCard from "./components/ProgressCard";
 import PersonalDataPanel from "./components/PersonalDataPanel";
 import DocumentsPanel from "./components/DocumentsPanel";
 import PathTimeline from "./components/PathTimeline";
+import NotesPanel from "./components/NotesPanel";
 import ResourcesPanel from "./components/ResourcesPanel";
 import DeleteCaseButton from "./components/DeleteCaseButton";
 import {
@@ -163,6 +164,8 @@ export default async function CaseDetailPage({
           resultLabel={process.authLabel}
           lang={lang}
         />
+
+        <NotesPanel conversationId={conv.id} lang={lang} />
 
         <ResourcesPanel resources={resources} lang={lang} />
 
