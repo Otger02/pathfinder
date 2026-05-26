@@ -134,7 +134,7 @@ async function loadRememberedCollectedData(
     .select("collected_data, created_at")
     .eq("user_id", userId)
     .gte("data_expires_at", nowIso)
-    .order("created_at", { ascending: true })
+    .order("created_at", { ascending: false })
     .limit(20);
 
   if (error) {
@@ -143,7 +143,7 @@ async function loadRememberedCollectedData(
   }
 
   let remembered: Partial<PersonalData> = {};
-  for (const row of data || []) {
+  for (const row of (data || []).slice().reverse()) {
     remembered = mergeExtractedData(
       remembered,
       sanitizeRememberedCollectedData(row.collected_data)
@@ -534,6 +534,7 @@ export async function POST(req: NextRequest) {
     let toolWasCalled = false;
     let stopReason: string | null = null;
     const contentBlockTypes: string[] = [];
+    const pendingConversationUpdates: PromiseLike<void>[] = [];
     // For the agentic follow-up after tool_use
     let lastToolUseId = "";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -668,15 +669,17 @@ export async function POST(req: NextRequest) {
                     Date.now() + 24 * 60 * 60 * 1000
                   ).toISOString();
                 }
-                supabase
-                  .from("conversations")
-                  .update(updateData)
-                  .eq("id", convId)
-                  .then(({ error }) => {
-                    if (error) {
-                      console.error("[chat] supabase update failed:", error.message);
-                    }
-                  });
+                pendingConversationUpdates.push(
+                  supabase
+                    .from("conversations")
+                    .update(updateData)
+                    .eq("id", convId)
+                    .then(({ error }) => {
+                      if (error) {
+                        console.error("[chat] supabase update failed:", error.message);
+                      }
+                    })
+                );
               } catch (parseErr) {
                 console.error("Tool use JSON parse error:", parseErr);
               }
@@ -801,6 +804,10 @@ export async function POST(req: NextRequest) {
           } catch (err) {
             console.error("[chat] Follow-up call error:", err);
           }
+        }
+
+        if (pendingConversationUpdates.length > 0) {
+          await Promise.allSettled(pendingConversationUpdates);
         }
 
         // Done

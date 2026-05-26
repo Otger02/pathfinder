@@ -38,6 +38,14 @@ export async function createChatInvocationWithFallback(
   request: ChatProviderRequest
 ): Promise<ChatProviderInvocation> {
   const configuredProviders = getConfiguredChatProviders();
+  if (process.env.NODE_ENV !== "production") {
+    console.log(
+      "[chat] provider order:",
+      process.env.CHAT_PROVIDER_ORDER || "(default)",
+      "configured:",
+      configuredProviders.map((provider) => provider.name)
+    );
+  }
   if (configuredProviders.length === 0) {
     throw new Error("No chat providers are configured");
   }
@@ -48,6 +56,9 @@ export async function createChatInvocationWithFallback(
       return await provider.createInvocation(request);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(`[chat] provider failed: ${provider.name} -> ${message}`);
+      }
       errors.push(`${provider.name}: ${message}`);
     }
   }
