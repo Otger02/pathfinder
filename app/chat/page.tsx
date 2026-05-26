@@ -7,7 +7,6 @@ import { t, labels } from "@/lib/i18n";
 import type { PersonalData, PersonalDataField } from "@/lib/types/personal-data";
 import { EMPTY_PERSONAL_DATA } from "@/lib/types/personal-data";
 import { getFormsForAuth } from "@/lib/form-config";
-import { getDocsForAuth } from "@/lib/doc-config";
 import type {
   ChatMessage,
   ChatSubPhase,
@@ -104,10 +103,6 @@ function ChatPageInner() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  // Transient error banner shown at the top of the chat phase. Set to a
-  // string when something we can't recover from happens (PDF regen
-  // failed, email draft API down, etc.); the user can dismiss it.
-  const [chatError, setChatError] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [sources, setSources] = useState<Source[]>([]);
   const abortRef = useRef<AbortController | null>(null);
@@ -261,184 +256,25 @@ function ChatPageInner() {
         const loadedData = (conv.collected_data as Record<string, string>) || {};
         setCollectedData(loadedData);
         collectedDataRef.current = loadedData;
-        const loadedAuthSlugs: string[] = conv.auth_slugs ?? [];
-        if (loadedAuthSlugs.length > 0) {
-          setAuthSlugs(loadedAuthSlugs);
+        if (conv.auth_slugs?.length > 0) {
+          setAuthSlugs(conv.auth_slugs);
           setMode("collection");
         }
-        const loadedSubPhase: ChatSubPhase =
-          (conv.chat_sub_phase as ChatSubPhase) || "conversa";
-        setChatSubPhase(loadedSubPhase);
-        const loadedLang: Lang = (conv.language as Lang) || lang;
-        if (conv.language) setLang(loadedLang);
-
-        // Hydrate message history from the database. If the conversation
-        // had nothing logged yet (rare — e.g. consent_request only), fall
-        // back to a welcome line.
-        const history: Array<{ role: string; content: string }> =
-          Array.isArray(conv.messages) ? conv.messages : [];
-        const hydrated: ChatMessage[] = history.map((m) => ({
-          role: m.role === "user" ? "user" : "assistant",
-          content: m.content,
-        }));
-
-        if (hydrated.length === 0) {
-          hydrated.push({
+        if (conv.chat_sub_phase) {
+          setChatSubPhase(conv.chat_sub_phase as ChatSubPhase);
+        }
+        if (conv.language) {
+          setLang(conv.language as Lang);
+        }
+        setMessages([
+          {
             role: "assistant",
-            content: t(labels.collectIntro, loadedLang),
-          });
-        }
-
-        // If the previous flow reached a milestone phase, re-inject the
-        // matching cards so the user can act on them (confirm summary,
-        // tick documents, open email) without restarting from scratch.
-        if (loadedAuthSlugs.length > 0) {
-          if (loadedSubPhase === "resum") {
-            hydrated.push({
-              role: "assistant",
-              content: "",
-              cardType: "summary",
-              cardData: {
-                collected: loadedData,
-                authSlugs: loadedAuthSlugs,
-                confirmed: false,
-              } as SummaryCardData,
-            });
-          } else if (
-            loadedSubPhase === "document" ||
-            loadedSubPhase === "enviament"
-          ) {
-            // Doc checklist: shows the physical-paperwork list with
-            // ticks for what the user has already obtained.
-            const docsObtained =
-              (loadedData.documents_obtained as unknown as string[]) ?? [];
-            hydrated.push({
-              role: "assistant",
-              content: "",
-              cardType: "doc_checklist",
-              cardData: {
-                authSlugs: loadedAuthSlugs,
-                documentsObtained: docsObtained,
-              } as DocChecklistCardData,
-            });
-          }
-        }
-
-        setMessages(hydrated);
+            content: conv.chat_sub_phase === "enviament" || conv.chat_sub_phase === "document"
+              ? t(labels.dataConfirmed, conv.language as Lang || lang)
+              : t(labels.collectIntro, conv.language as Lang || lang),
+          },
+        ]);
         setPhase("chat");
-
-        // Regenerate the downloadable PDF cards for resumed cases that
-        // already reached the document/enviament phases. The PDFs are
-        // produced server-side via /api/documents/regenerate (which
-        // pulls personalData from the conversation by id) so we don't
-        // re-send PII over the wire. URLs are local blobs that live
-        // for this tab session; for permanent downloads the user goes
-        // to /documents which regenerates fresh on click.
-        if (
-          (loadedSubPhase === "document" || loadedSubPhase === "enviament") &&
-          loadedAuthSlugs.length > 0
-        ) {
-          // Inject a loading DocumentCard right away so the user sees
-          // something is happening.
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: "assistant",
-              content: "",
-              cardType: "document",
-              cardData: { documents: [], loading: true } as DocumentCardData,
-            },
-          ]);
-
-          (async () => {
-            const docs: Array<{ name: string; url: string }> = [];
-            // Summary PDF first
-            const formIds = ["summary"];
-            for (const slug of loadedAuthSlugs) {
-              for (const form of getFormsForAuth(slug)) formIds.push(form.id);
-            }
-
-            for (const formId of formIds) {
-              try {
-                const resp = await fetch("/api/documents/regenerate", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    conversation_id: conv.id,
-                    formId,
-                    lang: loadedLang,
-                    inline: false,
-                  }),
-                });
-                if (!resp.ok) continue;
-                const blob = await resp.blob();
-                const url = URL.createObjectURL(blob);
-                const baseName =
-                  formId === "summary"
-                    ? `pathfinder-resumen-${loadedAuthSlugs[0]}`
-                    : `pathfinder-${formId}`;
-                docs.push({ name: `${baseName}.pdf`, url });
-              } catch {
-                // skip this PDF; user can still grab it from /documents
-              }
-            }
-
-            setGeneratedDocs(docs);
-            // Replace the loading DocumentCard with the populated one.
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.cardType === "document"
-                  ? {
-                      ...m,
-                      cardData: { documents: docs, loading: false } as DocumentCardData,
-                    }
-                  : m
-              )
-            );
-          })();
-        }
-
-        // Email draft is async — fire it after the initial paint so the
-        // chat is interactive immediately and the email card slots in
-        // when ready. We do this for both 'document' and 'enviament':
-        // if the user has all docs ticked already, the draft is what
-        // they need to act on next; if they don't, having the email
-        // card pre-loaded means the moment they tick the last one (or
-        // click the Envío tab) the draft is right there. Only fires
-        // when we have a valid provincia in collected_data — that's
-        // the routing key for the subdelegation address.
-        if (
-          (loadedSubPhase === "document" || loadedSubPhase === "enviament") &&
-          loadedAuthSlugs.length > 0 &&
-          loadedData.provincia
-        ) {
-          fetch("/api/email/draft", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              personalData: loadedData,
-              authSlug: loadedAuthSlugs[0],
-              provincia: loadedData.provincia,
-              lang: loadedLang,
-            }),
-          })
-            .then((r) => (r.ok ? r.json() : null))
-            .then((emailData: EmailDraftCardData | null) => {
-              if (!emailData) return;
-              setMessages((prev) => [
-                ...prev,
-                {
-                  role: "assistant",
-                  content: "",
-                  cardType: "email_draft",
-                  cardData: emailData,
-                },
-              ]);
-            })
-            .catch(() => {
-              // best-effort; the user can still resend from /documents
-            });
-        }
       })
       .catch(() => {/* resume failed — stay on tree */ });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -735,41 +571,6 @@ function ChatPageInner() {
     await handleAutoGeneratePdfs();
   }, [conversationId, authSlugs, lang]);
 
-  const handleSubPhaseChange = useCallback(
-    (phase: ChatSubPhase) => {
-      setChatSubPhase(phase);
-      // Persist to the backend so the next /api/chat call respects it.
-      if (conversationId) {
-        fetch(`/api/conversations/${conversationId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_sub_phase: phase }),
-        }).catch(() => {
-          // best-effort; the next message will still apply the local
-          // chat_sub_phase via the chat route's own logic.
-        });
-      }
-
-      // When the user manually clicks the 'Envío' tab and we don't have
-      // an email card yet, generate it now so the user gets the draft
-      // they expect to see in this phase.
-      if (phase === "enviament" && authSlugs.length > 0) {
-        let alreadyHasEmailCard = false;
-        setMessages((prev) => {
-          alreadyHasEmailCard = prev.some((m) => m.cardType === "email_draft");
-          return prev;
-        });
-        if (!alreadyHasEmailCard) {
-          handleTransitionToEnviament();
-        }
-      }
-    },
-    // handleTransitionToEnviament is stable enough — it only reads
-    // collectedDataRef and authSlugs which we already depend on.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [conversationId, authSlugs]
-  );
-
   const handleSummaryCorrect = useCallback(() => {
     setChatSubPhase("conversa");
     // Inject a system message directing the bot to ask what to correct
@@ -780,21 +581,22 @@ function ChatPageInner() {
   }, [lang]);
 
   const handleDocToggle = useCallback(async (slug: string, obtained: boolean) => {
-    // Optimistic update — and capture the new obtained list in a local
-    // var so we can detect 'all confirmed' below without waiting for a
-    // re-render.
-    let newObtained: string[] = [];
+    // Optimistic update
     setMessages((prev) =>
-      prev.map((m) => {
-        if (m.cardType !== "doc_checklist") return m;
-        const cd = m.cardData as DocChecklistCardData;
-        newObtained = obtained
-          ? [...cd.documentsObtained, slug]
-          : cd.documentsObtained.filter((s) => s !== slug);
-        return { ...m, cardData: { ...cd, documentsObtained: newObtained } };
-      })
+      prev.map((m) =>
+        m.cardType === "doc_checklist"
+          ? {
+              ...m,
+              cardData: {
+                ...(m.cardData as DocChecklistCardData),
+                documentsObtained: obtained
+                  ? [...(m.cardData as DocChecklistCardData).documentsObtained, slug]
+                  : (m.cardData as DocChecklistCardData).documentsObtained.filter((s) => s !== slug),
+              },
+            }
+          : m
+      )
     );
-
     // Persist to Supabase
     if (conversationId) {
       if (obtained) {
@@ -811,30 +613,7 @@ function ChatPageInner() {
         });
       }
     }
-
-    // Auto-advance to 'enviament' when the user has just ticked the last
-    // pending document. We only fire on a positive toggle so unticking
-    // doesn't trigger anything unexpected.
-    if (obtained && authSlugs.length > 0) {
-      const allDocs = getDocsForAuth(authSlugs);
-      const isAllChecked =
-        allDocs.length > 0 &&
-        allDocs.every((d) => newObtained.includes(d.slug));
-      const alreadyHasEmailCard = (() => {
-        // Read from latest state via the functional setMessages dance
-        let found = false;
-        setMessages((prev) => {
-          found = prev.some((m) => m.cardType === "email_draft");
-          return prev;
-        });
-        return found;
-      })();
-      if (isAllChecked && !alreadyHasEmailCard) {
-        await handleTransitionToEnviament();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [conversationId, authSlugs]);
+  }, [conversationId]);
 
   async function handleAutoGeneratePdfs() {
     // Inject doc checklist card before the document loader
@@ -958,14 +737,7 @@ function ChatPageInner() {
         }),
       });
 
-      if (!resp.ok) {
-        setChatError(
-          lang === "ca"
-            ? "No s'ha pogut generar l'esborrany del correu. Torna-ho a provar des de Documents."
-            : "No se ha podido generar el borrador del correo. Inténtalo desde Documentos."
-        );
-        return;
-      }
+      if (!resp.ok) return;
       const emailData = (await resp.json()) as EmailDraftCardData;
 
       setChatSubPhase("enviament");
@@ -1137,9 +909,6 @@ function ChatPageInner() {
           onSummaryConfirm={handleSummaryConfirm}
           onSummaryCorrect={handleSummaryCorrect}
           onDocToggle={handleDocToggle}
-          onSubPhaseChange={handleSubPhaseChange}
-          error={chatError}
-          onErrorDismiss={() => setChatError(null)}
         />
       )}
 
