@@ -46,6 +46,49 @@ function assertRequiredEnv() {
   }
 }
 
+async function sendInfoTurn(message: string): Promise<{ text: string }> {
+  const response = await fetch(`${BASE_URL}/api/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message,
+      idioma: "es",
+      mode: "info",
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`info chat failed: ${response.status} ${await response.text()}`);
+  }
+
+  const reader = response.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let text = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const chunks = buffer.split("\n\n");
+    buffer = chunks.pop() || "";
+
+    for (const chunk of chunks) {
+      if (!chunk.startsWith("data: ")) continue;
+      try {
+        const event = JSON.parse(chunk.slice(6)) as { type?: string; text?: string };
+        if (event.type === "text" && typeof event.text === "string") {
+          text += event.text;
+        }
+      } catch {
+        // Ignore malformed SSE events.
+      }
+    }
+  }
+
+  return { text };
+}
+
 async function waitForServer(url: string, timeoutMs: number) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
@@ -94,6 +137,7 @@ async function runScenario(options: {
   envOverrides: Record<string, string>;
   expectLogs: RegExp[];
   rejectLogs?: RegExp[];
+  runCheck?: () => Promise<void>;
 }) {
   console.log(`\n=== ${options.name} ===`);
 
@@ -123,19 +167,23 @@ async function runScenario(options: {
   try {
     await waitForServer(`${BASE_URL}/auth`, STARTUP_TIMEOUT_MS);
 
-    const testResult = spawnSync("npm", ["run", "test:auth-memory"], {
-      cwd: process.cwd(),
-      shell: true,
-      windowsHide: true,
-      env: {
-        ...process.env,
-        BASE_URL,
-      },
-      stdio: "inherit",
-    });
+    if (options.runCheck) {
+      await options.runCheck();
+    } else {
+      const testResult = spawnSync("npm", ["run", "test:auth-memory"], {
+        cwd: process.cwd(),
+        shell: true,
+        windowsHide: true,
+        env: {
+          ...process.env,
+          BASE_URL,
+        },
+        stdio: "inherit",
+      });
 
-    if (testResult.status !== 0) {
-      throw new Error(`test:auth-memory failed with exit code ${testResult.status}`);
+      if (testResult.status !== 0) {
+        throw new Error(`test:auth-memory failed with exit code ${testResult.status}`);
+      }
     }
 
     const settledLogs = await waitForLogPatterns(
@@ -167,6 +215,22 @@ async function runScenario(options: {
 async function main() {
   loadEnvLocal();
   assertRequiredEnv();
+
+  if (process.env.GEMINI_API_KEY) {
+    await runScenario({
+      name: "Gemini primary info mode",
+      envOverrides: {
+        CHAT_PROVIDER_ORDER: "gemini,openai,anthropic",
+      },
+      expectLogs: [/provider order: gemini,openai,anthropic configured: \[ 'gemini', 'openai', 'anthropic' \]/, /provider selected: gemini gemini-2\.5-flash/],
+      runCheck: async () => {
+        const result = await sendInfoTurn("Explica qué es el arraigo social y qué documentos suelen pedirse.");
+        if (result.text.trim().length < 80) {
+          throw new Error("Gemini info-mode response was too short");
+        }
+      },
+    });
+  }
 
   await runScenario({
     name: "OpenAI primary",

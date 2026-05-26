@@ -525,6 +525,7 @@ export async function POST(req: NextRequest) {
             : { type: "auto" };
     }
     const providerInvocation = await createChatInvocationWithFallback(providerRequest);
+    debug("[chat] provider selected:", providerInvocation.provider, providerInvocation.model);
 
     // ── 10. Stream transform: provider stream → client SSE ──────
     let fullResponse = "";
