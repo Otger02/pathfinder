@@ -6,6 +6,233 @@
  * All fields are optional — Claude only fills what the user mentioned.
  */
 
+import type { PersonalData } from "./types/personal-data";
+
+export interface ClaudeToolDefinition {
+  name: string;
+  description: string;
+  strict?: boolean;
+  input_schema: {
+    type: "object";
+    additionalProperties: boolean;
+    properties: Record<string, unknown>;
+    required: string[];
+  };
+}
+
+const TOOL_ENUM_VALUES = {
+  sexo: new Set(["H", "M", "X"]),
+  estadoCivil: new Set([
+    "soltero",
+    "casado",
+    "separado",
+    "divorciado",
+    "viudo",
+    "pareja_hecho",
+  ]),
+  tipoDocumento: new Set([
+    "pasaporte",
+    "titulo_viaje",
+    "cedula",
+    "documento_identidad",
+    "nie",
+  ]),
+  tipoSolicitud: new Set(["residencia_inicial", "prorroga", "provisional"]),
+  hijosEscolarizacion: new Set(["si", "no", "no_aplica"]),
+  formacio_tipus: new Set([
+    "educacio_secundaria",
+    "certificat_professional",
+    "ensenyances_obligatories_adults",
+    "formacio_serveis_empleo",
+  ]),
+  formacio_modalitat: new Set(["presencial", "a_distancia", "mixta"]),
+} as const;
+
+const ARRAY_TOOL_FIELDS = new Set([
+  "documents_obtained",
+  "formacio_tipus",
+  "formacio_modalitat",
+]);
+
+const ADDRESS_FIELDS = [
+  "domicilio",
+  "numeroDomicilio",
+  "pisoDomicilio",
+  "localidad",
+  "provincia",
+  "codigoPostal",
+] as const;
+
+const RELATED_FIELD_GROUPS: ReadonlyArray<ReadonlyArray<string>> = [
+  ADDRESS_FIELDS,
+  [
+    "empleador_nombre",
+    "empleador_nifNie",
+    "empleador_actividad",
+    "empleador_domicilio",
+    "empleador_localidad",
+    "empleador_provincia",
+    "empleador_codigoPostal",
+    "empleador_telefono",
+  ],
+  [
+    "familiar_nombre",
+    "familiar_primerApellido",
+    "familiar_segundoApellido",
+    "familiar_vinculo",
+    "familiar_sexo",
+    "familiar_estadoCivil",
+    "familiar_fechaNacimiento",
+    "familiar_paisNacimiento",
+    "familiar_lugarNacimiento",
+  ],
+  [
+    "formacio_entitat",
+    "formacio_nifCif",
+    "formacio_tipus",
+    "formacio_modalitat",
+    "formacio_duracio",
+  ],
+  [
+    "activitat_razonSocial",
+    "activitat_nif",
+    "activitat_actividad",
+    "activitat_domicilio",
+    "activitat_localidad",
+    "activitat_provincia",
+    "activitat_codigoPostal",
+    "activitat_telefono",
+  ],
+  [
+    "ciudadanoUE_nombre",
+    "ciudadanoUE_primerApellido",
+    "ciudadanoUE_nie",
+    "ciudadanoUE_nacionalidad",
+  ],
+  [
+    "espanyol_nombre",
+    "espanyol_primerApellido",
+    "espanyol_dni",
+    "espanyol_sexo",
+    "espanyol_estadoCivil",
+  ],
+  [
+    "tutor_nombre",
+    "tutor_dniNiePas",
+    "tutor_relacionMenor",
+    "tutor_domicilio",
+    "tutor_localidad",
+    "tutor_telefono",
+  ],
+];
+
+const STRICT_OPTIONAL_FIELD_LIMIT = 24;
+
+function addFieldIfKnown(target: Set<string>, field: string) {
+  if (field in COLLECT_PERSONAL_DATA_PROPERTIES) target.add(field);
+}
+
+function expandToolFieldSet(missingFields: string[]): string[] {
+  const selected = new Set<string>();
+  for (const field of missingFields) addFieldIfKnown(selected, field);
+
+  for (const group of RELATED_FIELD_GROUPS) {
+    const touchesGroup = group.some((field) => selected.has(field));
+    if (!touchesGroup) continue;
+
+    for (const field of group) {
+      if (selected.size >= STRICT_OPTIONAL_FIELD_LIMIT) break;
+      addFieldIfKnown(selected, field);
+    }
+  }
+
+  return Array.from(selected);
+}
+
+function cleanString(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function normalizeArrayField(field: string, value: unknown): unknown[] | null {
+  if (!Array.isArray(value)) return null;
+
+  const allowedValues =
+    field === "formacio_tipus"
+      ? TOOL_ENUM_VALUES.formacio_tipus
+      : field === "formacio_modalitat"
+        ? TOOL_ENUM_VALUES.formacio_modalitat
+        : null;
+
+  const cleaned = value
+    .map((item) => cleanString(item))
+    .filter((item): item is string => item !== null)
+    .filter((item) => (allowedValues ? allowedValues.has(item) : true));
+
+  return cleaned.length > 0 ? Array.from(new Set(cleaned)) : null;
+}
+
+export function normalizeCollectedPersonalDataInput(
+  input: unknown
+): Partial<PersonalData> {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return {};
+
+  const normalized: Partial<PersonalData> = {};
+  const payload = input as Record<string, unknown>;
+
+  for (const [field, rawValue] of Object.entries(payload)) {
+    if (!(field in COLLECT_PERSONAL_DATA_PROPERTIES)) continue;
+
+    if (ARRAY_TOOL_FIELDS.has(field)) {
+      const arrayValue = normalizeArrayField(field, rawValue);
+      if (arrayValue) {
+        normalized[field as keyof PersonalData] = arrayValue as never;
+      }
+      continue;
+    }
+
+    if (field === "hijosEscolarizacion") {
+      const normalizedValue = cleanString(rawValue);
+      if (!normalizedValue || !TOOL_ENUM_VALUES.hijosEscolarizacion.has(normalizedValue)) {
+        continue;
+      }
+      normalized.hijosEscolarizacion =
+        normalizedValue === "si"
+          ? true
+          : normalizedValue === "no"
+            ? false
+            : null;
+      continue;
+    }
+
+    const stringValue = cleanString(rawValue);
+    if (!stringValue) continue;
+
+    if (
+      field === "sexo" ||
+      field === "familiar_sexo" ||
+      field === "espanyol_sexo"
+    ) {
+      if (!TOOL_ENUM_VALUES.sexo.has(stringValue)) continue;
+    } else if (
+      field === "estadoCivil" ||
+      field === "familiar_estadoCivil" ||
+      field === "espanyol_estadoCivil"
+    ) {
+      if (!TOOL_ENUM_VALUES.estadoCivil.has(stringValue)) continue;
+    } else if (field === "tipoDocumento") {
+      if (!TOOL_ENUM_VALUES.tipoDocumento.has(stringValue)) continue;
+    } else if (field === "tipoSolicitud") {
+      if (!TOOL_ENUM_VALUES.tipoSolicitud.has(stringValue)) continue;
+    }
+
+    normalized[field as keyof PersonalData] = stringValue as never;
+  }
+
+  return normalized;
+}
+
 export const COLLECT_PERSONAL_DATA_TOOL = {
   name: "collect_personal_data",
   description:
@@ -14,6 +241,7 @@ export const COLLECT_PERSONAL_DATA_TOOL = {
     "Do NOT guess or infer values the user did not state.",
   input_schema: {
     type: "object" as const,
+    additionalProperties: false,
     properties: {
       nombre: {
         type: "string",
@@ -45,8 +273,8 @@ export const COLLECT_PERSONAL_DATA_TOOL = {
       },
       sexo: {
         type: "string",
-        enum: ["H", "M"],
-        description: "Sex: H (male) or M (female)",
+        enum: ["H", "M", "X"],
+        description: "Sex: H (male), M (female), or X (unspecified)",
       },
       nombrePadre: {
         type: "string",
@@ -58,12 +286,12 @@ export const COLLECT_PERSONAL_DATA_TOOL = {
       },
       estadoCivil: {
         type: "string",
-        enum: ["soltero", "casado", "divorciado", "viudo", "pareja_hecho"],
+        enum: ["soltero", "casado", "separado", "divorciado", "viudo", "pareja_hecho"],
         description: "Civil status",
       },
       tipoDocumento: {
         type: "string",
-        enum: ["pasaporte", "nie", "otro"],
+        enum: ["pasaporte", "titulo_viaje", "cedula", "documento_identidad", "nie"],
         description: "Type of identity document",
       },
       numeroDocumento: {
@@ -182,12 +410,12 @@ export const COLLECT_PERSONAL_DATA_TOOL = {
       },
       familiar_sexo: {
         type: "string",
-        enum: ["H", "M"],
-        description: "Sexo del familiar: H (hombre) o M (mujer)",
+        enum: ["H", "M", "X"],
+        description: "Sexo del familiar: H, M o X",
       },
       familiar_estadoCivil: {
         type: "string",
-        enum: ["soltero", "casado", "divorciado", "viudo", "pareja_hecho"],
+        enum: ["soltero", "casado", "separado", "divorciado", "viudo", "pareja_hecho"],
         description: "Estado civil del familiar",
       },
       familiar_fechaNacimiento: {
@@ -306,12 +534,12 @@ export const COLLECT_PERSONAL_DATA_TOOL = {
       },
       espanyol_sexo: {
         type: "string",
-        enum: ["H", "M"],
-        description: "Sexo del ciudadano español: H (hombre) o M (mujer)",
+        enum: ["H", "M", "X"],
+        description: "Sexo del ciudadano español: H, M o X",
       },
       espanyol_estadoCivil: {
         type: "string",
-        enum: ["soltero", "casado", "divorciado", "viudo", "pareja_hecho"],
+        enum: ["soltero", "casado", "separado", "divorciado", "viudo", "pareja_hecho"],
         description: "Estado civil del ciudadano español",
       },
 
@@ -344,3 +572,35 @@ export const COLLECT_PERSONAL_DATA_TOOL = {
     required: [] as string[],
   },
 };
+
+const COLLECT_PERSONAL_DATA_PROPERTIES =
+  COLLECT_PERSONAL_DATA_TOOL.input_schema.properties as Record<string, unknown>;
+
+export function buildCollectPersonalDataTool(options: {
+  phase: "conversa" | "document";
+  missingFields?: string[];
+}): ClaudeToolDefinition {
+  const fields =
+    options.phase === "document"
+      ? ["documents_obtained"]
+      : expandToolFieldSet(options.missingFields ?? []);
+
+  const properties = Object.fromEntries(
+    fields.map((field) => [field, COLLECT_PERSONAL_DATA_PROPERTIES[field]])
+  );
+
+  return {
+    name: COLLECT_PERSONAL_DATA_TOOL.name,
+    description: COLLECT_PERSONAL_DATA_TOOL.description,
+    strict:
+      options.phase === "document" &&
+      fields.length > 0 &&
+      fields.length <= STRICT_OPTIONAL_FIELD_LIMIT,
+    input_schema: {
+      type: "object",
+      additionalProperties: false,
+      properties,
+      required: [],
+    },
+  };
+}

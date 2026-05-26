@@ -317,6 +317,12 @@ NO repeteixis els números de document complets al resum — usa només els últ
       const obtained = (collectedData.documents_obtained as string[] | undefined) ?? [];
       const allDocs = getDocsForAuth(authSlugs);
       const missingDocs = getMissingDocs(authSlugs, obtained);
+      const closedCollectionFacts = [
+        collectedData.tipoSolicitud ? `  ✓ Tipus de sol·licitud: ${collectedData.tipoSolicitud}` : null,
+        collectedData.nacionalidad ? `  ✓ Nacionalitat: ${collectedData.nacionalidad}` : null,
+        collectedData.empleador_nombre ? `  ✓ Empleador: ${collectedData.empleador_nombre}` : null,
+        collectedData.localidad ? `  ✓ Localitat de residència: ${collectedData.localidad}` : null,
+      ].filter(Boolean);
 
       const checklistLines = allDocs.map((doc) => {
         const have = obtained.includes(doc.slug);
@@ -336,11 +342,20 @@ NO repeteixis els números de document complets al resum — usa només els últ
               .map((d) => `  • ${d.nameCa}${d.validity ? ` — ${d.validity}` : ""}${d.whoObtains === "employer" ? " (l'ha d'aportar l'empresa)" : d.whoObtains === "authority" ? " (emès per l'administració)" : ""}`)
               .join("\n")
           : "  ✅ Tots els documents confirmats!";
+      const closedFactsBlock =
+        closedCollectionFacts.length > 0
+          ? closedCollectionFacts.join("\n")
+          : "  ✓ Les dades personals i de la via migratòria ja estan tancades";
 
       parts.push(`
 
 INSTRUCCIÓ DOCUMENTS NECESSARIS:
 L'usuari ha completat les dades personals. Ara cal recollir la documentació física.
+    L'autorització objectiu JA ESTÀ DECIDIDA i és exactament: ${authSlugs.join(", ")}.
+    NO has de reavaluar la via, NO has de comparar-la amb altres opcions i NO has de demanar més dades per decidir entre alternatives.
+
+Dades personals ja tancades (NO les tornis a preguntar ni les reavaluïs):
+${closedFactsBlock}
 
 Llista de documents per a ${authSlugs.join(", ")}:
 ${checklistBlock}
@@ -355,7 +370,11 @@ Regles:
    Exemple: si tenia ["passaport_vigent"] i ara confirma empadronament, envia ["passaport_vigent","empadronament_2_anys"].
 3. Quan TOTS els documents estiguin confirmats, passa a l'explicació de com presentar la sol·licitud.
 4. Pots recomanar que comencin pels documents que tarden més (antecedents penals estrangers, informe d'arrelament).
-5. Usa l'eina collect_personal_data per actualitzar documents_obtained — mai perdis els slugs ja confirmats.`);
+5. Usa l'eina collect_personal_data per actualitzar documents_obtained — mai perdis els slugs ja confirmats.
+6. NO tornis a preguntar per anys a Espanya, tipus d'autorització, situació laboral o altres dades personals ja recollides en la fase anterior.
+7. Si necessites continuar la conversa, fes només la següent pregunta documental més útil: quin document pendent té ja preparat, quin li falta, o quin detall falta d'un document pendent.
+8. Si l'usuari confirma documents que ja apareixen com a obtinguts, limita't a reconèixer-ho i passa al següent document pendent.
+9. PROHIBIT en aquesta fase: preguntar "quants anys portes a Espanya", parlar d'"arraigo social", parlar d'"arraigo laboral", o demanar dades per decidir quina autorització convé. Aquesta decisió ja està tancada.`);
     } else if (subPhase === "enviament") {
       parts.push(`
 

@@ -6,7 +6,10 @@ import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit
 import { ChatRequestSchema, badRequestFromZod } from "@/lib/validation/schemas";
 import { detectSos } from "@/lib/sos";
 import { buildSystemPrompt } from "@/lib/prompt-builder";
-import { COLLECT_PERSONAL_DATA_TOOL } from "@/lib/tool-definitions";
+import {
+  buildCollectPersonalDataTool,
+  normalizeCollectedPersonalDataInput,
+} from "@/lib/tool-definitions";
 import {
   computeMissingFields,
   shouldTransitionToResum,
@@ -405,17 +408,25 @@ export async function POST(req: NextRequest) {
       max_tokens: CLAUDE_MAX_TOKENS,
       system: systemPrompt,
       messages: claudeMessages,
+      cache_control: { type: "ephemeral" },
       stream: true,
     };
 
-    // Add tool when in collection mode + conversa phase.
-    // Force the model to call collect_personal_data while there are
-    // missing required fields. Once everything is collected, fall back
-    // to "auto" so the model can answer free-form questions.
-    if (mode === "collection" && chatSubPhase === "conversa") {
-      claudeBody.tools = [COLLECT_PERSONAL_DATA_TOOL];
+    // Add a dynamic tool in collection phases. Anthropic strict tool use
+    // only works with smaller optional schemas, so we scope the tool to the
+    // active phase and nearby pending fields.
+    if (mode === "collection" && (chatSubPhase === "conversa" || chatSubPhase === "document")) {
+      const scopedTool = buildCollectPersonalDataTool({
+        phase: chatSubPhase === "document" ? "document" : "conversa",
+        missingFields,
+      });
+      claudeBody.tools = [scopedTool];
       claudeBody.tool_choice =
-        missingFields.length > 0 ? { type: "any" } : { type: "auto" };
+        chatSubPhase === "document"
+          ? { type: "any" }
+          : missingFields.length > 0
+            ? { type: "any" }
+            : { type: "auto" };
     }
 
     const claudeController = new AbortController();
@@ -569,8 +580,15 @@ export async function POST(req: NextRequest) {
                   toolUseActive = false;
 
                   try {
-                    const extractedData = JSON.parse(toolUseJson) as Partial<PersonalData>;
+                    const rawExtractedData = JSON.parse(toolUseJson) as Partial<PersonalData>;
+                    const extractedData = normalizeCollectedPersonalDataInput(rawExtractedData);
                     debug(`[chat] tool extracted ${Object.keys(extractedData).length} fields (${claudeModel}):`, Object.keys(extractedData).join(", "));
+                    if (Object.keys(rawExtractedData).length !== Object.keys(extractedData).length) {
+                      debug(
+                        `[chat] tool dropped invalid fields (${claudeModel}):`,
+                        Object.keys(rawExtractedData).filter((key) => !(key in extractedData)).join(", ")
+                      );
+                    }
 
                     // Save for the agentic follow-up call
                     lastToolUseId = toolUseId;
@@ -606,7 +624,10 @@ export async function POST(req: NextRequest) {
                     );
 
                     // Check phase transition
-                    if (shouldTransitionToResum(effectiveAuthSlugs, newCollected)) {
+                    if (
+                      chatSubPhase === "conversa" &&
+                      shouldTransitionToResum(effectiveAuthSlugs, newCollected)
+                    ) {
                       chatSubPhase = "resum";
                       streamController.enqueue(
                         encoder.encode(
@@ -710,6 +731,10 @@ export async function POST(req: NextRequest) {
             .map(([k, v]) => `${k}=${JSON.stringify(v)}`)
             .join(", ");
           const savedStr = justSaved.length > 0 ? `Saved this turn: ${justSaved.join(", ")}. ` : "";
+          const followUpConstraint =
+            chatSubPhase === "document"
+              ? "DOCUMENT PHASE RULES: The authorization path is already fixed. Do NOT ask about years in Spain, eligibility, arraigo social, arraigo laboral, or alternative routes. Only acknowledge the documents just saved and ask about the next missing document or the next document-specific clarification. "
+              : "";
 
           // Rebuild system prompt with UPDATED collectedData so Claude knows
           // which fields are already collected after this turn's tool call.
@@ -741,7 +766,7 @@ export async function POST(req: NextRequest) {
             },
             {
               role: "user",
-              content: [{ type: "tool_result", tool_use_id: lastToolUseId, content: `${savedStr}ALL data collected so far (DO NOT ASK FOR THESE AGAIN): ${allCollectedStr}. ${missingStr}` }],
+              content: [{ type: "tool_result", tool_use_id: lastToolUseId, content: `${followUpConstraint}${savedStr}ALL data collected so far (DO NOT ASK FOR THESE AGAIN): ${allCollectedStr}. ${missingStr}` }],
             },
           ];
 
@@ -761,6 +786,7 @@ export async function POST(req: NextRequest) {
                 max_tokens: CLAUDE_MAX_TOKENS,
                 system: followUpSystemPrompt,
                 messages: followUpMessages,
+                cache_control: { type: "ephemeral" },
                 stream: true,
               }),
               signal: followUpCtrl.signal,
