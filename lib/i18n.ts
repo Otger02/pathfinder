@@ -1261,4 +1261,43 @@ export const labels = {
     fr: "Bouton SOS — ouvrir les ressources d'urgence",
     ar: "زر النجدة — افتح موارد الطوارئ",
   },
+
+  // ── Consulates / diplomatic missions ────────────────────────
+  consulatesTitle: {
+    ca: "Ambaixades i consolats del teu país a Espanya",
+    es: "Embajadas y consulados de tu país en España",
+    en: "Embassies and consulates of your country in Spain",
+    fr: "Ambassades et consulats de ton pays en Espagne",
+    ar: "السفارات والقنصليات لبلدك في إسبانيا",
+  },
+  consulatesAppointment: {
+    ca: "Cita prèvia",
+    es: "Cita previa",
+    en: "Appointment",
+    fr: "Rendez-vous",
+    ar: "موعد مسبق",
+  },
+
+  // ── Procedural notes (law vs practice) ──────────────────────
+  proceduralNotesTitle: {
+    ca: "Avisos pràctics per a la teva zona",
+    es: "Avisos prácticos para tu zona",
+    en: "Practical notes for your area",
+    fr: "Conseils pratiques pour ta zone",
+    ar: "ملاحظات عملية لمنطقتك",
+  },
+  proceduralLawSays: {
+    ca: "La llei diu",
+    es: "La ley dice",
+    en: "The law says",
+    fr: "La loi dit",
+    ar: "ينص القانون",
+  },
+  proceduralSource: {
+    ca: "Font",
+    es: "Fuente",
+    en: "Source",
+    fr: "Source",
+    ar: "المصدر",
+  },
 } satisfies Record<string, I18nText>;

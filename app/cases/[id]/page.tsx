@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { createAuthServerClient } from "@/lib/supabase-server";
+import { createServiceClient } from "@/lib/supabase";
 import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
 import {
@@ -9,6 +10,7 @@ import {
 } from "@/app/dashboard/lib/dashboard-data";
 import { computeMissingFields } from "@/lib/collection-engine";
 import { buildDocumentGroups } from "@/app/documents/lib/build-document-list";
+import { isoForNationality, isoForProvince } from "@/lib/iso-mappings";
 import UserMenu from "@/app/dashboard/components/UserMenu";
 import DashboardLangSelector from "@/app/dashboard/components/DashboardLangSelector";
 import SosButton from "@/app/components/SosButton";
@@ -19,12 +21,17 @@ import PersonalDataPanel from "./components/PersonalDataPanel";
 import DocumentsPanel from "./components/DocumentsPanel";
 import PathTimeline from "./components/PathTimeline";
 import NotesPanel from "./components/NotesPanel";
+import ConsulatesPanel from "./components/ConsulatesPanel";
+import ProceduralNotesPanel from "./components/ProceduralNotesPanel";
 import ResourcesPanel from "./components/ResourcesPanel";
 import DeleteCaseButton from "./components/DeleteCaseButton";
 import {
   resourcesForSituation,
   situationFromAuthSlug,
 } from "./lib/case-helpers";
+
+// Severity ordering: blockers first, then workarounds, warnings, info.
+const SEVERITY_ORDER = ["blocker", "workaround", "warning", "info"] as const;
 
 interface CasePageProps {
   params: Promise<{ id: string }>;
@@ -85,6 +92,44 @@ export default async function CaseDetailPage({
   // Resources by situation
   const situation = situationFromAuthSlug(process.authSlug);
   const resources = resourcesForSituation(situation);
+
+  // ── Resource-layer queries (best-effort, never block render) ──
+  // Both panels return null when their query yields zero rows, so if the
+  // tables haven't been seeded yet the UI just doesn't show those sections.
+  const nationalityIso = isoForNationality(
+    typeof collected.nacionalidad === "string"
+      ? collected.nacionalidad
+      : null
+  );
+  const provinceIso = isoForProvince(
+    typeof collected.provincia === "string" ? collected.provincia : null
+  );
+
+  // Use a service client for the public, read-only lookups (RLS already
+  // grants public SELECT; this just skips an extra auth roundtrip).
+  let missions: Awaited<ReturnType<typeof fetchMissions>> = [];
+  let proceduralNotes: Awaited<ReturnType<typeof fetchProceduralNotes>> = [];
+  try {
+    const svc = createServiceClient();
+    missions = nationalityIso ? await fetchMissions(svc, nationalityIso) : [];
+    proceduralNotes = await fetchProceduralNotes(
+      svc,
+      process.authSlug ?? null,
+      provinceIso
+    );
+  } catch (err) {
+    // Tables may not exist yet (migration 008 not applied) — degrade silently.
+    // NB: `process` is shadowed by the local ProcessSummary variable above,
+    // so reach for the Node global through `globalThis`.
+    const nodeEnv = (globalThis as { process?: { env?: { NODE_ENV?: string } } })
+      .process?.env?.NODE_ENV;
+    if (nodeEnv !== "production") {
+      console.warn(
+        "[case] resource-layer fetch failed:",
+        err instanceof Error ? err.message : "unknown"
+      );
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--bg)" }}>
@@ -168,6 +213,10 @@ export default async function CaseDetailPage({
 
         <NotesPanel conversationId={conv.id} lang={lang} />
 
+        <ConsulatesPanel missions={missions} lang={lang} />
+
+        <ProceduralNotesPanel notes={proceduralNotes} lang={lang} />
+
         <ResourcesPanel resources={resources} lang={lang} />
 
         <DeleteCaseButton conversationId={conv.id} lang={lang} />
@@ -176,4 +225,71 @@ export default async function CaseDetailPage({
       <SosButton lang={lang} />
     </div>
   );
+}
+
+// ── Resource-layer fetch helpers ─────────────────────────────────────
+
+async function fetchMissions(
+  supabase: ReturnType<typeof createServiceClient>,
+  countryIso: string
+) {
+  const { data, error } = await supabase
+    .from("diplomatic_missions")
+    .select(
+      "id, type, city, address, phone, email, website, appointment_url, appointment_required, services, description"
+    )
+    .eq("country_iso", countryIso)
+    .eq("active", true)
+    .order("type", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+async function fetchProceduralNotes(
+  supabase: ReturnType<typeof createServiceClient>,
+  authSlug: string | null,
+  provinceIso: string | null
+) {
+  // Build an OR filter: notes that match the auth slug OR are generic
+  // (auth_slug IS NULL), AND match the province OR are national.
+  // Supabase doesn't have a clean OR builder for compound conditions,
+  // so we fetch the candidates and filter in JS — table size is small.
+  let query = supabase
+    .from("procedural_notes")
+    .select(
+      "id, severity, practical_text, legal_text, scope, source, authorization_slug, province_iso, ccaa_code, description"
+    )
+    .eq("active", true);
+  if (authSlug) {
+    query = query.or(`authorization_slug.eq.${authSlug},authorization_slug.is.null`);
+  } else {
+    query = query.is("authorization_slug", null);
+  }
+  const { data, error } = await query.limit(20);
+  if (error) throw error;
+
+  const rows = data ?? [];
+  // Filter by location: keep national-scope rows + rows matching the user's province.
+  const filtered = rows.filter((n) => {
+    if (n.scope === "national") return true;
+    if (n.scope === "province" && provinceIso) return n.province_iso === provinceIso;
+    if (n.scope === "ccaa" && provinceIso) {
+      // Crude CCAA match would need a province→CCAA map; defer to procedural_notes
+      // having ccaa_code matching the user's province's CCAA. Skip for now —
+      // when we add the CCAA mapper, this branch tightens.
+      return false;
+    }
+    return false;
+  });
+
+  // Sort by severity
+  filtered.sort(
+    (a, b) =>
+      SEVERITY_ORDER.indexOf(
+        a.severity as (typeof SEVERITY_ORDER)[number]
+      ) -
+      SEVERITY_ORDER.indexOf(b.severity as (typeof SEVERITY_ORDER)[number])
+  );
+
+  return filtered;
 }
