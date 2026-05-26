@@ -8,7 +8,7 @@
 
 import type { PersonalData } from "./types/personal-data";
 
-export interface ClaudeToolDefinition {
+export interface ChatToolDefinition {
   name: string;
   description: string;
   strict?: boolean;
@@ -19,6 +19,8 @@ export interface ClaudeToolDefinition {
     required: string[];
   };
 }
+
+export type ClaudeToolDefinition = ChatToolDefinition;
 
 const TOOL_ENUM_VALUES = {
   sexo: new Set(["H", "M", "X"]),
@@ -579,7 +581,7 @@ const COLLECT_PERSONAL_DATA_PROPERTIES =
 export function buildCollectPersonalDataTool(options: {
   phase: "conversa" | "document";
   missingFields?: string[];
-}): ClaudeToolDefinition {
+}): ChatToolDefinition {
   const fields =
     options.phase === "document"
       ? ["documents_obtained"]

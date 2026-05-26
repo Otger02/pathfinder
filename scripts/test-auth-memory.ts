@@ -248,8 +248,8 @@ async function main() {
     "second flow does not re-ask remembered identity fields"
   );
   assert(
-    /formaci|centre|curs|matriculat|entitat/i.test(secondText),
-    "second flow asks only for extra training-related fields"
+    /formaci|centre|curs|matriculat|entitat|adreça|domicili|carrer|província|codi postal/i.test(secondText),
+    "second flow asks only for extra non-remembered fields"
   );
 
   console.log(`\n${passed} passed, ${failed} failed`);

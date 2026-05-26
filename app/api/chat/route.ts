@@ -11,6 +11,12 @@ import {
   normalizeCollectedPersonalDataInput,
 } from "@/lib/tool-definitions";
 import {
+  createChatInvocationWithFallback,
+} from "@/lib/llm/provider-registry";
+import type {
+  ChatProviderMessage,
+} from "@/lib/llm/chat-provider";
+import {
   computeMissingFields,
   shouldTransitionToResum,
   mergeExtractedData,
@@ -33,9 +39,6 @@ const debug = (...args: unknown[]) => { if (isDev) console.log(...args); };
 // ── Config ───────────────────────────────────────────────────────────
 const VOYAGE_MODEL = "voyage-multilingual-2";
 const VOYAGE_URL = "https://api.voyageai.com/v1/embeddings";
-const CLAUDE_MODEL_HAIKU = "claude-haiku-4-5-20251001";
-const CLAUDE_MODEL_SONNET = "claude-sonnet-4-5-20250929";
-const CLAUDE_URL = "https://api.anthropic.com/v1/messages";
 const CLAUDE_MAX_TOKENS = 2048;
 
 // ── Helpers ──────────────────────────────────────────────────────────
@@ -180,8 +183,7 @@ export async function POST(req: NextRequest) {
     } = parsed.data;
 
     const voyageKey = process.env.VOYAGE_API_KEY;
-    const anthropicKey = process.env.ANTHROPIC_API_KEY;
-    if (!voyageKey || !anthropicKey) {
+    if (!voyageKey) {
       return Response.json({ error: "Missing API keys" }, { status: 500 });
     }
 
@@ -481,34 +483,29 @@ export async function POST(req: NextRequest) {
     });
 
     // ── 8. Build Claude messages ────────────────────────────────
-    const claudeMessages: Array<{ role: string; content: string }> = [];
+    const providerMessages: ChatProviderMessage[] = [];
 
     for (const msg of previousMessages) {
-      claudeMessages.push({
+      providerMessages.push({
         role: msg.role === "user" ? "user" : "assistant",
         content: msg.content,
       });
     }
 
-    claudeMessages.push({
+    providerMessages.push({
       role: "user",
       content: message.trim(),
     });
 
-    // ── 9. Call Claude with streaming ───────────────────────────
-    // Use Sonnet for collection/conversa: complex tool calls with many fields
-    // risk truncation under Haiku's output budget.
-    const claudeModel =
-      mode === "collection" && chatSubPhase === "conversa"
-        ? CLAUDE_MODEL_SONNET
-        : CLAUDE_MODEL_HAIKU;
-    const claudeBody: Record<string, unknown> = {
-      model: claudeModel,
-      max_tokens: CLAUDE_MAX_TOKENS,
-      system: systemPrompt,
-      messages: claudeMessages,
-      cache_control: { type: "ephemeral" },
-      stream: true,
+    // ── 9. Call provider with streaming ─────────────────────────
+    const providerRequest: Parameters<typeof createChatInvocationWithFallback>[0] = {
+      systemPrompt,
+      messages: providerMessages,
+      mode,
+      subPhase: chatSubPhase,
+      missingFields,
+      maxTokens: CLAUDE_MAX_TOKENS,
+      cacheControl: { type: "ephemeral" },
     };
 
     // Add a dynamic tool in collection phases. Anthropic strict tool use
@@ -519,37 +516,17 @@ export async function POST(req: NextRequest) {
         phase: chatSubPhase === "document" ? "document" : "conversa",
         missingFields,
       });
-      claudeBody.tools = [scopedTool];
-      claudeBody.tool_choice =
+      providerRequest.tools = [scopedTool];
+      providerRequest.toolChoice =
         chatSubPhase === "document"
           ? { type: "any" }
           : missingFields.length > 0
             ? { type: "any" }
             : { type: "auto" };
     }
+    const providerInvocation = await createChatInvocationWithFallback(providerRequest);
 
-    const claudeController = new AbortController();
-    const claudeTimeout = setTimeout(() => claudeController.abort(), 60_000);
-
-    const claudeResp = await fetch(CLAUDE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": anthropicKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify(claudeBody),
-      signal: claudeController.signal,
-    });
-
-    clearTimeout(claudeTimeout);
-
-    if (!claudeResp.ok) {
-      const errBody = await claudeResp.text();
-      throw new Error(`Claude API ${claudeResp.status}: ${errBody.slice(0, 300)}`);
-    }
-
-    // ── 10. Stream transform: Claude SSE → client SSE ───────────
+    // ── 10. Stream transform: provider stream → client SSE ──────
     let fullResponse = "";
     let toolUseId = "";
     let toolUseJson = "";
@@ -563,12 +540,9 @@ export async function POST(req: NextRequest) {
     let lastParsedToolInput: Record<string, any> = {};
 
     // Capture the toolChoiceUsed for the post-stream diagnostic
-    const toolChoiceUsed =
-      claudeBody.tool_choice as { type: string } | undefined;
+    const toolChoiceUsed = providerInvocation.toolChoiceUsed;
 
     const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
-
     const stream = new ReadableStream({
       async start(streamController) {
         // Emit conversation_id
@@ -609,166 +583,106 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        // Parse Claude stream
-        const reader = claudeResp.body!.getReader();
-        let buffer = "";
-
         try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
+          for await (const event of providerInvocation.stream) {
+            if (event.type === "text_delta") {
+              fullResponse += event.text;
+              streamController.enqueue(
+                encoder.encode(sseEvent({ type: "text", text: event.text }))
+              );
+              continue;
+            }
 
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split("\n");
-            buffer = lines.pop() || "";
+            if (event.type === "content_block_start") {
+              contentBlockTypes.push(event.contentBlockType);
+              if (event.contentBlockType === "tool_use") {
+                toolUseActive = true;
+                toolWasCalled = true;
+                toolUseId = event.id || "";
+                toolUseJson = "";
+              }
+              continue;
+            }
 
-            for (const line of lines) {
-              if (!line.startsWith("data: ")) continue;
-              const jsonStr = line.slice(6).trim();
-              if (jsonStr === "[DONE]") continue;
+            if (event.type === "message_delta") {
+              stopReason = event.stopReason;
+              continue;
+            }
+
+            if (event.type === "input_json_delta") {
+              toolUseJson += event.partialJson;
+              continue;
+            }
+
+            if (event.type === "content_block_stop" && toolUseActive) {
+              toolUseActive = false;
 
               try {
-                const event = JSON.parse(jsonStr);
-
-                // Text streaming
-                if (
-                  event.type === "content_block_delta" &&
-                  event.delta?.type === "text_delta"
-                ) {
-                  const text = event.delta.text;
-                  fullResponse += text;
-                  streamController.enqueue(
-                    encoder.encode(sseEvent({ type: "text", text }))
+                const rawExtractedData = JSON.parse(toolUseJson) as Partial<PersonalData>;
+                const extractedData = normalizeCollectedPersonalDataInput(rawExtractedData);
+                debug(`[chat] tool extracted ${Object.keys(extractedData).length} fields (${providerInvocation.model}):`, Object.keys(extractedData).join(", "));
+                if (Object.keys(rawExtractedData).length !== Object.keys(extractedData).length) {
+                  debug(
+                    `[chat] tool dropped invalid fields (${providerInvocation.model}):`,
+                    Object.keys(rawExtractedData).filter((key) => !(key in extractedData)).join(", ")
                   );
                 }
 
-                // Track content block types for diagnostics
-                if (event.type === "content_block_start" && event.content_block?.type) {
-                  contentBlockTypes.push(event.content_block.type);
-                }
+                lastToolUseId = toolUseId;
+                lastParsedToolInput = extractedData as Record<string, unknown>;
 
-                // Track stop_reason from message_delta
+                const newCollected = mergeExtractedData(collectedData, extractedData);
+                collectedData = newCollected;
+
+                const newMissing = computeMissingFields(effectiveAuthSlugs, newCollected);
+                const pct = computeCompletionPct(effectiveAuthSlugs, newCollected);
+
+                streamController.enqueue(
+                  encoder.encode(
+                    sseEvent({
+                      type: "data_update",
+                      collected: newCollected,
+                      missingFields: newMissing,
+                      completionPct: pct,
+                    })
+                  )
+                );
+
                 if (
-                  event.type === "message_delta" &&
-                  event.delta?.stop_reason
+                  chatSubPhase === "conversa" &&
+                  shouldTransitionToResum(effectiveAuthSlugs, newCollected)
                 ) {
-                  stopReason = event.delta.stop_reason;
+                  chatSubPhase = "resum";
+                  streamController.enqueue(
+                    encoder.encode(sseEvent({ type: "phase_change", phase: "resum" }))
+                  );
                 }
 
-                // Tool use start
-                if (
-                  event.type === "content_block_start" &&
-                  event.content_block?.type === "tool_use"
-                ) {
-                  toolUseActive = true;
-                  toolWasCalled = true;
-                  toolUseId = event.content_block.id || "";
-                  toolUseJson = "";
+                const updateData: Record<string, unknown> = {
+                  collected_data: newCollected,
+                  chat_sub_phase: chatSubPhase,
+                  ...(userId ? { user_id: userId } : {}),
+                };
+                if (Object.keys(collectedData).length > 0) {
+                  updateData.data_expires_at = new Date(
+                    Date.now() + 24 * 60 * 60 * 1000
+                  ).toISOString();
                 }
-
-                // Tool use JSON delta
-                if (
-                  event.type === "content_block_delta" &&
-                  event.delta?.type === "input_json_delta"
-                ) {
-                  toolUseJson += event.delta.partial_json || "";
-                }
-
-                // Tool use complete
-                if (event.type === "content_block_stop" && toolUseActive) {
-                  toolUseActive = false;
-
-                  try {
-                    const rawExtractedData = JSON.parse(toolUseJson) as Partial<PersonalData>;
-                    const extractedData = normalizeCollectedPersonalDataInput(rawExtractedData);
-                    debug(`[chat] tool extracted ${Object.keys(extractedData).length} fields (${claudeModel}):`, Object.keys(extractedData).join(", "));
-                    if (Object.keys(rawExtractedData).length !== Object.keys(extractedData).length) {
-                      debug(
-                        `[chat] tool dropped invalid fields (${claudeModel}):`,
-                        Object.keys(rawExtractedData).filter((key) => !(key in extractedData)).join(", ")
-                      );
+                supabase
+                  .from("conversations")
+                  .update(updateData)
+                  .eq("id", convId)
+                  .then(({ error }) => {
+                    if (error) {
+                      console.error("[chat] supabase update failed:", error.message);
                     }
-
-                    // Save for the agentic follow-up call
-                    lastToolUseId = toolUseId;
-                    lastParsedToolInput = extractedData as Record<string, unknown>;
-
-                    // Merge with existing data
-                    const newCollected = mergeExtractedData(
-                      collectedData,
-                      extractedData
-                    );
-                    collectedData = newCollected;
-
-                    // Compute new state
-                    const newMissing = computeMissingFields(
-                      effectiveAuthSlugs,
-                      newCollected
-                    );
-                    const pct = computeCompletionPct(
-                      effectiveAuthSlugs,
-                      newCollected
-                    );
-
-                    // Emit data_update
-                    streamController.enqueue(
-                      encoder.encode(
-                        sseEvent({
-                          type: "data_update",
-                          collected: newCollected,
-                          missingFields: newMissing,
-                          completionPct: pct,
-                        })
-                      )
-                    );
-
-                    // Check phase transition
-                    if (
-                      chatSubPhase === "conversa" &&
-                      shouldTransitionToResum(effectiveAuthSlugs, newCollected)
-                    ) {
-                      chatSubPhase = "resum";
-                      streamController.enqueue(
-                        encoder.encode(
-                          sseEvent({ type: "phase_change", phase: "resum" })
-                        )
-                      );
-                    }
-
-                    // Update Supabase (fire and forget)
-                    const updateData: Record<string, unknown> = {
-                      collected_data: newCollected,
-                      chat_sub_phase: chatSubPhase,
-                      ...(userId ? { user_id: userId } : {}),
-                    };
-                    // Set 24h TTL on first data collection
-                    if (Object.keys(collectedData).length > 0) {
-                      updateData.data_expires_at = new Date(
-                        Date.now() + 24 * 60 * 60 * 1000
-                      ).toISOString();
-                    }
-                    supabase
-                      .from("conversations")
-                      .update(updateData)
-                      .eq("id", convId)
-                      .then(({ error }) => {
-                        if (error) {
-                          console.error(
-                            "[chat] supabase update failed:",
-                            error.message
-                          );
-                        }
-                      });
-                  } catch (parseErr) {
-                    console.error("Tool use JSON parse error:", parseErr);
-                  }
-
-                  toolUseId = "";
-                  toolUseJson = "";
-                }
-              } catch {
-                // skip unparseable lines
+                  });
+              } catch (parseErr) {
+                console.error("Tool use JSON parse error:", parseErr);
               }
+
+              toolUseId = "";
+              toolUseJson = "";
             }
           }
         } catch (err) {
@@ -833,6 +747,8 @@ export async function POST(req: NextRequest) {
           const followUpConstraint =
             chatSubPhase === "document"
               ? "DOCUMENT PHASE RULES: The authorization path is already fixed. Do NOT ask about years in Spain, eligibility, arraigo social, arraigo laboral, or alternative routes. Only acknowledge the documents just saved and ask about the next missing document or the next document-specific clarification. "
+              : effectiveAuthSlugs.length > 0
+                ? `FIXED AUTHORIZATION RULES: The authorization path is already fixed to ${effectiveAuthSlugs.join(", ")}. Do NOT ask which authorization, route, or tramite the user wants. If tipoSolicitud is still missing, ask only whether it is residencia inicial, prorroga, or provisional. Otherwise ask only for the next missing field required for this same authorization. `
               : "";
 
           // Rebuild system prompt with UPDATED collectedData so Claude knows
@@ -856,9 +772,8 @@ export async function POST(req: NextRequest) {
             treePath: tree_path,
           });
 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const followUpMessages: any[] = [
-            ...claudeMessages,
+          const followUpMessages: ChatProviderMessage[] = [
+            ...providerMessages,
             {
               role: "assistant",
               content: [{ type: "tool_use", id: lastToolUseId, name: "collect_personal_data", input: lastParsedToolInput }],
@@ -869,60 +784,22 @@ export async function POST(req: NextRequest) {
             },
           ];
 
-          const followUpCtrl = new AbortController();
-          const followUpTimeout = setTimeout(() => followUpCtrl.abort(), 30_000);
-
           try {
-            const followUpResp = await fetch(CLAUDE_URL, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "x-api-key": anthropicKey,
-                "anthropic-version": "2023-06-01",
-              },
-              body: JSON.stringify({
-                model: claudeModel,
-                max_tokens: CLAUDE_MAX_TOKENS,
-                system: followUpSystemPrompt,
-                messages: followUpMessages,
-                cache_control: { type: "ephemeral" },
-                stream: true,
-              }),
-              signal: followUpCtrl.signal,
+            const followUpStream = await providerInvocation.continueAfterToolUse({
+              systemPrompt: followUpSystemPrompt,
+              messages: followUpMessages,
+              maxTokens: CLAUDE_MAX_TOKENS,
+              cacheControl: { type: "ephemeral" },
             });
 
-            clearTimeout(followUpTimeout);
-
-            if (followUpResp.ok) {
-              const followUpReader = followUpResp.body!.getReader();
-              let followUpBuffer = "";
-              while (true) {
-                const { done, value } = await followUpReader.read();
-                if (done) break;
-                followUpBuffer += decoder.decode(value, { stream: true });
-                const followUpLines = followUpBuffer.split("\n");
-                followUpBuffer = followUpLines.pop() || "";
-                for (const line of followUpLines) {
-                  if (!line.startsWith("data: ")) continue;
-                  const jsonStr = line.slice(6).trim();
-                  if (jsonStr === "[DONE]") continue;
-                  try {
-                    const event = JSON.parse(jsonStr);
-                    if (event.type === "content_block_delta" && event.delta?.type === "text_delta") {
-                      const text = event.delta.text;
-                      fullResponse += text;
-                      streamController.enqueue(encoder.encode(sseEvent({ type: "text", text })));
-                    }
-                  } catch { /* skip */ }
-                }
+            for await (const event of followUpStream) {
+              if (event.type === "text_delta") {
+                fullResponse += event.text;
+                streamController.enqueue(encoder.encode(sseEvent({ type: "text", text: event.text })));
               }
-            } else {
-              console.error("[chat] Follow-up call failed:", await followUpResp.text());
             }
           } catch (err) {
             console.error("[chat] Follow-up call error:", err);
-          } finally {
-            clearTimeout(followUpTimeout);
           }
         }
 
