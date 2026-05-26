@@ -59,6 +59,15 @@ export function getPreferredMimeType(): string {
   return "video/webm";
 }
 
+export function getPreferredAudioMimeType(): string {
+  if (typeof MediaRecorder === "undefined") return "audio/webm";
+  for (const mime of MIME_CANDIDATES) {
+    if (!mime.startsWith("audio/")) continue;
+    if (MediaRecorder.isTypeSupported(mime)) return mime;
+  }
+  return "audio/webm";
+}
+
 /**
  * Request camera + audio permissions. Falls back to audio-only if camera denied.
  */

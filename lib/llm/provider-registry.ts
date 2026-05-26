@@ -5,9 +5,11 @@ import type {
   ChatProviderRequest,
 } from "@/lib/llm/chat-provider";
 import { AnthropicChatProvider } from "@/lib/llm/providers/anthropic-chat";
+import { GeminiChatProvider } from "@/lib/llm/providers/gemini-chat";
 import { OpenAIChatProvider } from "@/lib/llm/providers/openai-chat";
 
 const DEFAULT_PROVIDER_ORDER: ChatProviderName[] = ["anthropic"];
+const LONG_CONTEXT_PROMPT_THRESHOLD = 12_000;
 
 function parseProviderOrder(rawOrder: string | undefined): ChatProviderName[] {
   if (!rawOrder) return DEFAULT_PROVIDER_ORDER;
@@ -17,15 +19,33 @@ function parseProviderOrder(rawOrder: string | undefined): ChatProviderName[] {
     .map((name) => name.trim().toLowerCase())
     .filter(
       (name): name is ChatProviderName =>
-        name === "anthropic" || name === "openai"
+        name === "anthropic" || name === "openai" || name === "gemini"
     );
 
   return parsed.length > 0 ? Array.from(new Set(parsed)) : DEFAULT_PROVIDER_ORDER;
 }
 
+function resolveProviderOrder(request: ChatProviderRequest): ChatProviderName[] {
+  const envOrder = parseProviderOrder(process.env.CHAT_PROVIDER_ORDER);
+
+  if (request.preferredProviders && request.preferredProviders.length > 0) {
+    return Array.from(new Set([...request.preferredProviders, ...envOrder]));
+  }
+
+  if (
+    request.mode === "info" &&
+    request.systemPrompt.length >= LONG_CONTEXT_PROMPT_THRESHOLD
+  ) {
+    return Array.from(new Set(["gemini", ...envOrder]));
+  }
+
+  return envOrder;
+}
+
 export function getConfiguredChatProviders(): ChatProviderAdapter[] {
   const providers: Record<ChatProviderName, ChatProviderAdapter> = {
     anthropic: new AnthropicChatProvider(process.env.ANTHROPIC_API_KEY),
+    gemini: new GeminiChatProvider(process.env.GEMINI_API_KEY),
     openai: new OpenAIChatProvider(process.env.OPENAI_API_KEY),
   };
 
@@ -37,11 +57,18 @@ export function getConfiguredChatProviders(): ChatProviderAdapter[] {
 export async function createChatInvocationWithFallback(
   request: ChatProviderRequest
 ): Promise<ChatProviderInvocation> {
-  const configuredProviders = getConfiguredChatProviders();
+  const providers: Record<ChatProviderName, ChatProviderAdapter> = {
+    anthropic: new AnthropicChatProvider(process.env.ANTHROPIC_API_KEY),
+    gemini: new GeminiChatProvider(process.env.GEMINI_API_KEY),
+    openai: new OpenAIChatProvider(process.env.OPENAI_API_KEY),
+  };
+  const configuredProviders = resolveProviderOrder(request)
+    .map((name) => providers[name])
+    .filter((provider) => provider.isConfigured());
   if (process.env.NODE_ENV !== "production") {
     console.log(
       "[chat] provider order:",
-      process.env.CHAT_PROVIDER_ORDER || "(default)",
+      resolveProviderOrder(request).join(",") || process.env.CHAT_PROVIDER_ORDER || "(default)",
       "configured:",
       configuredProviders.map((provider) => provider.name)
     );

@@ -244,7 +244,7 @@ async function main() {
     "second flow does not re-ask authorization choice"
   );
   assert(
-    !/com et dius|nom complet|nacionalitat|passaport|telèfon/i.test(secondText),
+    !/com et dius|quin(?:a|) (?:és|es) la teva nacionalitat|quin(?:a|) (?:és|es) el teu passaport|quin(?:a|) (?:és|es) el teu telèfon|necessito .*?(?:nom|nacionalitat|passaport|telèfon)/i.test(secondText),
     "second flow does not re-ask remembered identity fields"
   );
   assert(

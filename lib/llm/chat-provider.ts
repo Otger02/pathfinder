@@ -1,7 +1,7 @@
 import type { ChatSubPhase } from "@/lib/types/chat-flow";
 import type { ChatToolDefinition } from "@/lib/tool-definitions";
 
-export type ChatProviderName = "anthropic" | "openai";
+export type ChatProviderName = "anthropic" | "openai" | "gemini";
 
 export interface ChatProviderToolChoice {
   type: string;
@@ -42,6 +42,7 @@ export interface ChatProviderRequest {
   tools?: ChatToolDefinition[];
   toolChoice?: ChatProviderToolChoice;
   cacheControl?: { type: "ephemeral" };
+  preferredProviders?: ChatProviderName[];
 }
 
 export interface ChatProviderFollowUpRequest {

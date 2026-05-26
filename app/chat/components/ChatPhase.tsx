@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, FormEvent } from "react";
 import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
 import type { ChatMessage, ChatSubPhase } from "@/lib/types/chat-flow";
+import { getPreferredAudioMimeType } from "@/lib/media-permissions";
 import PathChips from "./PathChips";
 import MessageBubble from "./MessageBubble";
 import ProgressTabs from "./ProgressTabs";
@@ -79,9 +80,14 @@ export default function ChatPhase({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const voiceSubmitPending = useRef(false);
   const [recording, setRecording] = useState(false);
   const [srUnsupported, setSrUnsupported] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -95,12 +101,61 @@ export default function ChatPhase({
     }
   }, [input]);
 
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+      }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, []);
+
   const inputDisabled =
     loading ||
+    transcribing ||
     (mode === "collection" &&
       (chatSubPhase === "resum" || chatSubPhase === "document"));
 
-  function startVoiceInput() {
+  async function transcribeAudio(blob: Blob) {
+    setVoiceError(null);
+    setTranscribing(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("audio", new File([blob], "voice-input.webm", { type: blob.type || "audio/webm" }));
+      formData.append("lang", SR_LANG_MAP[lang] ?? "es-ES");
+
+      const response = await fetch("/api/chat/transcribe", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const data = (await response.json()) as { text?: string };
+      const transcript = typeof data.text === "string" ? data.text.trim() : "";
+      if (!transcript) {
+        setVoiceError(t(labels.voiceInputFailed, lang));
+        return;
+      }
+
+      voiceSubmitPending.current = true;
+      onInputChange(transcript);
+    } catch {
+      setVoiceError(t(labels.voiceInputFailed, lang));
+    } finally {
+      setTranscribing(false);
+    }
+  }
+
+  function startBrowserSpeechFallback() {
     if (typeof window === "undefined") return;
     const w = window as unknown as {
       SpeechRecognition?: SpeechRecognitionCtor;
@@ -109,11 +164,6 @@ export default function ChatPhase({
     const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
     if (!SR) {
       setSrUnsupported(true);
-      return;
-    }
-
-    if (recording && recognitionRef.current) {
-      recognitionRef.current.stop();
       return;
     }
 
@@ -135,6 +185,67 @@ export default function ChatPhase({
     recognition.start();
   }
 
+  async function startVoiceInput() {
+    if (recording) {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+        return;
+      }
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      return;
+    }
+
+    setVoiceError(null);
+
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+      startBrowserSpeechFallback();
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = getPreferredAudioMimeType();
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+
+      audioChunksRef.current = [];
+      mediaStreamRef.current = stream;
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      recorder.onerror = () => {
+        setRecording(false);
+        setVoiceError(t(labels.voiceInputFailed, lang));
+      };
+
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: recorder.mimeType || mimeType || "audio/webm",
+        });
+        mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = null;
+        mediaRecorderRef.current = null;
+        audioChunksRef.current = [];
+        setRecording(false);
+
+        if (audioBlob.size > 0) {
+          await transcribeAudio(audioBlob);
+        }
+      };
+
+      setRecording(true);
+      recorder.start();
+    } catch {
+      startBrowserSpeechFallback();
+    }
+  }
+
   return (
     <div className="animate-fade-in flex flex-col min-h-[60vh]">
       {/* Progress tabs for collection mode */}
@@ -153,6 +264,14 @@ export default function ChatPhase({
             <PathChips path={path} lang={lang} />
           </div>
         </div>
+      )}
+
+      {voiceError && (
+        <div className="mb-3 text-sm text-danger">{voiceError}</div>
+      )}
+
+      {transcribing && (
+        <div className="mb-3 text-sm text-text-muted">{t(labels.transcribingVoice, lang)}</div>
       )}
 
       {/* Messages */}
@@ -231,8 +350,7 @@ export default function ChatPhase({
             type="button"
             onClick={startVoiceInput}
             disabled={inputDisabled}
-            aria-label={recording ? "Stop voice input" : "Start voice input"}
-            aria-pressed={recording}
+            aria-label={recording ? t(labels.stopVoiceInput, lang) : t(labels.startVoiceInput, lang)}
             className={`icon-btn outlined shrink-0 rounded-xl ${
               recording ? "bg-danger! text-white! border-danger! animate-pulse" : ""
             }`}
