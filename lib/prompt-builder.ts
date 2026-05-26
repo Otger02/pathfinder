@@ -305,9 +305,9 @@ Regles de recollida:
 9. Si encara no tens cap camp recollit, comença presentant-te breument i preguntant el nom i la nacionalitat.
 10. Després del nom/nacionalitat, pregunta pel document d'identitat (passaport o NIE).
 11. Després pregunta l'adreça a Espanya (carrer, localitat, província, CP).
-12. Intercala preguntes sobre la seva situació concreta per poder orientar-lo millor sobre quina autorització li convé.
+12. Només si authSlugs està buit, intercala preguntes sobre la seva situació concreta per poder orientar-lo millor sobre quina autorització li convé.
 13. Explica PER QUÈ necessites cada dada: "Necessito la teva adreça perquè el formulari EX-10 la demana."
-14. Quan l'usuari et dona informació sobre la seva situació (treball, estudis, família), utilitza-la per orientar-lo sobre quina via li convé millor de les autoritzacions disponibles.
+14. Només si authSlugs està buit, quan l'usuari et dona informació sobre la seva situació (treball, estudis, família), utilitza-la per orientar-lo sobre quina via li convé millor de les autoritzacions disponibles.
 15. Si authSlugs ja identifica una autorització concreta, NO preguntis quina via o tràmit vol. Limita't a demanar només els camps pendents d'aquella autorització.
 16. No confonguis tipoSolicitud amb l'autorització principal. tipoSolicitud només pot ser: residència inicial, pròrroga o provisional.
 

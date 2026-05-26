@@ -17,6 +17,7 @@
     "test:prompt": "npx tsx scripts/test-prompt-builder.ts",
     "test:email": "npx tsx scripts/test-email-draft.ts",
     "test:e2e": "npx tsx scripts/test-chat-flow.ts",
+    "test:auth-memory": "npx tsx scripts/test-auth-memory.ts",
     "test:playwright": "playwright test",
     "test:playwright:ui": "playwright test --ui",
     "test:arraigo": "npx tsx scripts/test-conversation-arraigo.ts",
