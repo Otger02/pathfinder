@@ -74,6 +74,7 @@ const FIELD_LABELS_ES: Partial<Record<PersonalDataField, string>> = {
   notifTelefono: "teléfono notificaciones",
   notifEmail: "email notificaciones",
   consentimientoDehu: "consentimiento DEHú",
+  tipoSolicitud: "tipo de solicitud administrativa (residència inicial, pròrroga o provisional)",
 };
 
 // ── Base prompt ─────────────────────────────────────────────────────
@@ -280,6 +281,10 @@ export function buildSystemPrompt(options: PromptBuilderOptions): string {
 INSTRUCCIÓ RECOLLIDA DE DADES:
 ${authList}
 
+L'autorització objectiu ja està fixada per l'aplicació: ${authSlugs.join(", ") || "cap"}.
+NO tornis a preguntar quin tràmit, via o autorització vol l'usuari quan authSlugs ja no està buit.
+Si falta el camp tipoSolicitud, això NO vol dir triar una altra autorització: només has de preguntar si és residència inicial, pròrroga o provisional.
+
 Camps ja recollits:
 ${collectedList}
 
@@ -303,6 +308,8 @@ Regles de recollida:
 12. Intercala preguntes sobre la seva situació concreta per poder orientar-lo millor sobre quina autorització li convé.
 13. Explica PER QUÈ necessites cada dada: "Necessito la teva adreça perquè el formulari EX-10 la demana."
 14. Quan l'usuari et dona informació sobre la seva situació (treball, estudis, família), utilitza-la per orientar-lo sobre quina via li convé millor de les autoritzacions disponibles.
+15. Si authSlugs ja identifica una autorització concreta, NO preguntis quina via o tràmit vol. Limita't a demanar només els camps pendents d'aquella autorització.
+16. No confonguis tipoSolicitud amb l'autorització principal. tipoSolicitud només pot ser: residència inicial, pròrroga o provisional.
 
 ⚠️ IMPORTANT: Els camps que apareixen a "Camps ja recollits" estan confirmats. NO els tornis a demanar. Passa directament a preguntar els "Camps pendents".`);
     } else if (subPhase === "resum") {

@@ -16,7 +16,11 @@ import {
   mergeExtractedData,
   computeCompletionPct,
 } from "@/lib/collection-engine";
-import type { PersonalData, PersonalDataField } from "@/lib/types/personal-data";
+import {
+  EMPTY_PERSONAL_DATA,
+  type PersonalData,
+  type PersonalDataField,
+} from "@/lib/types/personal-data";
 import type { ChatSubPhase } from "@/lib/types/chat-flow";
 
 // Node.js runtime (not Edge) — needed for tool_use stream parsing + crypto
@@ -81,6 +85,71 @@ function sseEvent(data: Record<string, unknown>): string {
   return `data: ${JSON.stringify(data)}\n\n`;
 }
 
+const REMEMBERED_FIELD_KEYS = new Set<PersonalDataField>(
+  Object.keys(EMPTY_PERSONAL_DATA) as PersonalDataField[]
+);
+
+const REMEMBERED_FIELD_EXCLUSIONS = new Set<PersonalDataField>([
+  "documents_obtained",
+  "tipoSolicitud",
+]);
+
+function sanitizeRememberedCollectedData(input: unknown): Partial<PersonalData> {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return {};
+
+  const remembered: Partial<PersonalData> = {};
+  for (const [key, value] of Object.entries(input as Record<string, unknown>)) {
+    const field = key as PersonalDataField;
+    if (!REMEMBERED_FIELD_KEYS.has(field)) continue;
+    if (REMEMBERED_FIELD_EXCLUSIONS.has(field)) continue;
+
+    if (typeof value === "boolean") {
+      remembered[field] = value as never;
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      if (value.length > 0) remembered[field] = value as never;
+      continue;
+    }
+
+    if (typeof value === "string" && value.trim() !== "") {
+      remembered[field] = value.trim() as never;
+    }
+  }
+
+  return remembered;
+}
+
+async function loadRememberedCollectedData(
+  supabase: ReturnType<typeof createServiceClient>,
+  userId: string
+): Promise<Partial<PersonalData>> {
+  const nowIso = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("conversations")
+    .select("collected_data, created_at")
+    .eq("user_id", userId)
+    .gte("data_expires_at", nowIso)
+    .order("created_at", { ascending: true })
+    .limit(20);
+
+  if (error) {
+    console.error("[chat] remembered data load failed:", error.message);
+    return {};
+  }
+
+  let remembered: Partial<PersonalData> = {};
+  for (const row of data || []) {
+    remembered = mergeExtractedData(
+      remembered,
+      sanitizeRememberedCollectedData(row.collected_data)
+    );
+  }
+
+  return remembered;
+}
+
 // ── POST handler ─────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
@@ -123,6 +192,11 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabaseAuth.auth.getUser();
     const userId = user?.id ?? null;
 
+    // Determine mode early so new authenticated conversations can decide
+    // whether to preload remembered collection data.
+    const effectiveAuthSlugs = auth_slugs || [];
+    const mode = requestMode || (effectiveAuthSlugs.length > 0 ? "collection" : "info");
+
     // ── Sentinel: __CONFIRM_SUMMARY__ ───────────────────────────
     if (message.trim() === "__CONFIRM_SUMMARY__" && conversation_id) {
       await supabase
@@ -163,6 +237,11 @@ export async function POST(req: NextRequest) {
     if (tree_node_text) treeMeta._tree_node_text = tree_node_text;
 
     if (!convId) {
+      let rememberedCollectedData: Partial<PersonalData> = {};
+      if (userId && mode === "collection") {
+        rememberedCollectedData = await loadRememberedCollectedData(supabase, userId);
+      }
+
       const insertData: Record<string, unknown> = {
         user_code: "web-anonymous",
         language: idioma || "es",
@@ -172,12 +251,15 @@ export async function POST(req: NextRequest) {
       if (auth_slugs && auth_slugs.length > 0) {
         insertData.auth_slugs = auth_slugs;
       }
-      // Seed collected_data with the tree meta so future resumes have it
-      // even if no slot-filling tool calls run before the user navigates
-      // away.
-      if (Object.keys(treeMeta).length > 0) {
-        insertData.collected_data = treeMeta;
-        collectedData = treeMeta as Partial<PersonalData>;
+      // Seed collected_data with remembered authenticated data plus tree meta
+      // so new logged-in applications only ask for fields missing in the new
+      // authorization while keeping per-route path context.
+      collectedData = {
+        ...rememberedCollectedData,
+        ...(treeMeta as Partial<PersonalData>),
+      };
+      if (Object.keys(collectedData).length > 0) {
+        insertData.collected_data = collectedData;
       }
       const { data, error } = await supabase
         .from("conversations")
@@ -217,10 +299,6 @@ export async function POST(req: NextRequest) {
         }
       }
     }
-
-    // Determine mode: explicit from client, or auto-detect from auth_slugs
-    const effectiveAuthSlugs = auth_slugs || [];
-    const mode = requestMode || (effectiveAuthSlugs.length > 0 ? "collection" : "info");
 
     // ── 2. Consent gate ──────────────────────────────────────────
     // If consent has not been given yet, return immediately with
@@ -330,6 +408,27 @@ export async function POST(req: NextRequest) {
       mode === "collection"
         ? computeMissingFields(effectiveAuthSlugs, collectedData)
         : [];
+
+    // Authenticated remembered data can fully satisfy a new application.
+    // In that case skip directly to the summary instead of reopening slot
+    // collection for fields we already know.
+    if (
+      mode === "collection" &&
+      chatSubPhase === "conversa" &&
+      missingFields.length === 0 &&
+      Object.keys(collectedData).length > 0
+    ) {
+      chatSubPhase = "resum";
+      supabase
+        .from("conversations")
+        .update({ chat_sub_phase: "resum" })
+        .eq("id", convId)
+        .then(({ error }) => {
+          if (error) {
+            console.error("[chat] failed to persist resum prefill:", error.message);
+          }
+        });
+    }
 
     // ── 6.5. Defensive subPhase reset ─────────────────────────────
     // If a previous turn left subPhase at "resum"/"document" but we still
