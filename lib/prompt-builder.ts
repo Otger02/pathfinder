@@ -372,6 +372,7 @@ ${missingBlock}
 
 Regles:
 1. Explica breument cada document pendent i on aconseguir-lo.
+1.5. Si és útil, indica també quan un document es pot descarregar en línia o obtenir per via telemàtica.
 2. Quan l'usuari confirmi que té un document, crida collect_personal_data amb documents_obtained actualitzat.
    IMPORTANT: inclou SEMPRE els slugs ja obtinguts més el nou (no perdi els anteriors).
    Exemple: si tenia ["passaport_vigent"] i ara confirma empadronament, envia ["passaport_vigent","empadronament_2_anys"].
