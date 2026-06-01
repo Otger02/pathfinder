@@ -7,6 +7,11 @@ import { ChatRequestSchema, badRequestFromZod } from "@/lib/validation/schemas";
 import { detectSos } from "@/lib/sos";
 import { buildSystemPrompt } from "@/lib/prompt-builder";
 import {
+  ccaaForProvinceIso,
+  isoForNationality,
+  isoForProvince,
+} from "@/lib/iso-mappings";
+import {
   buildCollectPersonalDataTool,
   normalizeCollectedPersonalDataInput,
 } from "@/lib/tool-definitions";
@@ -84,8 +89,83 @@ interface MatchChunk {
   source_file: string | null;
 }
 
+interface ProceduralContextNote {
+  id: string;
+  authorization_slug: string | null;
+  scope: "province" | "ccaa" | "national" | "consulate";
+  province_iso: string | null;
+  ccaa_code: string | null;
+  country_iso: string | null;
+  practical_text: string;
+  legal_text: string | null;
+  severity: "blocker" | "workaround" | "warning" | "info";
+  source: string | null;
+  description: Record<string, string> | null;
+}
+
+const PROCEDURAL_SEVERITY_ORDER = ["blocker", "workaround", "warning", "info"] as const;
+
 function sseEvent(data: Record<string, unknown>): string {
   return `data: ${JSON.stringify(data)}\n\n`;
+}
+
+function pickLocalizedDescription(
+  description: Record<string, string> | null | undefined,
+  idioma: string,
+  fallback: string
+): string {
+  if (!description || typeof description !== "object") return fallback;
+  return description[idioma] || description.es || description.ca || description.en || fallback;
+}
+
+async function loadProceduralNotesForChat(
+  supabase: ReturnType<typeof createServiceClient>,
+  authSlugs: string[],
+  provinceIso: string | null,
+  ccaaCode: string | null,
+  countryIso: string | null
+): Promise<ProceduralContextNote[]> {
+  const { data, error } = await supabase
+    .from("procedural_notes")
+    .select(
+      "id, authorization_slug, scope, province_iso, ccaa_code, country_iso, practical_text, legal_text, severity, source, description"
+    )
+    .eq("active", true)
+    .limit(40);
+
+  if (error) {
+    debug("[chat] procedural notes unavailable:", error.message);
+    return [];
+  }
+
+  const rows = (data || []) as ProceduralContextNote[];
+  const filtered = rows.filter((note) => {
+    const matchesAuth =
+      note.authorization_slug == null ||
+      authSlugs.length === 0 ||
+      authSlugs.includes(note.authorization_slug);
+    if (!matchesAuth) return false;
+
+    if (note.scope === "national") return true;
+    if (note.scope === "province") {
+      return Boolean(provinceIso && note.province_iso === provinceIso);
+    }
+    if (note.scope === "ccaa") {
+      return Boolean(ccaaCode && note.ccaa_code === ccaaCode);
+    }
+    if (note.scope === "consulate") {
+      return Boolean(countryIso && note.country_iso === countryIso);
+    }
+    return false;
+  });
+
+  filtered.sort(
+    (a, b) =>
+      PROCEDURAL_SEVERITY_ORDER.indexOf(a.severity) -
+      PROCEDURAL_SEVERITY_ORDER.indexOf(b.severity)
+  );
+
+  return filtered.slice(0, 6);
 }
 
 const REMEMBERED_FIELD_KEYS = new Set<PersonalDataField>(
@@ -374,6 +454,22 @@ export async function POST(req: NextRequest) {
 
     const allChunks = (chunks || []) as MatchChunk[];
     const relevantChunks = allChunks.filter((c) => c.similarity >= 0.3);
+    const provinceIso = isoForProvince(
+      typeof collectedData.provincia === "string" ? collectedData.provincia : null
+    );
+    const ccaaCode = ccaaForProvinceIso(provinceIso);
+    const countryIso = isoForNationality(
+      typeof collectedData.nacionalidad === "string"
+        ? collectedData.nacionalidad
+        : null
+    );
+    const proceduralNotes = await loadProceduralNotesForChat(
+      supabase,
+      effectiveAuthSlugs,
+      provinceIso,
+      ccaaCode,
+      countryIso
+    );
 
     // ── 4. Build context block ──────────────────────────────────
     let contextBlock: string;
@@ -389,6 +485,23 @@ export async function POST(req: NextRequest) {
     } else {
       contextBlock =
         "No s'han trobat documents específics a la base de coneixement per aquesta consulta. Respon amb el que sàpigues i indica que no has trobat informació específica.";
+    }
+
+    if (proceduralNotes.length > 0) {
+      contextBlock +=
+        "\n\nNOTES D'APLICACIO REAL:\n\n" +
+        proceduralNotes
+          .map((note, index) => {
+            const text = pickLocalizedDescription(
+              note.description,
+              idioma || "es",
+              note.practical_text
+            );
+            const legal = note.legal_text ? `\nEl text legal diu: ${note.legal_text}` : "";
+            const source = note.source ? `\nFont: ${note.source}` : "";
+            return `[P${index + 1}] ${note.severity.toUpperCase()} | ${note.scope}\n${text}${legal}${source}`;
+          })
+          .join("\n\n---\n\n");
     }
 
     // ── 5. Conversation history (last 6 messages) ───────────────

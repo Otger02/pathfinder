@@ -8,13 +8,15 @@ interface Resource {
   country: string;
   city: string | null;
   telefon: string | null;
+  province_iso: string | null;
+  active: boolean;
 }
 
 export default async function ResourcesPage() {
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("resources")
-    .select("id, nom, tipus, country, city, telefon")
+    .select("id, nom, tipus, country, city, province_iso, telefon, active")
     .order("nom");
 
   const resources = (data || []) as Resource[];
@@ -66,7 +68,9 @@ export default async function ResourcesPage() {
                 <th style={thStyle}>Tipus</th>
                 <th style={thStyle}>País</th>
                 <th style={thStyle}>Ciutat</th>
+                <th style={thStyle}>Província</th>
                 <th style={thStyle}>Telèfon</th>
+                <th style={thStyle}>Estat</th>
                 <th style={thStyle}></th>
               </tr>
             </thead>
@@ -88,7 +92,9 @@ export default async function ResourcesPage() {
                   </td>
                   <td style={tdStyle}>{r.country}</td>
                   <td style={tdStyle}>{r.city || "—"}</td>
+                  <td style={tdStyle}>{r.province_iso || "—"}</td>
                   <td style={tdStyle}>{r.telefon || "—"}</td>
+                  <td style={tdStyle}>{r.active ? "Actiu" : "Inactiu"}</td>
                   <td style={tdStyle}>
                     <Link
                       href={`/admin/resources/${r.id}`}

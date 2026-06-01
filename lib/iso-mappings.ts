@@ -160,3 +160,63 @@ export function isoForProvince(input: string | undefined | null): string | null 
   const key = normalize(input);
   return PROVINCE_ALIASES[key] ?? null;
 }
+
+const PROVINCE_TO_CCAA: Record<string, string> = {
+  "ES-C": "ES-GA",
+  "ES-VI": "ES-PV",
+  "ES-AB": "ES-CM",
+  "ES-A": "ES-VC",
+  "ES-AL": "ES-AN",
+  "ES-O": "ES-AS",
+  "ES-AV": "ES-CL",
+  "ES-BA": "ES-EX",
+  "ES-B": "ES-CT",
+  "ES-BI": "ES-PV",
+  "ES-BU": "ES-CL",
+  "ES-CC": "ES-EX",
+  "ES-CA": "ES-AN",
+  "ES-CS": "ES-VC",
+  "ES-CE": "ES-CE",
+  "ES-CR": "ES-CM",
+  "ES-CO": "ES-AN",
+  "ES-CU": "ES-CM",
+  "ES-SS": "ES-PV",
+  "ES-GI": "ES-CT",
+  "ES-GR": "ES-AN",
+  "ES-GU": "ES-CM",
+  "ES-H": "ES-AN",
+  "ES-HU": "ES-AR",
+  "ES-PM": "ES-IB",
+  "ES-J": "ES-AN",
+  "ES-LO": "ES-RI",
+  "ES-GC": "ES-CN",
+  "ES-LE": "ES-CL",
+  "ES-L": "ES-CT",
+  "ES-LU": "ES-GA",
+  "ES-M": "ES-MD",
+  "ES-MA": "ES-AN",
+  "ES-ML": "ES-ML",
+  "ES-MU": "ES-MC",
+  "ES-NA": "ES-NC",
+  "ES-OR": "ES-GA",
+  "ES-P": "ES-CL",
+  "ES-PO": "ES-GA",
+  "ES-S": "ES-CB",
+  "ES-SA": "ES-CL",
+  "ES-TF": "ES-CN",
+  "ES-SG": "ES-CL",
+  "ES-SE": "ES-AN",
+  "ES-SO": "ES-CL",
+  "ES-T": "ES-CT",
+  "ES-TE": "ES-AR",
+  "ES-TO": "ES-CM",
+  "ES-V": "ES-VC",
+  "ES-VA": "ES-CL",
+  "ES-ZA": "ES-CL",
+  "ES-Z": "ES-AR",
+};
+
+export function ccaaForProvinceIso(input: string | undefined | null): string | null {
+  if (!input || typeof input !== "string") return null;
+  return PROVINCE_TO_CCAA[input] ?? null;
+}

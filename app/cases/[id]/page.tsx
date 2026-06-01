@@ -10,7 +10,11 @@ import {
 } from "@/app/dashboard/lib/dashboard-data";
 import { computeMissingFields } from "@/lib/collection-engine";
 import { buildDocumentGroups } from "@/app/documents/lib/build-document-list";
-import { isoForNationality, isoForProvince } from "@/lib/iso-mappings";
+import {
+  ccaaForProvinceIso,
+  isoForNationality,
+  isoForProvince,
+} from "@/lib/iso-mappings";
 import UserMenu from "@/app/dashboard/components/UserMenu";
 import DashboardLangSelector from "@/app/dashboard/components/DashboardLangSelector";
 import SosButton from "@/app/components/SosButton";
@@ -89,9 +93,9 @@ export default async function CaseDetailPage({
   const groups = buildDocumentGroups([conv], lang);
   const documents = groups[0]?.documents ?? [];
 
-  // Resources by situation
+  // Resources fallback by situation
   const situation = situationFromAuthSlug(process.authSlug);
-  const resources = resourcesForSituation(situation);
+  const fallbackResources = resourcesForSituation(situation);
 
   // ── Resource-layer queries (best-effort, never block render) ──
   // Both panels return null when their query yields zero rows, so if the
@@ -104,18 +108,23 @@ export default async function CaseDetailPage({
   const provinceIso = isoForProvince(
     typeof collected.provincia === "string" ? collected.provincia : null
   );
+  const ccaaCode = ccaaForProvinceIso(provinceIso);
 
   // Use a service client for the public, read-only lookups (RLS already
   // grants public SELECT; this just skips an extra auth roundtrip).
   let missions: Awaited<ReturnType<typeof fetchMissions>> = [];
   let proceduralNotes: Awaited<ReturnType<typeof fetchProceduralNotes>> = [];
+  let fetchedResources: Awaited<ReturnType<typeof fetchResources>> = [];
   try {
     const svc = createServiceClient();
+    fetchedResources = await fetchResources(svc, provinceIso, ccaaCode, lang);
     missions = nationalityIso ? await fetchMissions(svc, nationalityIso) : [];
     proceduralNotes = await fetchProceduralNotes(
       svc,
       process.authSlug ?? null,
-      provinceIso
+      provinceIso,
+      ccaaCode,
+      nationalityIso
     );
   } catch (err) {
     // Tables may not exist yet (migration 008 not applied) — degrade silently.
@@ -130,6 +139,9 @@ export default async function CaseDetailPage({
       );
     }
   }
+
+  const resources =
+    fetchedResources.length > 0 ? fetchedResources : fallbackResources;
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--bg)" }}>
@@ -248,7 +260,9 @@ async function fetchMissions(
 async function fetchProceduralNotes(
   supabase: ReturnType<typeof createServiceClient>,
   authSlug: string | null,
-  provinceIso: string | null
+  provinceIso: string | null,
+  ccaaCode: string | null,
+  countryIso: string | null
 ) {
   // Build an OR filter: notes that match the auth slug OR are generic
   // (auth_slug IS NULL), AND match the province OR are national.
@@ -257,7 +271,7 @@ async function fetchProceduralNotes(
   let query = supabase
     .from("procedural_notes")
     .select(
-      "id, severity, practical_text, legal_text, scope, source, authorization_slug, province_iso, ccaa_code, description"
+      "id, severity, practical_text, legal_text, scope, source, authorization_slug, province_iso, ccaa_code, country_iso, description"
     )
     .eq("active", true);
   if (authSlug) {
@@ -273,11 +287,11 @@ async function fetchProceduralNotes(
   const filtered = rows.filter((n) => {
     if (n.scope === "national") return true;
     if (n.scope === "province" && provinceIso) return n.province_iso === provinceIso;
-    if (n.scope === "ccaa" && provinceIso) {
-      // Crude CCAA match would need a province→CCAA map; defer to procedural_notes
-      // having ccaa_code matching the user's province's CCAA. Skip for now —
-      // when we add the CCAA mapper, this branch tightens.
-      return false;
+    if (n.scope === "ccaa" && ccaaCode) {
+      return n.ccaa_code === ccaaCode;
+    }
+    if (n.scope === "consulate" && countryIso) {
+      return n.country_iso === countryIso;
     }
     return false;
   });
@@ -292,4 +306,65 @@ async function fetchProceduralNotes(
   );
 
   return filtered;
+}
+
+async function fetchResources(
+  supabase: ReturnType<typeof createServiceClient>,
+  provinceIso: string | null,
+  ccaaCode: string | null,
+  lang: Lang
+) {
+  const { data, error } = await supabase
+    .from("resources")
+    .select(
+      "id, nom, tipus, city, adreca, telefon, email, web, description, notes, free_of_charge, appointment_required, province_iso, ccaa_code"
+    )
+    .eq("active", true)
+    .order("nom", { ascending: true })
+    .limit(50);
+
+  if (error) throw error;
+
+  const rows = (data || []) as Array<{
+    id: string;
+    nom: string;
+    tipus: string;
+    city: string | null;
+    adreca: string | null;
+    telefon: string | null;
+    email: string | null;
+    web: string | null;
+    description: Record<string, string> | null;
+    notes: string | null;
+    free_of_charge: boolean | null;
+    appointment_required: boolean | null;
+    province_iso: string | null;
+    ccaa_code: string | null;
+  }>;
+
+  const filtered = rows.filter((resource) => {
+    if (resource.province_iso) return provinceIso === resource.province_iso;
+    if (resource.ccaa_code) return ccaaCode === resource.ccaa_code;
+    return true;
+  });
+
+  return filtered.map((resource) => ({
+    id: resource.id,
+    name: resource.nom,
+    phone: resource.telefon || "",
+    description:
+      resource.description?.[lang] ||
+      resource.description?.es ||
+      resource.description?.ca ||
+      resource.description?.en ||
+      resource.notes ||
+      resource.tipus,
+    city: resource.city,
+    address: resource.adreca,
+    email: resource.email,
+    website: resource.web,
+    type: resource.tipus,
+    freeOfCharge: resource.free_of_charge,
+    appointmentRequired: resource.appointment_required,
+  }));
 }

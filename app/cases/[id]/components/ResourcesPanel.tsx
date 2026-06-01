@@ -1,6 +1,19 @@
 import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
-import type { Resource } from "../lib/case-helpers";
+
+interface ResourceItem {
+  id?: string;
+  name: string;
+  phone: string;
+  description: string;
+  city?: string | null;
+  address?: string | null;
+  email?: string | null;
+  website?: string | null;
+  type?: string | null;
+  freeOfCharge?: boolean | null;
+  appointmentRequired?: boolean | null;
+}
 
 function formatPhone(phone: string): string {
   // +34 915 980 535 → groups of 3
@@ -14,19 +27,24 @@ export default function ResourcesPanel({
   resources,
   lang,
 }: {
-  resources: Resource[];
+  resources: ResourceItem[];
   lang: Lang;
 }) {
+  if (!resources || resources.length === 0) return null;
+
   return (
     <section>
       <div className="div-label mb-2">{t(labels.resourcesTitle, lang)}</div>
       <div className="card flat overflow-hidden" style={{ padding: 0 }}>
         {resources.map((r, i) => (
-          <a
-            key={i}
-            href={`tel:${r.phone}`}
+          <div
+            key={r.id || i}
             className="row"
-            aria-label={`${r.name}: ${formatPhone(r.phone)}`}
+            style={{
+              alignItems: "flex-start",
+              cursor: "default",
+              borderTop: i > 0 ? "1px solid var(--line)" : "none",
+            }}
           >
             <span
               className="row-icon"
@@ -51,14 +69,50 @@ export default function ResourcesPanel({
             <div className="row-body">
               <div className="row-title">{r.name}</div>
               <div className="row-meta">{r.description}</div>
+              {(r.city || r.address) && (
+                <div className="text-xs mt-1" style={{ color: "var(--ink-3)" }}>
+                  {[r.city, r.address].filter(Boolean).join(" · ")}
+                </div>
+              )}
+              {(r.phone || r.email || r.website) && (
+                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+                  {r.phone && (
+                    <a
+                      href={`tel:${r.phone.replace(/\s/g, "")}`}
+                      className="text-xs underline"
+                      style={{ color: "var(--primary-2)" }}
+                    >
+                      {formatPhone(r.phone)}
+                    </a>
+                  )}
+                  {r.email && (
+                    <a
+                      href={`mailto:${r.email}`}
+                      className="text-xs underline"
+                      style={{ color: "var(--primary-2)" }}
+                    >
+                      {r.email}
+                    </a>
+                  )}
+                  {r.website && (
+                    <a
+                      href={r.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs underline"
+                      style={{ color: "var(--primary-2)" }}
+                    >
+                      Web
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
-            <span
-              className="text-sm font-mono"
-              style={{ color: "var(--primary-2)" }}
-            >
-              {formatPhone(r.phone)}
-            </span>
-          </a>
+            <div className="text-right text-xs" style={{ color: "var(--ink-3)" }}>
+              {r.freeOfCharge === true ? <div>Gratis</div> : null}
+              {r.appointmentRequired === true ? <div>Cita prèvia</div> : null}
+            </div>
+          </div>
         ))}
       </div>
     </section>
