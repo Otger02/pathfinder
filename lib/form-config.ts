@@ -422,6 +422,108 @@ export const AUTH_FIELD_RULES: Partial<Record<string, AuthFieldRules>> = {
     optional: ["email", "pisoDomicilio"],
   },
 
+  // ── EX-00: Estudis / estades ─────────────────────────────────
+  // Tots comparteixen el bloc d'identitat de l'apartat 1 (idèntic a la
+  // resta d'EX). No tenim camps específics d'institució educativa al
+  // model de dades, així que el centre d'estudis es tracta com a
+  // document a aportar, no com a camp del formulari.
+  estancia_estudis_superiors: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  estancia_activitats_formatives: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  estancia_mobilitat_alumnes: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  estancia_voluntariat: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  mobilitat_estudiants_ue: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  cerca_feina_emprenedoria: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  nacionals_andorrans: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+
+  // ── EX-04: Pràctiques ────────────────────────────────────────
+  residencia_practiques: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: ["empleador_nombre", "empleador_nifNie"],
+    optional: ["email", "pisoDomicilio"],
+  },
+
+  // ── EX-01: No lucrativa ──────────────────────────────────────
+  // titular_* s'activa quan el titular dels recursos és una altra persona
+  // (detectContext.hasTitular no existeix encara, així que titular com a
+  // optional — el tool l'extreu si es menciona).
+  residencia_no_lucrativa: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio", "titular_nombre", "titular_primerApellido", "titular_parentesco"],
+  },
+  renovacio_residencia_no_lucrativa: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio", "titular_nombre", "titular_primerApellido", "titular_parentesco"],
+  },
+
+  // ── EX-09: Residència amb excepció d'autorització de treball ─
+  residencia_excepcio_treball: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+
+  // ── EX-11: Llarga durada / llarga durada-UE ──────────────────
+  residencia_llarga_duracio_nacional: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  residencia_llarga_duracio_ue: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  llarga_duracio_ue_altre_estat: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  llarga_duracio_familiar: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  recuperacio_llarga_duracio: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  recuperacio_llarga_duracio_ue: {
+    required: ["sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento", "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio"],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+
   // ── EX-02: Reagrupació familiar ──────────────────────────────
   reagrupacio_familiar: {
     required: ["estadoCivil", "familiar_nombre", "familiar_primerApellido", "familiar_vinculo", "familiar_sexo"],
