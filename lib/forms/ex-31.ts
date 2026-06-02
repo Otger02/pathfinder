@@ -13,19 +13,24 @@
  *   - 47 PDFCheckBox (Casilla de verificación 141 .. 187)
  *   - 6 pàgines
  *
- * ⚠️ COBERTURA PARCIAL.
+ * COBERTURA: Apartat 1 (sol·licitant) complet i VERIFICAT.
  *
- * Aquest field map està en mode "skeleton" — només l'Apartat 1 (Datos
- * del solicitante, Texto1..Texto26) està mapat amb confiança a partir
- * del patró estàndard dels EX. Els camps restants (Texto27..Texto140,
- * checkboxes 141..187) requereixen inspecció visual del PDF per
- * verificar la correspondència amb cada secció (residència, antecedents
- * penals per país, notificacions, etc.) i s'aniran omplint en commits
- * posteriors.
+ * Les posicions dels 188 widgets es van extreure amb
+ * scripts/label-ex31.ts (vegeu docs/ex31-field-positions.md i
+ * public/forms/EX-31-labeled.pdf). L'Apartat 1 (Texto1..Texto26 +
+ * sexe/estat civil) coincideix posició a posició amb l'Apartat 1
+ * d'EX-10, així que el mapatge és fiable.
  *
- * Comportament actual: l'API serveix el PDF amb els ~22 camps base ja
- * omplerts i l'usuari completa la resta manualment. Millor que no oferir
- * el formulari en plena finestra de regularització extraordinària 2026.
+ * El formulari conté blocs de persona addicionals repetits
+ * (Texto27..Texto140) per a unitats familiars que sol·liciten juntes.
+ * Aquests es deixen DELIBERADAMENT sense mapar (null): la immensa
+ * majoria de sol·licitants són individuals, i mapar malament un bloc
+ * familiar seria pitjor que deixar-lo en blanc perquè l'usuari
+ * l'ompli a mà. Es mapejaran quan es verifiquin visualment.
+ *
+ * Comportament actual: l'API serveix el PDF amb tot l'Apartat 1 ja
+ * omplert (dades personals + sexe + estat civil + data de naixement)
+ * i l'usuari completa els blocs addicionals si cal.
  */
 
 import type { FieldMap } from "@/lib/pdf/field-maps";
@@ -82,12 +87,29 @@ export const EX_31_DATE_FIELDS: Record<string, { dd: string; mm: string; yyyy: s
 };
 
 /* =========================================================
- * 3) CHECKBOXES — placeholders. PENDING visual mapping.
+ * 3) CHECKBOXES — Apartat 1 (sol·licitant), verified by position
+ *    against the EX-10 X/H/M and S/C/V/D/Sp conventions.
  * ======================================================= */
 
-export const EX_31_SEXO_CHECKBOXES: Record<string, string> = {};
+// Sexo (apartat 1), y≈645, left→right by x: 187(473) 141(507) 142(537)
+export const EX_31_SEXO_CHECKBOXES: Record<string, string> = {
+  "Casilla de verificación187": "X", // X* (no binari)
+  "Casilla de verificación141": "H", // Hombre
+  "Casilla de verificación142": "M", // Mujer
+};
+
+// Estado civil (apartat 1), y≈608, left→right: 143 144 145 146 147
+export const EX_31_ESTADO_CIVIL_CHECKBOXES: Record<string, string> = {
+  "Casilla de verificación143": "soltero",
+  "Casilla de verificación144": "casado",
+  "Casilla de verificación145": "viudo",
+  "Casilla de verificación146": "divorciado",
+  "Casilla de verificación147": "separado_pareja_hecho",
+};
+
+// Tipo doc / circumstància / etc. — not part of apartat 1 identity block;
+// left empty pending visual verification of the rest of the form.
 export const EX_31_TIPO_DOC_CHECKBOXES: Record<string, string> = {};
-export const EX_31_ESTADO_CIVIL_CHECKBOXES: Record<string, string> = {};
 export const EX_31_CIRCUNSTANCIA_CHECKBOXES: Record<string, string> = {};
 export const EX_31_TIPO_AUTORIZACION_CHECKBOXES: Record<string, string> = {};
 export const EX_31_HIJOS_ESCOLARIZACION_CHECKBOXES: Record<string, boolean> = {};
