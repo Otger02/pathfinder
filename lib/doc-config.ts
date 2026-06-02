@@ -197,6 +197,30 @@ export const AUTH_TO_DOCS: Record<string, string[]> = {
     "model_790",
     "foto_carnet",
   ],
+
+  // ── Regularització extraordinària 2026 (RD 316/2026) ─────────────────────
+  // Vía protección internacional (EX-31, DA 20a): asilo presentado antes
+  // del 1/1/2026 + 5 meses de permanencia.
+  regularitzacio_extraordinaria_protec_intl: [
+    "passaport_o_cedula",
+    "acreditacio_solicitud_asil",
+    "prova_permanencia_5_mesos",
+    "antecedents_penals_espanya",
+    "antecedents_penals_origen",
+    "antecedents_penals_paisos_residits",
+    "foto_carnet",
+  ],
+  // Vía situación irregular (EX-32, DA 21a): en España antes del 1/1/2026
+  // + 5 meses de permanencia.
+  regularitzacio_extraordinaria_irregular: [
+    "passaport_o_cedula",
+    "prova_estada_abans_2026",
+    "prova_permanencia_5_mesos",
+    "antecedents_penals_espanya",
+    "antecedents_penals_origen",
+    "antecedents_penals_paisos_residits",
+    "foto_carnet",
+  ],
 };
 
 // ── Helper functions ────────────────────────────────────────────────────────

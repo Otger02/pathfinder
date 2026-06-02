@@ -402,6 +402,26 @@ export const AUTH_FIELD_RULES: Partial<Record<string, AuthFieldRules>> = {
     optional:    ["email", "pisoDomicilio"],
   },
 
+  // ── Regularització extraordinària 2026 (EX-31 / EX-32) ───────
+  // No tipoSolicitud (és sempre inicial). El padró i els antecedents es
+  // tracten com a documents (doc-config), no com a camps de formulari.
+  regularitzacio_extraordinaria_protec_intl: {
+    required: [
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+  regularitzacio_extraordinaria_irregular: {
+    required: [
+      "sexo", "estadoCivil", "lugarNacimiento", "paisNacimiento",
+      "nombrePadre", "nombreMadre", "telefono", "numeroDomicilio",
+    ],
+    recommended: [],
+    optional: ["email", "pisoDomicilio"],
+  },
+
   // ── EX-02: Reagrupació familiar ──────────────────────────────
   reagrupacio_familiar: {
     required: ["estadoCivil", "familiar_nombre", "familiar_primerApellido", "familiar_vinculo", "familiar_sexo"],

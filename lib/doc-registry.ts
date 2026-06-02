@@ -156,4 +156,54 @@ export const DOC_REGISTRY: Record<string, DocDefinition> = {
     descriptionCa: "Resolució administrativa que denega la sol·licitud d'autorització prèvia que va motivar la segona oportunitat. Incloure la resolució original i, si escau, la resolució de la via de recurs.",
     whoObtains: "applicant",
   },
+
+  // ── Regularització extraordinària 2026 (RD 316/2026 DA 20a/21a) ──────────
+  passaport_o_cedula: {
+    slug: "passaport_o_cedula",
+    nameEs: "Pasaporte, cédula de inscripción o título de viaje",
+    nameCa: "Passaport, cèdula d'inscripció o títol de viatge",
+    descriptionEs: "Copia completa del pasaporte en vigor. Si no dispones de pasaporte, se acepta cédula de inscripción o título de viaje. A diferencia de otros trámites, la regularización extraordinaria NO exige pasaporte vigente obligatorio.",
+    descriptionCa: "Còpia completa del passaport en vigor. Si no disposes de passaport, s'accepta cèdula d'inscripció o títol de viatge. A diferència d'altres tràmits, la regularització extraordinària NO exigeix passaport vigent obligatori.",
+    whoObtains: "applicant",
+    note: "Si no tens cap document de viatge, demana cèdula d'inscripció al consolat del teu país o, si és impossible, a l'Oficina d'Estrangeria.",
+  },
+
+  prova_estada_abans_2026: {
+    slug: "prova_estada_abans_2026",
+    nameEs: "Prueba de estancia en España antes del 1/1/2026",
+    nameCa: "Prova d'estada a Espanya abans de l'1/1/2026",
+    descriptionEs: "Cualquier documento que acredite que ya estabas en España antes del 1 de enero de 2026: empadronamiento, tarjeta sanitaria, informe de servicios sociales, matrícula escolar, billete de entrada, atención médica, etc.",
+    descriptionCa: "Qualsevol document que acrediti que ja eres a Espanya abans de l'1 de gener de 2026: empadronament, targeta sanitària, informe de serveis socials, matrícula escolar, bitllet d'entrada, atenció mèdica, etc.",
+    whoObtains: "applicant",
+    note: "Com més documents oficials aportis, més sòlida és la prova. El padró amb data d'alta anterior a l'1/1/2026 és la prova més clara.",
+  },
+
+  prova_permanencia_5_mesos: {
+    slug: "prova_permanencia_5_mesos",
+    nameEs: "Prueba de permanencia continuada (5 meses)",
+    nameCa: "Prova de permanència continuada (5 mesos)",
+    descriptionEs: "Documentación que acredite haber permanecido en España de forma continuada durante los 5 meses anteriores a la solicitud: padrón, facturas, informes escolares o sanitarios, certificados de servicios sociales, etc.",
+    descriptionCa: "Documentació que acrediti haver romàs a Espanya de forma continuada durant els 5 mesos anteriors a la sol·licitud: padró, factures, informes escolars o sanitaris, certificats de serveis socials, etc.",
+    whoObtains: "applicant",
+    note: "Pot ser el mateix conjunt de documents que la prova d'estada, sempre que cobreixi els 5 mesos previs sense interrupcions.",
+  },
+
+  antecedents_penals_paisos_residits: {
+    slug: "antecedents_penals_paisos_residits",
+    nameEs: "Antecedentes penales de países de residencia (últimos 5 años)",
+    nameCa: "Antecedents penals de països de residència (últims 5 anys)",
+    descriptionEs: "Certificado de antecedentes penales de cada país donde hayas residido durante los últimos 5 años, además de España y tu país de origen. Apostillados y traducidos por traductor jurado.",
+    descriptionCa: "Certificat d'antecedents penals de cada país on hagis residit durant els últims 5 anys, a més d'Espanya i el teu país d'origen. Apostillats i traduïts per traductor jurat.",
+    whoObtains: "applicant",
+    note: "Només si has viscut en altres països a banda d'Espanya i el d'origen en els últims 5 anys.",
+  },
+
+  acreditacio_solicitud_asil: {
+    slug: "acreditacio_solicitud_asil",
+    nameEs: "Acreditación de solicitud de protección internacional (antes del 1/1/2026)",
+    nameCa: "Acreditació de sol·licitud de protecció internacional (abans de l'1/1/2026)",
+    descriptionEs: "Documento que acredita que solicitaste protección internacional (asilo) en España antes del 1 de enero de 2026: tarjeta roja, resguardo de solicitud, o resolución. Necesario para la vía EX-31.",
+    descriptionCa: "Document que acredita que vas sol·licitar protecció internacional (asil) a Espanya abans de l'1 de gener de 2026: targeta vermella, resguard de sol·licitud, o resolució. Necessari per a la via EX-31.",
+    whoObtains: "applicant",
+  },
 };
