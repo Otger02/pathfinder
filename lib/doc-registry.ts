@@ -206,4 +206,14 @@ export const DOC_REGISTRY: Record<string, DocDefinition> = {
     descriptionCa: "Document que acredita que vas sol·licitar protecció internacional (asil) a Espanya abans de l'1 de gener de 2026: targeta vermella, resguard de sol·licitud, o resolució. Necessari per a la via EX-31.",
     whoObtains: "applicant",
   },
+
+  acreditacio_vulnerabilitat: {
+    slug: "acreditacio_vulnerabilitat",
+    nameEs: "Acreditación de situación de vulnerabilidad (ANEXO II, DA21)",
+    nameCa: "Acreditació de situació de vulnerabilitat (ANNEX II, DA21)",
+    descriptionEs: "Modelo ANEXO II del RD 1155/2024 firmado y sellado por una entidad certificadora: administración pública competente en asistencia social, o entidad del Tercer Sector / sindicato inscrita en el Registro de Colaboradores de Extranjería. Solo para la vía de vulnerabilidad de la regularización (EX-32, opción 8).",
+    descriptionCa: "Model ANNEX II del RD 1155/2024 signat i segellat per una entitat certificadora: administració pública competent en assistència social, o entitat del Tercer Sector / sindicat inscrita al Registre de Col·laboradors d'Estrangeria. Només per a la via de vulnerabilitat de la regularització (EX-32, opció 8).",
+    whoObtains: "authority",
+    note: "L'entitat marca les circumstàncies (aïllament social, sense llar, pobresa, monoparentalitat, riscos psicosocials, etc.). Pathfinder pot pre-omplir el bloc 2 (dades de la persona) per estalviar feina a l'entitat.",
+  },
 };
