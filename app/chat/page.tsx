@@ -872,6 +872,38 @@ function ChatPageInner() {
 
       <hr className="my-3 border-border-light" />
 
+      {/* ── EU AI Act art. 50 disclosure (always visible) ──── */}
+      <div
+        className="flex items-start gap-2 mb-3 px-3 py-2 rounded-lg text-xs"
+        style={{ background: "var(--surface)", color: "var(--ink-3)" }}
+        role="note"
+      >
+        <svg
+          className="w-4 h-4 shrink-0 mt-0.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.8}
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+          />
+        </svg>
+        <span className="flex-1">
+          {t(labels.aiDisclosure, lang)}{" "}
+          <a
+            href={`/privacy?lang=${lang}`}
+            className="underline"
+            style={{ color: "var(--primary-2)" }}
+          >
+            {t(labels.privacyLink, lang)}
+          </a>
+        </span>
+      </div>
+
       {/* ── PHASE 1: Decision Tree ─────────────────────────── */}
       {phase === "tree" && currentNode && (
         <TreePhase

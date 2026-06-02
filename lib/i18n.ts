@@ -205,6 +205,22 @@ export const labels = {
     fr: "Avant de continuer",
     ca: "Abans de continuar",
   },
+  // EU AI Act art. 50 — transparency: the user must know they're talking
+  // to an AI, shown clearly at the first interaction.
+  aiDisclosure: {
+    es: "Asistente de IA, no un abogado. Te orienta sobre trámites de extranjería, pero no sustituye asesoramiento legal profesional.",
+    en: "AI assistant, not a lawyer. It guides you through immigration procedures but does not replace professional legal advice.",
+    ar: "مساعد ذكاء اصطناعي، وليس محامياً. يرشدك في إجراءات الهجرة لكنه لا يحل محل المشورة القانونية المهنية.",
+    fr: "Assistant IA, pas un avocat. Il t'oriente sur les démarches d'immigration mais ne remplace pas un conseil juridique professionnel.",
+    ca: "Assistent d'IA, no un advocat. T'orienta sobre tràmits d'estrangeria, però no substitueix l'assessorament legal professional.",
+  },
+  privacyLink: {
+    es: "Privacidad y aviso legal",
+    en: "Privacy & legal notice",
+    ar: "الخصوصية والإشعار القانوني",
+    fr: "Confidentialité et mentions légales",
+    ca: "Privacitat i avís legal",
+  },
   consentBody: {
     es: "Para ayudarte a preparar tus documentos, necesitamos recoger algunos datos personales (nombre, documento de identidad, dirección). Tus datos se usarán únicamente para generar los formularios y NO se guardan en ningún servidor.",
     en: "To help you prepare your documents, we need to collect some personal data (name, ID document, address). Your data will only be used to generate the forms and is NOT saved on any server.",

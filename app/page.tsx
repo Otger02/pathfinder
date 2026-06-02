@@ -522,6 +522,11 @@ export default function OnboardingPage() {
             Violencia de género: 016
           </a>
         </div>
+        <div className="mt-2 text-xs text-text-muted">
+          <a href="/privacy" className="hover:underline">
+            Privacitat i avís legal · Assistent d&apos;IA, no advocat
+          </a>
+        </div>
       </footer>
 
       {/* ── Listening overlay ─────────────────────────────────────── */}
