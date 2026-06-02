@@ -6,7 +6,7 @@
  * and returns the filled PDF as Uint8Array.
  */
 
-import { PDFDocument, PDFForm } from "pdf-lib";
+import { PDFDocument, PDFForm, StandardFonts, type PDFFont } from "pdf-lib";
 import { readFileSync } from "fs";
 import { join } from "path";
 import type { ExFormId } from "@/lib/form-config";
@@ -21,6 +21,74 @@ import {
   resolveCircunstanciaCheckbox,
   resolveTipoSolicitudCheckbox,
 } from "@/lib/forms/ex-10";
+import {
+  EX_32_OVERLAY_TEXT,
+  EX_32_OVERLAY_FECHA,
+  EX_32_OVERLAY_SEXO,
+  EX_32_OVERLAY_ESTADO,
+} from "@/lib/forms/ex-32";
+
+/**
+ * EX-32 is a FLAT PDF (no AcroForm fields). We fill Apartat 1 by drawing
+ * text on top of page 1 at coordinates derived from the sibling EX-31 form
+ * (same MICTM layout, A4). See lib/forms/ex-32.ts for the coordinate maps.
+ */
+async function drawEx32Overlay(
+  pdf: PDFDocument,
+  personalData: Partial<PersonalData>
+): Promise<void> {
+  let font: PDFFont;
+  try {
+    font = await pdf.embedFont(StandardFonts.Helvetica);
+  } catch {
+    return;
+  }
+  const pages = pdf.getPages();
+  const draw = (page: number, x: number, y: number, text: string, size = 9) => {
+    const p = pages[page - 1];
+    if (!p || !text) return;
+    p.drawText(text, { x, y, size, font });
+  };
+
+  // Single-line text fields
+  for (const mark of EX_32_OVERLAY_TEXT) {
+    const value = personalData[mark.key];
+    if (typeof value === "string" && value.trim()) {
+      draw(mark.page, mark.x, mark.y, value.trim());
+    }
+  }
+
+  // Fecha de nacimiento (YYYY-MM-DD or DD/MM/YYYY → three boxes)
+  const fecha = personalData.fechaNacimiento;
+  if (typeof fecha === "string" && fecha.trim()) {
+    let dd = "", mm = "", yyyy = "";
+    if (fecha.includes("-")) {
+      const [y, m, d] = fecha.split("-");
+      dd = d; mm = m; yyyy = y;
+    } else if (fecha.includes("/")) {
+      const [d, m, y] = fecha.split("/");
+      dd = d; mm = m; yyyy = y;
+    }
+    if (dd && mm && yyyy) {
+      const f = EX_32_OVERLAY_FECHA;
+      draw(f.page, f.ddX, f.y, dd.padStart(2, "0"));
+      draw(f.page, f.mmX, f.y, mm.padStart(2, "0"));
+      draw(f.page, f.yyyyX, f.y, yyyy);
+    }
+  }
+
+  // Sexo checkbox → "X" mark
+  if (personalData.sexo && EX_32_OVERLAY_SEXO[personalData.sexo]) {
+    const c = EX_32_OVERLAY_SEXO[personalData.sexo];
+    draw(c.page, c.x, c.y, "X", 10);
+  }
+
+  // Estado civil checkbox → "X" mark
+  if (personalData.estadoCivil && EX_32_OVERLAY_ESTADO[personalData.estadoCivil]) {
+    const c = EX_32_OVERLAY_ESTADO[personalData.estadoCivil];
+    draw(c.page, c.x, c.y, "X", 10);
+  }
+}
 
 /**
  * EX-10-specific checkbox logic.
@@ -338,6 +406,11 @@ export async function fillExForm(
   // ── EX-10 specific: headers + defaults that the generic loop can't do ─
   if (exFormId === "EX-10") {
     fillEx10Checkboxes(form, personalData, authSlug);
+  }
+
+  // ── EX-32: flat PDF, fill Apartat 1 via drawText overlay ────
+  if (exFormId === "EX-32") {
+    await drawEx32Overlay(pdf, personalData);
   }
 
   // ── Flatten if requested ────────────────────────────────────

@@ -65,6 +65,12 @@ const KNOWN_NOTES: Partial<Record<ExFormId, string[]>> = {
   "EX-01": [
     "No lucrativa — supports `titular_*` block for non-applicant titular of resources.",
   ],
+  "EX-31": [
+    "Regularización extraordinaria 2026 (protección internacional, DA20). Apartat 1 mapped & verified against EX-10 layout. Additional-person blocks left null on purpose.",
+  ],
+  "EX-32": [
+    "Regularización extraordinaria 2026 (situación irregular, DA21). FLAT PDF (0 AcroForm fields). Apartat 1 filled via drawText OVERLAY (EX_32_OVERLAY_* in lib/forms/ex-32.ts), coordinates calibrated against the form's own label baselines via pdfjs getTextContent. 'empty map' status below refers only to AcroForm fields — the form IS filled via overlay.",
+  ],
 };
 
 // Forms covered by scripts/test-fill-all.ts
