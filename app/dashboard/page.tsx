@@ -14,6 +14,7 @@ import QuickStats from "./components/QuickStats";
 import UserMenu from "./components/UserMenu";
 import DashboardLangSelector from "./components/DashboardLangSelector";
 import SosButton from "@/app/components/SosButton";
+import RegularizationBanner from "@/app/components/RegularizationBanner";
 
 interface DashboardPageProps {
   searchParams: Promise<{ lang?: string }>;
@@ -101,6 +102,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         className="flex-1 mx-auto w-full max-w-2xl px-4 sm:px-6 py-8 space-y-6"
         dir={lang === "ar" ? "rtl" : "ltr"}
       >
+        {/* Regularization 2026 banner (auto-hides after 2026-06-30) */}
+        <RegularizationBanner lang={lang} />
+
         {/* Greeting */}
         <div>
           <h1 className="h-display">

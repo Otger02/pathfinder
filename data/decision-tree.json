@@ -271,15 +271,20 @@
         "id": "b1-r-reg",
         "type": "result",
         "text": "Regularització extraordinària — SOL·LICITA ARA (fins 30/06/2026)",
-        "note": "Documentació: còpia passaport/cèdula d'inscripció/títol de viatge + prova d'estar a Espanya abans 01/01/2026 + prova dels 5 mesos de permanència + certificat antecedents penals (Espanya + país d'origen). Via telemàtica: disponible 24h. Via presencial: cita prèvia obligatòria. Tel. 060 (9:30-14h i 16:30-19:30h). Amb l'admissió a tràmit ja es pot treballar. Autorització resultant: 1 any.",
+        "note": "Dues vies amb formulari propi: EX-31 si tens sol·licitud de protecció internacional presentada abans 01/01/2026 (DA 20a RD 1155/2024); EX-32 si estaves en situació irregular i ja eres a Espanya abans 01/01/2026 (DA 21a RD 1155/2024). Documentació: còpia passaport/cèdula d'inscripció/títol de viatge + prova d'estar a Espanya abans 01/01/2026 + prova dels 5 mesos de permanència + certificat antecedents penals (Espanya + país d'origen). Via telemàtica: disponible 24h. Via presencial: cita prèvia obligatòria. Tel. 060 (9:30-14h i 16:30-19:30h). Amb l'admissió a tràmit ja es pot treballar. Autorització resultant: 1 any.",
         "opts": [
           {
-            "text": "Via telemàtica (24h, sense cita)",
+            "text": "Tinc asil presentat abans 01/01/2026 → EX-31",
             "s": "r",
             "next": null
           },
           {
-            "text": "Via presencial — demanar cita prèvia",
+            "text": "Estava en situació irregular abans 01/01/2026 → EX-32",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Via telemàtica (24h, sense cita)",
             "s": "r",
             "next": null
           },
@@ -291,7 +296,10 @@
         ],
         "x": 370,
         "y": 980,
-        "slugs": []
+        "slugs": [
+          "regularitzacio_extraordinaria_protec_intl",
+          "regularitzacio_extraordinaria_irregular"
+        ]
       },
       {
         "id": "b1-p3",

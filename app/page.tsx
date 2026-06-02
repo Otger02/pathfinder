@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
+import RegularizationBanner from "@/app/components/RegularizationBanner";
 
 // ── Mapping idioma del navegador → codi intern (fallback) ──────────
 // pt/sw/ur tenen tree translations però encara no UI translations,
@@ -376,6 +377,11 @@ export default function OnboardingPage() {
 
       {/* ── Hero ── */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 pb-8 text-center">
+        {/* Regularization 2026 banner (auto-hides after 2026-06-30) */}
+        <div className="w-full max-w-2xl">
+          <RegularizationBanner lang="ca" />
+        </div>
+
         {/* Greetings */}
         <div className="flex items-baseline gap-2 sm:gap-4 flex-wrap justify-center mb-6">
           {GREETINGS.map((g, i) => (

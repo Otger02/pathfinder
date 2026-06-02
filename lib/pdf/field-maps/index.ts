@@ -229,6 +229,36 @@ const FIELD_MAP_LOADERS: Partial<Record<ExFormId, () => Promise<FieldMap>>> = {
       dateFields: m.EX_25_DATE_FIELDS,
     };
   },
+  // ── Regularització extraordinària 2026 (RD 316/2026 DA 20a / 21a) ──
+  // Skeleton field maps — see lib/forms/ex-31.ts and ex-32.ts for status.
+  "EX-31": async () => {
+    const m = await import("./ex-31");
+    return {
+      textFields: m.EX_31_TEXT_FIELDS,
+      sexoCheckboxes: m.EX_31_SEXO_CHECKBOXES,
+      tipoDocCheckboxes: m.EX_31_TIPO_DOC_CHECKBOXES,
+      estadoCivilCheckboxes: m.EX_31_ESTADO_CIVIL_CHECKBOXES,
+      circunstanciaCheckboxes: m.EX_31_CIRCUNSTANCIA_CHECKBOXES,
+      tipoAutorizacionCheckboxes: m.EX_31_TIPO_AUTORIZACION_CHECKBOXES,
+      hijosEscolarizacionCheckboxes: m.EX_31_HIJOS_ESCOLARIZACION_CHECKBOXES,
+      consentimientoCheckbox: m.EX_31_CONSENTIMIENTO_CHECKBOX,
+      dateFields: m.EX_31_DATE_FIELDS,
+    };
+  },
+  "EX-32": async () => {
+    const m = await import("./ex-32");
+    return {
+      textFields: m.EX_32_TEXT_FIELDS,
+      sexoCheckboxes: m.EX_32_SEXO_CHECKBOXES,
+      tipoDocCheckboxes: m.EX_32_TIPO_DOC_CHECKBOXES,
+      estadoCivilCheckboxes: m.EX_32_ESTADO_CIVIL_CHECKBOXES,
+      circunstanciaCheckboxes: m.EX_32_CIRCUNSTANCIA_CHECKBOXES,
+      tipoAutorizacionCheckboxes: m.EX_32_TIPO_AUTORIZACION_CHECKBOXES,
+      hijosEscolarizacionCheckboxes: m.EX_32_HIJOS_ESCOLARIZACION_CHECKBOXES,
+      consentimientoCheckbox: m.EX_32_CONSENTIMIENTO_CHECKBOX,
+      dateFields: m.EX_32_DATE_FIELDS,
+    };
+  },
 };
 
 export async function getFieldMap(formId: ExFormId): Promise<FieldMap | null> {

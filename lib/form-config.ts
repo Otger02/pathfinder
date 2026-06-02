@@ -11,7 +11,10 @@ import type { PersonalDataField } from "./types/personal-data";
 export type ExFormId =
   | "EX-00" | "EX-01" | "EX-02" | "EX-03" | "EX-04"
   | "EX-06" | "EX-07" | "EX-09" | "EX-10" | "EX-11"
-  | "EX-19" | "EX-24" | "EX-25";
+  | "EX-19" | "EX-24" | "EX-25"
+  // RD 316/2026 (DA 20a, 21a) — convocatòria regularització extraordinària
+  // 16/04/2026 → 30/06/2026
+  | "EX-31" | "EX-32";
 
 export interface ExFormInfo {
   id: ExFormId;
@@ -114,6 +117,18 @@ export const EX_FORMS: Record<ExFormId, ExFormInfo> = {
       (f) => f !== "nombrePadre" && f !== "nombreMadre"
     ),
   },
+  "EX-31": {
+    id: "EX-31",
+    name: "Autorización de residencia por circunstancias excepcionales — Arraigo PI (DA 20ª RD 1155/2024)",
+    requiredFields: [...BASE_REQUIRED],
+    optionalFields: BASE_OPTIONAL,
+  },
+  "EX-32": {
+    id: "EX-32",
+    name: "Autorización de residencia por circunstancias excepcionales — Arraigo extraordinario (DA 21ª RD 1155/2024)",
+    requiredFields: [...BASE_REQUIRED],
+    optionalFields: BASE_OPTIONAL,
+  },
 };
 
 /**
@@ -201,6 +216,10 @@ export const AUTH_TO_EX: Record<string, ExFormId[]> = {
   menor_no_acompanyat: ["EX-25"],
   renovacio_menor_no_acompanyat_majoria: ["EX-25"],
   menor_excepcional_majoria_edat: ["EX-25"],
+
+  // Regularització extraordinària 2026 (RD 316/2026) — termini 30/06/2026
+  regularitzacio_extraordinaria_protec_intl: ["EX-31"],
+  regularitzacio_extraordinaria_irregular: ["EX-32"],
 
   // EU registration (no EX form needed — uses Modelo EX-18 or online)
   certificat_registre_ciutada_ue: [],

@@ -38,6 +38,7 @@ const ALL_FORM_IDS: ExFormId[] = [
   "EX-00", "EX-01", "EX-02", "EX-03", "EX-04",
   "EX-06", "EX-07", "EX-09", "EX-10", "EX-11",
   "EX-19", "EX-24", "EX-25",
+  "EX-31", "EX-32",
 ];
 
 const PERSONAL_DATA_FIELDS = new Set(Object.keys(EMPTY_PERSONAL_DATA));
