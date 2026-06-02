@@ -88,7 +88,7 @@ Esborrany tècnic · juny 2026 · **pendent de validació jurídica**
 1. **Validació jurídica** d'aquest document per un advocat/DPO.
 2. **Confirmar la regió de Supabase** (preferible UE; si està als EUA, documentar la transferència).
 3. **Signar DPAs** (acords d'encarregat) amb Supabase, Anthropic, Voyage, Vercel.
-4. **Verificar que el cron `cleanup_expired_pii()` està programat** a Supabase (sense ell, el TTL de 24h no s'executa).
+4. ~~**Verificar que el cron `cleanup_expired_pii()` està programat**~~ ✅ FET: Vercel Cron diari (`vercel.json` → `/api/cron/cleanup`, 03:00). Cal definir `CRON_SECRET` a Vercel perquè l'endpoint no sigui públic. Si cal neteja horària (Hobby limita a 1/dia), usar pg_cron a Supabase (instruccions al comentari del route).
 5. **DPIA específica del mòdul SOS** (categoria especial: àudio/vídeo + GPS en context de detenció). Definir: retenció, qui hi accedeix, cadena de custòdia legal, base legal (interès vital art. 9.2.c?).
 6. **Registre d'activitats de tractament** (art. 30 RGPD) formal.
 7. **Minimització cap al LLM**: revisar que no s'envia més PII de la necessària a Anthropic en el `contextBlock` / historial.
