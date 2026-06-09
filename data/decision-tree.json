@@ -276,12 +276,12 @@
           {
             "text": "Tinc asil presentat abans 01/01/2026 → EX-31",
             "s": "r",
-            "next": null
+            "next": "b1-r-reg-ex31"
           },
           {
             "text": "Estava en situació irregular abans 01/01/2026 → EX-32",
             "s": "r",
-            "next": null
+            "next": "b1-r-reg-ex32"
           },
           {
             "text": "Via telemàtica (24h, sense cita)",
@@ -298,6 +298,52 @@
         "y": 980,
         "slugs": [
           "regularitzacio_extraordinaria_protec_intl",
+          "regularitzacio_extraordinaria_irregular"
+        ]
+      },
+      {
+        "id": "b1-r-reg-ex31",
+        "type": "result",
+        "text": "Regularització via protecció internacional — EX-31",
+        "note": "Aquesta via (DA 20a RD 1155/2024) és per a qui va presentar sol·licitud de protecció internacional (asil) a Espanya abans de l'01/01/2026. Formulari: EX-31. Documentació: còpia del passaport/cèdula d'inscripció/títol de viatge + acreditació de la sol·licitud d'asil + prova dels 5 mesos de permanència + antecedents penals (Espanya, país d'origen i països on hagis residit els últims 5 anys). Termini fins 30/06/2026. Amb l'admissió a tràmit ja es pot treballar. Comença el xat i t'ajudo a preparar l'EX-31.",
+        "opts": [
+          {
+            "text": "Via telemàtica (24h, sense cita)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Tel. 060 per a dubtes i cita",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 250,
+        "y": 1090,
+        "slugs": [
+          "regularitzacio_extraordinaria_protec_intl"
+        ]
+      },
+      {
+        "id": "b1-r-reg-ex32",
+        "type": "result",
+        "text": "Regularització via situació irregular — EX-32",
+        "note": "Aquesta via (DA 21a RD 1155/2024) és per a qui estava en situació administrativa irregular i ja era a Espanya abans de l'01/01/2026. Formulari: EX-32. Documentació: còpia del passaport/cèdula d'inscripció/títol de viatge + prova d'estar a Espanya abans 01/01/2026 + prova dels 5 mesos de permanència + antecedents penals (Espanya, país d'origen i països on hagis residit els últims 5 anys). Si al·legues vulnerabilitat, cal l'ANNEX II signat per una entitat certificadora. Termini fins 30/06/2026. Amb l'admissió a tràmit ja es pot treballar. Comença el xat i t'ajudo a preparar l'EX-32.",
+        "opts": [
+          {
+            "text": "Via telemàtica (24h, sense cita)",
+            "s": "r",
+            "next": null
+          },
+          {
+            "text": "Tel. 060 per a dubtes i cita",
+            "s": "r",
+            "next": null
+          }
+        ],
+        "x": 490,
+        "y": 1090,
+        "slugs": [
           "regularitzacio_extraordinaria_irregular"
         ]
       },

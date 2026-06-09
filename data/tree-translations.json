@@ -717,6 +717,24 @@
         "Reunificación familiar — solicitar extensión",
         "Nacionalidad a los 5 años (estatuto refugiado)"
       ]
+    },
+    "b1-r-reg-ex31": {
+      "id": "b1-r-reg-ex31",
+      "text": "Regularización vía protección internacional — EX-31",
+      "note": "Esta vía (DA 20ª RD 1155/2024) es para quien presentó solicitud de protección internacional (asilo) en España antes del 01/01/2026. Formulario: EX-31. Documentación: copia del pasaporte/cédula de inscripción/título de viaje + acreditación de la solicitud de asilo + prueba de los 5 meses de permanencia + antecedentes penales (España, país de origen y países donde hayas residido los últimos 5 años). Plazo hasta 30/06/2026. Con la admisión a trámite ya se puede trabajar. Empieza el chat y te ayudo a preparar el EX-31.",
+      "opts": [
+        "Vía telemática (24h, sin cita)",
+        "Tel. 060 para dudas y cita"
+      ]
+    },
+    "b1-r-reg-ex32": {
+      "id": "b1-r-reg-ex32",
+      "text": "Regularización vía situación irregular — EX-32",
+      "note": "Esta vía (DA 21ª RD 1155/2024) es para quien estaba en situación administrativa irregular y ya estaba en España antes del 01/01/2026. Formulario: EX-32. Documentación: copia del pasaporte/cédula de inscripción/título de viaje + prueba de estar en España antes del 01/01/2026 + prueba de los 5 meses de permanencia + antecedentes penales (España, país de origen y países donde hayas residido los últimos 5 años). Si alegas vulnerabilidad, hace falta el ANEXO II firmado por una entidad certificadora. Plazo hasta 30/06/2026. Con la admisión a trámite ya se puede trabajar. Empieza el chat y te ayudo a preparar el EX-32.",
+      "opts": [
+        "Vía telemática (24h, sin cita)",
+        "Tel. 060 para dudas y cita"
+      ]
     }
   },
   "fr": {
@@ -1437,6 +1455,24 @@
         "Regroupement familial — demander extension",
         "Nationalité après 5 ans (statut réfugié)"
       ]
+    },
+    "b1-r-reg-ex31": {
+      "id": "b1-r-reg-ex31",
+      "text": "Régularisation via protection internationale — EX-31",
+      "note": "Cette voie (DA 20a RD 1155/2024) est pour ceux qui ont présenté une demande de protection internationale (asile) en Espagne avant le 01/01/2026. Formulaire : EX-31. Documents : copie du passeport/carte d'inscription/titre de voyage + preuve de la demande d'asile + preuve des 5 mois de séjour + casier judiciaire (Espagne, pays d'origine et pays où tu as résidé les 5 dernières années). Délai jusqu'au 30/06/2026. Avec l'admission au traitement tu peux déjà travailler. Commence le chat et je t'aide à préparer l'EX-31.",
+      "opts": [
+        "Voie télématique (24h, sans rendez-vous)",
+        "Tél. 060 pour questions et rendez-vous"
+      ]
+    },
+    "b1-r-reg-ex32": {
+      "id": "b1-r-reg-ex32",
+      "text": "Régularisation via situation irrégulière — EX-32",
+      "note": "Cette voie (DA 21a RD 1155/2024) est pour ceux qui étaient en situation administrative irrégulière et étaient déjà en Espagne avant le 01/01/2026. Formulaire : EX-32. Documents : copie du passeport/carte d'inscription/titre de voyage + preuve d'être en Espagne avant le 01/01/2026 + preuve des 5 mois de séjour + casier judiciaire (Espagne, pays d'origine et pays où tu as résidé les 5 dernières années). Si tu allègues une vulnérabilité, il faut l'ANNEXE II signé par une entité certificatrice. Délai jusqu'au 30/06/2026. Avec l'admission au traitement tu peux déjà travailler. Commence le chat et je t'aide à préparer l'EX-32.",
+      "opts": [
+        "Voie télématique (24h, sans rendez-vous)",
+        "Tél. 060 pour questions et rendez-vous"
+      ]
     }
   },
   "ar": {
@@ -2156,6 +2192,24 @@
         "طلب TIE كلاجئ/ة",
         "لم شمل الأسرة — طلب تمديد",
         "الجنسية بعد 5 سنوات (صفة لاجئ)"
+      ]
+    },
+    "b1-r-reg-ex31": {
+      "id": "b1-r-reg-ex31",
+      "text": "التسوية عن طريق الحماية الدولية — EX-31",
+      "note": "هذا المسار (DA 20a RD 1155/2024) مخصص لمن قدم طلب حماية دولية (لجوء) في إسبانيا قبل 01/01/2026. الاستمارة: EX-31. الوثائق المطلوبة: نسخة من جواز السفر/بطاقة التسجيل/وثيقة السفر + إثبات تقديم طلب اللجوء + إثبات الإقامة 5 أشهر + السوابق العدلية (إسبانيا، بلدك الأصلي والبلدان التي أقمت فيها آخر 5 سنوات). الأجل حتى 30/06/2026. بمجرد قبول الملف يمكنك العمل. ابدأ المحادثة وسأساعدك في تحضير EX-31.",
+      "opts": [
+        "عبر الإنترنت (24 ساعة، بدون موعد)",
+        "هاتف 060 للاستفسارات والمواعيد"
+      ]
+    },
+    "b1-r-reg-ex32": {
+      "id": "b1-r-reg-ex32",
+      "text": "التسوية عن طريق الوضع غير النظامي — EX-32",
+      "note": "هذا المسار (DA 21a RD 1155/2024) مخصص لمن كان في وضع إداري غير نظامي وكان موجوداً في إسبانيا قبل 01/01/2026. الاستمارة: EX-32. الوثائق المطلوبة: نسخة من جواز السفر/بطاقة التسجيل/وثيقة السفر + إثبات التواجد في إسبانيا قبل 01/01/2026 + إثبات الإقامة 5 أشهر + السوابق العدلية (إسبانيا، بلدك الأصلي والبلدان التي أقمت فيها آخر 5 سنوات). إذا ادعيت الهشاشة، يجب تقديم ANNEX II موقع من جهة معتمدة. الأجل حتى 30/06/2026. بمجرد قبول الملف يمكنك العمل. ابدأ المحادثة وسأساعدك في تحضير EX-32.",
+      "opts": [
+        "عبر الإنترنت (24 ساعة، بدون موعد)",
+        "هاتف 060 للاستفسارات والمواعيد"
       ]
     }
   },
@@ -2879,6 +2933,24 @@
         "Reagrupamento familiar — pedir extensão",
         "Nacionalidade aos 5 anos (estatuto refugiado)"
       ]
+    },
+    "b1-r-reg-ex31": {
+      "id": "b1-r-reg-ex31",
+      "text": "Regularização via proteção internacional — EX-31",
+      "note": "Esta via (DA 20a RD 1155/2024) é para quem apresentou pedido de proteção internacional (asilo) em Espanha antes de 01/01/2026. Formulário: EX-31. Documentação: cópia do passaporte/cédula de inscrição/título de viagem + comprovativo do pedido de asilo + prova dos 5 meses de permanência + registo criminal (Espanha, país de origem e países onde tenhas residido nos últimos 5 anos). Prazo até 30/06/2026. Com a admissão do processo já se pode trabalhar. Começa o chat e ajudo-te a preparar o EX-31.",
+      "opts": [
+        "Via telemática (24h, sem marcação)",
+        "Tel. 060 para dúvidas e marcação"
+      ]
+    },
+    "b1-r-reg-ex32": {
+      "id": "b1-r-reg-ex32",
+      "text": "Regularização via situação irregular — EX-32",
+      "note": "Esta via (DA 21a RD 1155/2024) é para quem estava em situação administrativa irregular e já se encontrava em Espanha antes de 01/01/2026. Formulário: EX-32. Documentação: cópia do passaporte/cédula de inscrição/título de viagem + prova de estar em Espanha antes de 01/01/2026 + prova dos 5 meses de permanência + registo criminal (Espanha, país de origem e países onde tenhas residido nos últimos 5 anos). Se alegares vulnerabilidade, é necessário o ANEXO II assinado por uma entidade certificadora. Prazo até 30/06/2026. Com a admissão do processo já se pode trabalhar. Começa o chat e ajudo-te a preparar o EX-32.",
+      "opts": [
+        "Via telemática (24h, sem marcação)",
+        "Tel. 060 para dúvidas e marcação"
+      ]
     }
   },
   "sw": {
@@ -3601,6 +3673,24 @@
         "Kuungana na familia — omba upanuzi",
         "Uraia baada ya miaka 5 (hadhi ya mkimbizi)"
       ]
+    },
+    "b1-r-reg-ex31": {
+      "id": "b1-r-reg-ex31",
+      "text": "Kurasimishwa kupitia ulinzi wa kimataifa — EX-31",
+      "note": "Njia hii (DA 20a RD 1155/2024) ni kwa wale waliowasilisha ombi la ulinzi wa kimataifa (hifadhi) Hispania kabla ya tarehe 01/01/2026. Fomu: EX-31. Nyaraka zinazohitajika: nakala ya pasipoti/cheti cha usajili/hati ya kusafiria + uthibitisho wa ombi la hifadhi + uthibitisho wa kukaa miezi 5 + rekodi za jinai (Hispania, nchi ya asili na nchi ulizoishi miaka 5 iliyopita). Muda wa mwisho hadi 30/06/2026. Baada ya ombi kukubaliwa, tayari unaweza kufanya kazi. Anza mazungumzo na nitakusaidia kuandaa EX-31.",
+      "opts": [
+        "Njia ya mtandaoni (masaa 24, bila miadi)",
+        "Simu 060 kwa maswali na miadi"
+      ]
+    },
+    "b1-r-reg-ex32": {
+      "id": "b1-r-reg-ex32",
+      "text": "Kurasimishwa kupitia hali isiyo ya kawaida — EX-32",
+      "note": "Njia hii (DA 21a RD 1155/2024) ni kwa wale walio katika hali isiyo ya kawaida ya kiutawala na walikuwa tayari Hispania kabla ya tarehe 01/01/2026. Fomu: EX-32. Nyaraka zinazohitajika: nakala ya pasipoti/cheti cha usajili/hati ya kusafiria + uthibitisho wa kuwa Hispania kabla ya 01/01/2026 + uthibitisho wa kukaa miezi 5 + rekodi za jinai (Hispania, nchi ya asili na nchi ulizoishi miaka 5 iliyopita). Ukidai hali ya udhaifu, inahitajika ANNEX II iliyotiwa sahihi na taasisi iliyoidhinishwa. Muda wa mwisho hadi 30/06/2026. Baada ya ombi kukubaliwa, tayari unaweza kufanya kazi. Anza mazungumzo na nitakusaidia kuandaa EX-32.",
+      "opts": [
+        "Njia ya mtandaoni (masaa 24, bila miadi)",
+        "Simu 060 kwa maswali na miadi"
+      ]
     }
   },
   "ur": {
@@ -4322,6 +4412,24 @@
         "پناہ گزین کے طور پر TIE کی درخواست کریں",
         "خاندانی اتحاد — توسیع کی درخواست کریں",
         "5 سال میں شہریت (پناہ گزین کی حیثیت)"
+      ]
+    },
+    "b1-r-reg-ex31": {
+      "id": "b1-r-reg-ex31",
+      "text": "بین الاقوامی تحفظ کے ذریعے قانونی حیثیت — EX-31",
+      "note": "یہ راستہ (DA 20a RD 1155/2024) ان لوگوں کے لیے ہے جنہوں نے 01/01/2026 سے پہلے سپین میں بین الاقوامی تحفظ (پناہ) کی درخواست دی تھی۔ فارم: EX-31۔ دستاویزات: پاسپورٹ/رجسٹریشن سرٹیفکیٹ/سفری دستاویز کی کاپی + پناہ کی درخواست کا ثبوت + 5 ماہ قیام کا ثبوت + پولیس کلیئرنس سرٹیفکیٹ (سپین، اپنا ملک اور پچھلے 5 سال میں جہاں رہے ہوں)۔ آخری تاریخ 30/06/2026۔ درخواست قبول ہونے پر کام کرنے کی اجازت مل جاتی ہے۔ چیٹ شروع کریں اور میں EX-31 تیار کرنے میں آپ کی مدد کروں گا۔",
+      "opts": [
+        "آن لائن (24 گھنٹے، اپائنٹمنٹ کے بغیر)",
+        "سوالات اور اپائنٹمنٹ کے لیے فون 060"
+      ]
+    },
+    "b1-r-reg-ex32": {
+      "id": "b1-r-reg-ex32",
+      "text": "غیر قانونی حیثیت کے ذریعے قانونی حیثیت — EX-32",
+      "note": "یہ راستہ (DA 21a RD 1155/2024) ان لوگوں کے لیے ہے جو انتظامی طور پر غیر قانونی حیثیت میں تھے اور 01/01/2026 سے پہلے سپین میں موجود تھے۔ فارم: EX-32۔ دستاویزات: پاسپورٹ/رجسٹریشن سرٹیفکیٹ/سفری دستاویز کی کاپی + 01/01/2026 سے پہلے سپین میں موجودگی کا ثبوت + 5 ماہ قیام کا ثبوت + پولیس کلیئرنس سرٹیفکیٹ (سپین، اپنا ملک اور پچھلے 5 سال میں جہاں رہے ہوں)۔ اگر آپ کمزور حالات کا دعویٰ کرتے ہیں تو ANNEX II کسی تصدیق شدہ ادارے سے دستخط شدہ ہونا ضروری ہے۔ آخری تاریخ 30/06/2026۔ درخواست قبول ہونے پر کام کرنے کی اجازت مل جاتی ہے۔ چیٹ شروع کریں اور میں EX-32 تیار کرنے میں آپ کی مدد کروں گا۔",
+      "opts": [
+        "آن لائن (24 گھنٹے، اپائنٹمنٹ کے بغیر)",
+        "سوالات اور اپائنٹمنٹ کے لیے فون 060"
       ]
     }
   },
