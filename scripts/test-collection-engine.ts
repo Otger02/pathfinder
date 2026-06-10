@@ -88,6 +88,8 @@ console.log("\n═══ Scenario 3: Merge extracted data ═══");
 
 console.log("\n═══ Scenario 4: All fields filled — transition to resum ═══");
 {
+  // arraigo_social requires the full EX-10 apartat-1 identity block
+  // (AUTH_FIELD_RULES), not just the BASE_REQUIRED set.
   const fullData: Partial<PersonalData> = {
     nombre: "Ahmed",
     primerApellido: "El Fassi",
@@ -99,6 +101,15 @@ console.log("\n═══ Scenario 4: All fields filled — transition to resum �
     localidad: "Barcelona",
     provincia: "Barcelona",
     codigoPostal: "08001",
+    tipoSolicitud: "residencia_inicial",
+    sexo: "H",
+    estadoCivil: "soltero",
+    lugarNacimiento: "Tánger",
+    paisNacimiento: "Marruecos",
+    nombrePadre: "Hassan",
+    nombreMadre: "Fatima",
+    telefono: "612345678",
+    numeroDomicilio: "5",
   };
 
   const missing = computeMissingFields(["arraigo_social"], fullData);
@@ -122,9 +133,10 @@ console.log("\n═══ Scenario 5: Multiple auth slugs (reagrupació + arraigo
     {}
   );
 
-  // reagrupació requires estadoCivil (EX-02), arraigo doesn't (EX-10)
+  // Both require estadoCivil since the EX-10 apartat-1 rules tightened;
+  // arraigo additionally requires tipoSolicitud, which reagrupació doesn't.
   assert(missing1.includes("estadoCivil"), "reagrupació requires estadoCivil");
-  assert(!missing2.includes("estadoCivil"), "arraigo does NOT require estadoCivil");
+  assert(missing2.includes("tipoSolicitud"), "arraigo requires tipoSolicitud");
   assert(
     missingBoth.includes("estadoCivil"),
     "combined requires estadoCivil (union)"
@@ -183,14 +195,23 @@ console.log("\n═══ Scenario 7: Minors (EX-25) — parent names required �
     "Cannot transition without parent names"
   );
 
-  // Now add parents
+  // Now add parents + the tutor block (required for minors per
+  // AUTH_FIELD_RULES — a minor's case always has a guardian/entity)
   const withParents = mergeExtractedData(partial, {
     nombrePadre: "Hassan Benali",
     nombreMadre: "Fatima Ait",
+    tutor_nombre: "DGAIA",
+    tutor_dniNiePas: "Q0801234B",
+    tutor_relacionMenor: "Tutor legal (entitat pública)",
+    // Once tutor context is detected, the recommended tutor contact
+    // fields activate as required (isRecommendedActive → hasTutor).
+    tutor_domicilio: "Av. Paral·lel 52",
+    tutor_localidad: "Barcelona",
+    tutor_telefono: "934831000",
   });
   assert(
     shouldTransitionToResum(["menor_no_acompanyat"], withParents),
-    "Can transition with parent names filled"
+    "Can transition with parents + tutor filled"
   );
 }
 

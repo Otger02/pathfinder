@@ -1,11 +1,18 @@
 import { computeMissingFields, shouldTransitionToResum } from "@/lib/collection-engine";
 
+// BASE covers BASE_REQUIRED plus the EX-10 apartat-1 identity block that
+// AUTH_FIELD_RULES requires for every arraigo slug (sexo, estadoCivil,
+// lugar/país de nacimiento, padres, teléfono, número de domicilio).
 const BASE = {
   nombre: "Mohamed", primerApellido: "Aziz",
   fechaNacimiento: "1990-01-01", nacionalidad: "Marroquí",
   tipoDocumento: "pasaporte" as const, numeroDocumento: "BK123",
   domicilio: "Calle X", localidad: "Barcelona",
   codigoPostal: "08001", provincia: "Barcelona",
+  sexo: "H" as const, estadoCivil: "soltero" as const,
+  lugarNacimiento: "Rabat", paisNacimiento: "Marruecos",
+  nombrePadre: "Aziz", nombreMadre: "Khadija",
+  telefono: "611111111", numeroDomicilio: "10",
 };
 
 let allOk = true;
