@@ -22,6 +22,7 @@ import {
   getRootNode,
   ROOT_NODE_ID,
 } from "@/lib/tree-i18n";
+import { loadTree } from "@/lib/load-tree";
 import LanguageSelector from "./components/LanguageSelector";
 import UserMenu from "@/app/dashboard/components/UserMenu";
 import TreePhase from "./components/TreePhase";
@@ -231,12 +232,9 @@ function ChatPageInner() {
     setIsRecording(false);
   }, []);
 
-  // Load decision tree + translations in parallel
+  // Load decision tree + translations from the bundle (works offline).
   useEffect(() => {
-    Promise.all([
-      fetch("/api/tree").then((r) => r.json() as Promise<DecisionTree>),
-      loadTranslations(),
-    ])
+    Promise.all([loadTree(), loadTranslations()])
       .then(([data]) => {
         const map = buildNodeMap(data);
         setNodeMap(map);

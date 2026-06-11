@@ -34,16 +34,18 @@ Apunta para cada escenario: PASA / FALLA + capturas si algo falla + modelo de m�
 
 > Importante: el modo offline solo funciona en producción y después de haber visitado la app al menos una vez con conexión.
 
-1. Con conexión, abre la app instalada y navega: portada → elige idioma → responde 2-3 preguntas del árbol de decisión.
+1. Con conexión, abre la app instalada y entra al chat **una vez** (esto descarga y guarda el árbol de decisión). Puedes salir.
 2. Activa el **modo avión**.
 3. Cierra la app y vuelve a abrirla desde el icono.
 4. Intenta navegar a la portada y al chat.
-5. Intenta enviar un mensaje al asistente.
-6. Intenta entrar en una página que NO hayas visitado antes (p. ej. escribe la URL `/privacy` si no la habías abierto).
-7. Desactiva el modo avión y reintenta.
+5. **Recorre el árbol de decisión completo, sin conexión**: elige idioma, responde varias preguntas hasta llegar a un resultado (p. ej. el flujo de arraigo).
+6. Intenta enviar un mensaje al asistente (esto SÍ necesita conexión).
+7. Intenta entrar en una página que NO hayas visitado antes (p. ej. escribe la URL `/privacy` si no la habías abierto).
+8. Desactiva el modo avión y reintenta.
 
 **Criterio PASA:**
 - [ ] Con modo avión, la app abre y muestra la portada o el chat (versión guardada), no el dinosaurio de Chrome.
+- [ ] **El árbol de decisión funciona entero sin conexión**: preguntas, opciones traducidas y resultados se ven, aunque estés en modo avión. (Solo el botón "Hablar con el asistente" requiere conexión.)
 - [ ] Al enviar un mensaje sin conexión aparece un error controlado (no se queda colgada para siempre).
 - [ ] Al entrar en una página no visitada sin conexión, aparece la página **"Sin conexión a internet"** en castellano, con el teléfono 112 y un botón de reintentar.
 - [ ] Al recuperar la conexión y pulsar "Reintentar", la app vuelve a funcionar sin tener que reinstalarla.
