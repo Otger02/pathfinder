@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Instrument_Serif, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
+import ServiceWorkerRegistration from "./components/ServiceWorkerRegistration";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -26,6 +27,16 @@ export const metadata: Metadata = {
   title: "Pathfinder",
   description:
     "Información sobre derechos e inmigración en España — Fundació Tierra Digna",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Pathfinder",
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/icon-192.png",
+  },
   openGraph: {
     title: "Pathfinder",
     description: "Immigration rights and information in Spain",
@@ -36,6 +47,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Matches --primary (sage palette) in globals.css and the manifest.
+  themeColor: "#2F6A5F",
   // Prevents the virtual keyboard from obscuring the chat input on mobile.
   interactiveWidget: "resizes-content",
 };
@@ -47,24 +60,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#2a7d6e" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-      </head>
       <body className={`${manrope.variable} ${instrumentSerif.variable} ${notoArabic.variable}`}>
         {children}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').catch(() => {});
-              }
-            `,
-          }}
-        />
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
