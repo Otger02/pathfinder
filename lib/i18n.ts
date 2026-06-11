@@ -1362,6 +1362,27 @@ export const labels = {
     fr: "L'image est trop grande. Prends la photo en plus basse résolution ou recadre-la.",
     ar: "الصورة كبيرة جداً. التقط الصورة بدقة أقل أو قم بقصها.",
   },
+  visionFieldsTitle: {
+    ca: "Dades extretes del document",
+    es: "Datos extraídos del documento",
+    en: "Data extracted from the document",
+    fr: "Données extraites du document",
+    ar: "البيانات المستخرجة من المستند",
+  },
+  visionDeadlinesTitle: {
+    ca: "Terminis detectats",
+    es: "Plazos detectados",
+    en: "Deadlines detected",
+    fr: "Délais détectés",
+    ar: "المواعيد النهائية المكتشفة",
+  },
+  visionSavedNote: {
+    ca: "He guardat aquestes dades al teu procés.",
+    es: "He guardado estos datos en tu proceso.",
+    en: "I've saved this data to your case.",
+    fr: "J'ai enregistré ces données dans ton dossier.",
+    ar: "لقد حفظت هذه البيانات في ملفك.",
+  },
   documentAnalysisFailed: {
     ca: "No he pogut analitzar el document. Torna-ho a provar amb una foto més clara.",
     es: "No he podido analizar el documento. Inténtalo de nuevo con una foto más clara.",

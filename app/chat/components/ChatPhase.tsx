@@ -58,6 +58,7 @@ export default function ChatPhase({
   onSummaryConfirm,
   onSummaryCorrect,
   onDocToggle,
+  onAttachDocument,
 }: {
   messages: ChatMessage[];
   sources: Source[];
@@ -76,8 +77,10 @@ export default function ChatPhase({
   onSummaryConfirm: () => void;
   onSummaryCorrect: () => void;
   onDocToggle?: (slug: string, obtained: boolean) => void;
+  onAttachDocument?: (file: File) => void;
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -345,6 +348,34 @@ export default function ChatPhase({
           aria-label={t(labels.inputPlaceholder, lang)}
           className="input flex-1"
         />
+        {onAttachDocument && (
+          <>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) onAttachDocument(file);
+                // Reset so picking the same file again re-triggers onChange
+                e.target.value = "";
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={inputDisabled}
+              aria-label={t(labels.attachDocument, lang)}
+              title={t(labels.attachDocumentHint, lang)}
+              className="icon-btn outlined shrink-0 rounded-xl"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+              </svg>
+            </button>
+          </>
+        )}
         {!srUnsupported && (
           <button
             type="button"

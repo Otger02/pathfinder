@@ -30,6 +30,7 @@ import FormPhase from "./components/FormPhase";
 import ConsentModal from "./components/ConsentModal";
 import SosOverlay from "./components/SosOverlay";
 import SaveProgressBanner from "./components/SaveProgressBanner";
+import { compressImageFile } from "./lib/compress-image";
 import { RecordingEngine } from "@/lib/recording-engine";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
@@ -580,6 +581,102 @@ function ChatPageInner() {
     ]);
   }, [lang]);
 
+  // ── Document photo intake (vision) ──────────────────────────
+  // Compress client-side, send to /api/vision, render the analysis as a
+  // normal assistant message. Extracted fields are persisted server-side
+  // (consent-gated); locally we just merge them into collectedData so the
+  // summary card reflects them immediately.
+  const handleAttachDocument = useCallback(
+    async (file: File) => {
+      if (loading) return;
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: `📎 ${file.name}` },
+        { role: "assistant", content: "" },
+      ]);
+      setLoading(true);
+
+      const replaceLastAssistant = (content: string) => {
+        setMessages((prev) => {
+          const copy = [...prev];
+          for (let i = copy.length - 1; i >= 0; i--) {
+            if (copy[i].role === "assistant" && !copy[i].cardType) {
+              copy[i] = { ...copy[i], content };
+              break;
+            }
+          }
+          return copy;
+        });
+      };
+
+      try {
+        const compressed = await compressImageFile(file);
+        if (!compressed) {
+          replaceLastAssistant(t(labels.documentTooLarge, lang));
+          return;
+        }
+
+        const resp = await fetch("/api/vision", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            image_base64: compressed.base64,
+            media_type: compressed.mediaType,
+            conversation_id: conversationId ?? undefined,
+            idioma: lang,
+          }),
+        });
+        if (!resp.ok) throw new Error(`vision ${resp.status}`);
+        const data = (await resp.json()) as {
+          ok: boolean;
+          document_type: string;
+          fields: Record<string, unknown>;
+          explanation: string;
+          deadlines: Array<{ date: string | null; description: string }>;
+          persisted: boolean;
+        };
+        if (!data.ok) throw new Error("analysis failed");
+
+        let md = `📄 **${data.document_type}**\n\n${data.explanation}`;
+
+        const fieldEntries = Object.entries(data.fields ?? {}).filter(
+          ([, v]) => typeof v === "string" && v
+        );
+        if (fieldEntries.length > 0) {
+          md +=
+            `\n\n**${t(labels.visionFieldsTitle, lang)}:**\n` +
+            fieldEntries.map(([k, v]) => `- ${k}: ${v}`).join("\n");
+          // Mirror into local state so the summary card shows them now.
+          setCollectedData((prev) => {
+            const next = { ...prev };
+            for (const [k, v] of fieldEntries) next[k] = String(v);
+            return next;
+          });
+        }
+
+        if (data.deadlines?.length > 0) {
+          md +=
+            `\n\n**⏰ ${t(labels.visionDeadlinesTitle, lang)}:**\n` +
+            data.deadlines
+              .map((d) => `- ${d.date ? `${d.date} — ` : ""}${d.description}`)
+              .join("\n");
+        }
+
+        if (data.persisted) {
+          md += `\n\n_${t(labels.visionSavedNote, lang)}_`;
+        }
+
+        replaceLastAssistant(md);
+      } catch (err) {
+        console.error("vision intake failed:", err);
+        replaceLastAssistant(t(labels.documentAnalysisFailed, lang));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loading, lang, conversationId]
+  );
+
   const handleDocToggle = useCallback(async (slug: string, obtained: boolean) => {
     // Optimistic update
     setMessages((prev) =>
@@ -941,6 +1038,7 @@ function ChatPageInner() {
           onSummaryConfirm={handleSummaryConfirm}
           onSummaryCorrect={handleSummaryCorrect}
           onDocToggle={handleDocToggle}
+          onAttachDocument={handleAttachDocument}
         />
       )}
 
