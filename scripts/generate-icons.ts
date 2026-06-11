@@ -2,12 +2,14 @@
  * Generate PWA icons for Pathfinder.
  *
  * Draws a compass logo on a cream background with "PATHFINDER" text.
- * Outputs 512x512 and 192x192 PNGs.
+ * Outputs 512x512 and 192x192 PNGs, plus maskable variants (full-bleed
+ * square background with the artwork scaled into the central 80% safe
+ * zone, so Android launcher masks — circle, squircle — never crop it).
  *
  * Run: npx tsx scripts/generate-icons.ts
  */
 
-import { createCanvas } from "canvas";
+import { createCanvas, type CanvasRenderingContext2D } from "canvas";
 import { writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
 
@@ -19,10 +21,27 @@ const COLORS = {
   white: "#F5F0E8",
 };
 
-function generateIcon(size: number): Buffer {
+function generateIcon(size: number, maskable = false): Buffer {
   const canvas = createCanvas(size, size);
   const ctx = canvas.getContext("2d");
 
+  if (maskable) {
+    // Full-bleed background; the launcher mask may crop up to ~10% on
+    // each side, so keep the artwork inside the central 80% safe zone.
+    ctx.fillStyle = COLORS.cream;
+    ctx.fillRect(0, 0, size, size);
+
+    const SAFE = 0.8;
+    ctx.translate((size * (1 - SAFE)) / 2, (size * (1 - SAFE)) / 2);
+    ctx.scale(SAFE, SAFE);
+  }
+
+  drawArtwork(ctx, size);
+
+  return canvas.toBuffer("image/png");
+}
+
+function drawArtwork(ctx: CanvasRenderingContext2D, size: number): void {
   const s = (pct: number) => size * pct; // scale helper
 
   // ── Background with rounded corners ───────────────────────────
@@ -168,20 +187,21 @@ function generateIcon(size: number): Buffer {
   ctx.fillText("by Tierra Digna", cx, subY);
 
   ctx.restore();
-
-  return canvas.toBuffer("image/png");
 }
 
-// ── Generate both sizes ─────────────────────────────────────────────
+// ── Generate all sizes and variants ─────────────────────────────────
 
-const outDir = join(__dirname, "..", "public", "icons");
+// Run from the repo root (as the npm scripts do).
+const outDir = join(process.cwd(), "public", "icons");
 mkdirSync(outDir, { recursive: true });
 
 for (const size of [512, 192]) {
-  const buf = generateIcon(size);
-  const path = join(outDir, `icon-${size}.png`);
-  writeFileSync(path, buf);
-  console.log(`✓ ${path} — ${buf.length} bytes (${(buf.length / 1024).toFixed(1)} KB)`);
+  for (const maskable of [false, true]) {
+    const buf = generateIcon(size, maskable);
+    const path = join(outDir, `icon-${size}${maskable ? "-maskable" : ""}.png`);
+    writeFileSync(path, buf);
+    console.log(`✓ ${path} — ${buf.length} bytes (${(buf.length / 1024).toFixed(1)} KB)`);
+  }
 }
 
 console.log("\nDone!");
