@@ -1316,4 +1316,57 @@ export const labels = {
     fr: "Source",
     ar: "المصدر",
   },
+
+  // ── Text-to-speech ──────────────────────────────────────────
+  ttsListen: {
+    ca: "Escoltar",
+    es: "Escuchar",
+    en: "Listen",
+    fr: "Écouter",
+    ar: "استمع",
+  },
+  ttsStop: {
+    ca: "Aturar",
+    es: "Detener",
+    en: "Stop",
+    fr: "Arrêter",
+    ar: "إيقاف",
+  },
+
+  // ── Document upload (vision intake) ─────────────────────────
+  attachDocument: {
+    ca: "Pujar foto d'un document",
+    es: "Subir foto de un documento",
+    en: "Upload a photo of a document",
+    fr: "Téléverser la photo d'un document",
+    ar: "رفع صورة مستند",
+  },
+  attachDocumentHint: {
+    ca: "Passaport, padró, una carta oficial... L'analitzo i extrec les dades.",
+    es: "Pasaporte, padrón, una carta oficial... La analizo y extraigo los datos.",
+    en: "Passport, padrón, an official letter... I'll analyze it and extract the data.",
+    fr: "Passeport, padrón, une lettre officielle... Je l'analyse et j'extrais les données.",
+    ar: "جواز السفر، شهادة التسجيل، رسالة رسمية... سأحللها وأستخرج البيانات.",
+  },
+  analyzingDocument: {
+    ca: "Analitzant el document...",
+    es: "Analizando el documento...",
+    en: "Analyzing the document...",
+    fr: "Analyse du document...",
+    ar: "جارٍ تحليل المستند...",
+  },
+  documentTooLarge: {
+    ca: "La imatge és massa gran. Fes la foto amb menys resolució o retalla-la.",
+    es: "La imagen es demasiado grande. Haz la foto con menos resolución o recórtala.",
+    en: "The image is too large. Take the photo at a lower resolution or crop it.",
+    fr: "L'image est trop grande. Prends la photo en plus basse résolution ou recadre-la.",
+    ar: "الصورة كبيرة جداً. التقط الصورة بدقة أقل أو قم بقصها.",
+  },
+  documentAnalysisFailed: {
+    ca: "No he pogut analitzar el document. Torna-ho a provar amb una foto més clara.",
+    es: "No he podido analizar el documento. Inténtalo de nuevo con una foto más clara.",
+    en: "I couldn't analyze the document. Try again with a clearer photo.",
+    fr: "Je n'ai pas pu analyser le document. Réessaie avec une photo plus nette.",
+    ar: "لم أتمكن من تحليل المستند. حاول مرة أخرى بصورة أوضح.",
+  },
 } satisfies Record<string, I18nText>;
