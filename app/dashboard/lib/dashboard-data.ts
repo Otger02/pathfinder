@@ -5,6 +5,7 @@
  * `conversations` table. Stays free of UI concerns — pure functions only.
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { PersonalData } from "@/lib/types/personal-data";
 import { computeCompletionPct, computeMissingFields } from "@/lib/collection-engine";
 import { getRequiredFields } from "@/lib/form-config";
@@ -19,6 +20,40 @@ export interface ConversationRow {
   consent_given: boolean | null;
   created_at: string;
   updated_at: string | null;
+}
+
+const ROW_COLUMNS =
+  "id, language, auth_slugs, collected_data, chat_sub_phase, consent_given, created_at";
+
+/**
+ * Fetch a user's conversations ordered by last activity.
+ *
+ * Prefers `updated_at` (migration 009); if the column doesn't exist yet
+ * the first query errors and we retry ordered by `created_at`, so the
+ * app keeps working on databases where the migration hasn't run.
+ */
+export async function fetchConversationsByActivity(
+  supabase: SupabaseClient,
+  userId: string,
+  opts: { limit?: number; onlyWithAuthSlugs?: boolean } = {}
+): Promise<ConversationRow[]> {
+  const run = async (withUpdatedAt: boolean) => {
+    const cols = withUpdatedAt ? `${ROW_COLUMNS}, updated_at` : ROW_COLUMNS;
+    const orderCol = withUpdatedAt ? "updated_at" : "created_at";
+    let q = supabase.from("conversations").select(cols).eq("user_id", userId);
+    if (opts.onlyWithAuthSlugs) q = q.not("auth_slugs", "is", null);
+    q = q.order(orderCol, { ascending: false });
+    if (opts.limit) q = q.limit(opts.limit);
+    return q;
+  };
+
+  let { data, error } = await run(true);
+  if (error) {
+    // Column missing (migration 009 not applied) — fall back silently.
+    ({ data, error } = await run(false));
+  }
+  if (error || !data) return [];
+  return data as unknown as ConversationRow[];
 }
 
 export type ProcessStatus = "active" | "paused" | "completed";

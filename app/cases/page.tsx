@@ -4,7 +4,7 @@ import { createAuthServerClient } from "@/lib/supabase-server";
 import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
 import {
-  type ConversationRow,
+  fetchConversationsByActivity,
   summarizeConversation,
 } from "@/app/dashboard/lib/dashboard-data";
 import ProcessRow from "@/app/dashboard/components/ProcessRow";
@@ -29,15 +29,7 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
     redirect(`/auth?returnTo=/cases&lang=${lang}`);
   }
 
-  const { data: rows } = await supabase
-    .from("conversations")
-    .select(
-      "id, language, auth_slugs, collected_data, chat_sub_phase, consent_given, created_at"
-    )
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
-
-  const conversations = (rows ?? []) as ConversationRow[];
+  const conversations = await fetchConversationsByActivity(supabase, user.id);
   const summaries = conversations.map(summarizeConversation);
 
   return (

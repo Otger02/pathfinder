@@ -4,8 +4,8 @@ import { createAuthServerClient } from "@/lib/supabase-server";
 import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
 import {
-  type ConversationRow,
   countDocumentsObtained,
+  fetchConversationsByActivity,
   summarizeConversation,
 } from "./lib/dashboard-data";
 import CurrentProcessCard from "./components/CurrentProcessCard";
@@ -33,20 +33,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     redirect(`/auth?returnTo=/dashboard&lang=${lang}`);
   }
 
-  // Pull the user's conversations, latest first.
-  // NOTE: ordering by created_at because the schema doesn't currently
-  // expose updated_at. summarizeConversation falls back to created_at
-  // when updated_at is missing.
-  const { data: rows } = await supabase
-    .from("conversations")
-    .select(
-      "id, language, auth_slugs, collected_data, chat_sub_phase, consent_given, created_at"
-    )
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(20);
-
-  const conversations = (rows ?? []) as ConversationRow[];
+  // Pull the user's conversations ordered by last activity (updated_at
+  // when migration 009 is applied, created_at otherwise).
+  const conversations = await fetchConversationsByActivity(supabase, user.id, {
+    limit: 20,
+  });
   const summaries = conversations.map(summarizeConversation);
 
   // Current process = the most recent conversation that isn't completed.

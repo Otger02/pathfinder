@@ -414,6 +414,18 @@ export async function POST(req: NextRequest) {
     });
     if (msgErr) throw new Error(`Save user message: ${msgErr.message}`);
 
+    // Bump last-activity so the dashboard orders by real activity.
+    // Message inserts don't touch the conversations row, so the 009
+    // trigger never fires for them. Non-fatal: ignore errors (e.g.
+    // migration 009 not applied yet).
+    supabase
+      .from("conversations")
+      .update({ updated_at: new Date().toISOString() })
+      .eq("id", convId)
+      .then(({ error }) => {
+        if (error) debug("[chat] updated_at bump skipped:", error.message);
+      });
+
     // ── 2.6. SOS detection ──────────────────────────────────────
     const sosResult = detectSos(message.trim());
     let sosEventId: string | null = null;

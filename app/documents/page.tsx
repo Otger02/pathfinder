@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createAuthServerClient } from "@/lib/supabase-server";
 import type { Lang } from "@/lib/i18n";
 import { t, labels } from "@/lib/i18n";
-import type { ConversationRow } from "@/app/dashboard/lib/dashboard-data";
+import { fetchConversationsByActivity } from "@/app/dashboard/lib/dashboard-data";
 import UserMenu from "@/app/dashboard/components/UserMenu";
 import DashboardLangSelector from "@/app/dashboard/components/DashboardLangSelector";
 import SosButton from "@/app/components/SosButton";
@@ -29,19 +29,11 @@ export default async function DocumentsPage({ searchParams }: DocumentsPageProps
 
   // Pull conversations the user can produce documents from: those with
   // at least one auth_slug. Without an auth_slug we have no form to fill
-  // and no summary to render.
-  // NOTE: ordering by created_at — schema doesn't expose updated_at yet.
-  const { data: rows } = await supabase
-    .from("conversations")
-    .select(
-      "id, language, auth_slugs, collected_data, chat_sub_phase, consent_given, created_at"
-    )
-    .eq("user_id", user.id)
-    .not("auth_slugs", "is", null)
-    .order("created_at", { ascending: false })
-    .limit(50);
-
-  const conversations = (rows ?? []) as ConversationRow[];
+  // and no summary to render. Ordered by last activity.
+  const conversations = await fetchConversationsByActivity(supabase, user.id, {
+    limit: 50,
+    onlyWithAuthSlugs: true,
+  });
   const groups = buildDocumentGroups(conversations, lang);
 
   return (
