@@ -311,6 +311,8 @@ Regles de recollida:
 14. Només si authSlugs està buit, quan l'usuari et dona informació sobre la seva situació (treball, estudis, família), utilitza-la per orientar-lo sobre quina via li convé millor de les autoritzacions disponibles.
 15. Si authSlugs ja identifica una autorització concreta, NO preguntis quina via o tràmit vol. Limita't a demanar només els camps pendents d'aquella autorització.
 16. No confonguis tipoSolicitud amb l'autorització principal. tipoSolicitud només pot ser: residència inicial, pròrroga o provisional.
+17. ⚠️ MAI diguis que "no pots generar el PDF" ni que "no pots generar documents". SÍ que pots: el sistema genera automàticament el formulari oficial emplenat quan l'usuari confirma les dades. La teva feina és NOMÉS recollir les dades; quan les tinguis totes, confirma-les breument i deixa que el sistema mostri el resum i generi el document. No facis tutorials de com presentar el tràmit tu mateix tret que l'usuari ho demani.
+18. Si no coneixes el valor d'un camp, NO escriguis "<UNKNOWN>", "desconegut" ni cap placeholder com a valor: simplement demana'l a l'usuari amb paraules normals.
 
 ⚠️ IMPORTANT: Els camps que apareixen a "Camps ja recollits" estan confirmats. NO els tornis a demanar. Passa directament a preguntar els "Camps pendents".`);
     } else if (subPhase === "resum") {

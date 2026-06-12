@@ -151,10 +151,20 @@ function expandToolFieldSet(missingFields: string[]): string[] {
   return Array.from(selected);
 }
 
+// Placeholder strings the model sometimes emits for unknown values. We
+// drop them at the door so they never get stored (and never block the
+// flow by looking "filled"). Mirrors collection-engine's set.
+const PLACEHOLDER_VALUES = new Set([
+  "<unknown>", "unknown", "<desconegut>", "desconegut", "desconocido",
+  "<desconocido>", "n/a", "na", "null", "-", "—", "<null>", "?", "<?>",
+]);
+
 function cleanString(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
+  if (trimmed.length === 0) return null;
+  if (PLACEHOLDER_VALUES.has(trimmed.toLowerCase())) return null;
+  return trimmed;
 }
 
 function normalizeArrayField(field: string, value: unknown): unknown[] | null {

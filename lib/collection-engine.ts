@@ -17,11 +17,29 @@ import { getRequiredFields } from "./form-config";
 
 // ── Field value helpers ───────────────────────────────────────────────────
 
+// Placeholder strings a model might emit for an unknown value. Treated as
+// NOT filled so the field is re-asked instead of silently shipping the
+// placeholder into the PDF.
+const PLACEHOLDER_VALUES = new Set([
+  "<unknown>", "unknown", "<desconegut>", "desconegut", "desconocido",
+  "<desconocido>", "n/a", "na", "null", "-", "—", "<null>", "?", "<?>",
+]);
+
+export function isPlaceholderValue(value: unknown): boolean {
+  return (
+    typeof value === "string" &&
+    PLACEHOLDER_VALUES.has(value.trim().toLowerCase())
+  );
+}
+
 function isFilled(value: unknown): boolean {
   if (value === undefined || value === null) return false;
   if (typeof value === "boolean") return true;          // false is a valid answer
   if (Array.isArray(value)) return value.length > 0;
-  if (typeof value === "string") return value.trim() !== "";
+  if (typeof value === "string") {
+    const t = value.trim();
+    return t !== "" && !PLACEHOLDER_VALUES.has(t.toLowerCase());
+  }
   return false;
 }
 
