@@ -1362,6 +1362,13 @@ export const labels = {
     fr: "L'image est trop grande. Prends la photo en plus basse résolution ou recadre-la.",
     ar: "الصورة كبيرة جداً. التقط الصورة بدقة أقل أو قم بقصها.",
   },
+  uploadCapabilityIntro: {
+    ca: "Pots pujar una foto del teu passaport, padró o una carta oficial (o un PDF) amb el clip d'aquí sota: el llegiré, n'extrauré les dades i t'explicaré què diu.",
+    es: "Puedes subir una foto de tu pasaporte, padrón o una carta oficial (o un PDF) con el clip de aquí abajo: lo leeré, extraeré los datos y te explicaré qué dice.",
+    en: "You can upload a photo of your passport, padrón or an official letter (or a PDF) using the clip below: I'll read it, extract the data and explain what it says.",
+    fr: "Tu peux téléverser une photo de ton passeport, de ton padrón ou d'une lettre officielle (ou un PDF) avec le trombone ci-dessous : je le lirai, j'en extrairai les données et je t'expliquerai ce qu'il dit.",
+    ar: "يمكنك رفع صورة لجواز سفرك أو شهادة التسجيل أو رسالة رسمية (أو ملف PDF) باستخدام المشبك أدناه: سأقرأها وأستخرج البيانات وأشرح لك ما تقوله.",
+  },
   visionFieldsTitle: {
     ca: "Dades extretes del document",
     es: "Datos extraídos del documento",

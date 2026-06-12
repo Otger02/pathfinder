@@ -33,6 +33,14 @@ const SR_LANG_MAP: Record<string, string> = {
   ar: "ar-SA",
 };
 
+// WhatsApp-like cap: ~5 lines before the textarea scrolls internally.
+const TEXTAREA_MAX_HEIGHT = 132;
+
+function autosizeTextarea(el: HTMLTextAreaElement) {
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, TEXTAREA_MAX_HEIGHT) + "px";
+}
+
 interface Source {
   id: string;
   source_file: string | null;
@@ -81,6 +89,7 @@ export default function ChatPhase({
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -102,6 +111,12 @@ export default function ChatPhase({
       voiceSubmitPending.current = false;
       formRef.current?.requestSubmit();
     }
+  }, [input]);
+
+  // Keep the textarea height in sync when input changes externally
+  // (voice transcript fills it; clearing after send shrinks it back).
+  useEffect(() => {
+    if (textareaRef.current) autosizeTextarea(textareaRef.current);
   }, [input]);
 
   useEffect(() => {
@@ -333,20 +348,38 @@ export default function ChatPhase({
         </button>
       )}
 
-      {/* Input form */}
+      {/* Input form — WhatsApp-style: auto-growing textarea capped at
+          ~5 lines, Enter sends, Shift+Enter inserts a newline. */}
       <form
         ref={formRef}
         onSubmit={onSubmit}
-        className="flex gap-2 sticky bottom-0 bg-surface-alt py-3 border-t border-border-light"
+        className="flex items-end gap-2 sticky bottom-0 bg-surface-alt py-3 border-t border-border-light"
       >
-        <input
-          type="text"
+        <textarea
+          ref={textareaRef}
+          rows={1}
           value={input}
-          onChange={(e) => onInputChange(e.target.value)}
+          onChange={(e) => {
+            onInputChange(e.target.value);
+            autosizeTextarea(e.target);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              if (!inputDisabled && input.trim()) formRef.current?.requestSubmit();
+            }
+          }}
           placeholder={t(labels.inputPlaceholder, lang)}
           disabled={inputDisabled}
           aria-label={t(labels.inputPlaceholder, lang)}
           className="input flex-1"
+          style={{
+            resize: "none",
+            overflowY: "auto",
+            maxHeight: TEXTAREA_MAX_HEIGHT,
+            minHeight: 44,
+            lineHeight: "1.45",
+          }}
         />
         {onAttachDocument && (
           <>
@@ -394,9 +427,15 @@ export default function ChatPhase({
         <button
           type="submit"
           disabled={inputDisabled}
-          className="btn shrink-0"
+          aria-label={t(labels.sendButton, lang)}
+          title={t(labels.sendButton, lang)}
+          className={`icon-btn shrink-0 rounded-xl ${loading ? "animate-pulse" : ""}`}
+          style={{ background: "var(--primary)", color: "var(--on-primary, #fff)", border: "none" }}
         >
-          {loading ? "..." : t(labels.sendButton, lang)}
+          {/* paper-plane send icon — compact, keeps the input wide */}
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+          </svg>
         </button>
       </form>
     </div>

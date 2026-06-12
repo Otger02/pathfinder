@@ -328,6 +328,9 @@ function ChatPageInner() {
         } else {
           fullWelcome += "\n\n" + t(labels.askAnything, lang);
         }
+        // Surface the document-upload capability up front — users won't
+        // discover the 📎 on their own.
+        fullWelcome += "\n\n📎 " + t(labels.uploadCapabilityIntro, lang);
         setMessages([{ role: "assistant", content: fullWelcome }]);
       }
     }, 300);
@@ -368,8 +371,8 @@ function ChatPageInner() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: text,
-          conversation_id: conversationId,
-          situacio_legal: situacioLegal,
+          conversation_id: conversationId ?? undefined,
+          situacio_legal: situacioLegal ?? undefined,
           idioma: lang,
           auth_slugs: authSlugs.length > 0 ? authSlugs : undefined,
           mode: mode,

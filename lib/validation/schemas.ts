@@ -18,13 +18,15 @@ import { z } from "zod";
 const Uuid = z.string().uuid("Must be a valid UUID");
 const SafeShortString = z.string().max(255);
 const LangCode = z.enum(["ca", "es", "en", "fr", "ar"]);
+const optionalFromNull = <T extends z.ZodType>(schema: T) =>
+  z.preprocess((value) => (value === null ? undefined : value), schema.optional());
 
 // ── /api/chat ────────────────────────────────────────────────────
 
 export const ChatRequestSchema = z.object({
   message: z.string().min(1, "message is required").max(4000),
-  conversation_id: Uuid.optional(),
-  situacio_legal: z.string().max(80).optional(),
+  conversation_id: optionalFromNull(Uuid),
+  situacio_legal: optionalFromNull(z.string().max(80)),
   idioma: LangCode.optional(),
   auth_slugs: z.array(z.string().max(120)).max(20).optional(),
   mode: z.enum(["info", "collection"]).optional(),
