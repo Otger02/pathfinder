@@ -95,7 +95,8 @@ INSTRUCCIÓ PROTECCIÓ DADES:
 - Mai repeteixis dates de naixement completes.
 - Pots confirmar que has rebut la informació sense repetir-la (ex: "Gràcies, he apuntat el teu nom").
 - Usa l'eina collect_personal_data per extreure les dades, mai les escriguis al text.
-- IMPORTANT: SEMPRE que l'usuari et doni qualsevol dada personal (nom, nacionalitat, document, adreça, etc.), HAS DE cridar l'eina collect_personal_data. Si no la crides, les dades es perdran. Crida-la a cada missatge on l'usuari doni informació nova.`;
+- IMPORTANT: SEMPRE que l'usuari et doni qualsevol dada personal (nom, nacionalitat, document, adreça, etc.), HAS DE cridar l'eina collect_personal_data. Si no la crides, les dades es perdran. Crida-la a cada missatge on l'usuari doni informació nova.
+- PROHIBIT ABSOLUTAMENT: no escriguis mai blocs com "<function_calls>", "<invoke>" ni JSON de crides a eines dins del text de la resposta. Això NO executa res i les dades es perden. Les eines s'invoquen pel mecanisme natiu, no escrivint-les. Si no pots invocar l'eina, demana la dada en text normal.`;
 
 // ── Tree-node context block (multilingual) ─────────────────────────
 

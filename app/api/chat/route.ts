@@ -663,6 +663,15 @@ export async function POST(req: NextRequest) {
       missingFields,
       maxTokens: CLAUDE_MAX_TOKENS,
       cacheControl: { type: "ephemeral" },
+      // Slot-filling depends on the collect_personal_data tool. Gemini's
+      // adapter doesn't support tool use, and it hallucinates the call as
+      // plain text (nested JSON, localized keys) which silently drops the
+      // data. Force Anthropic for the whole collection flow — it's the
+      // only provider here with reliable strict tool use. Info-mode Q&A
+      // keeps the normal (cheaper Gemini-first) order.
+      ...(mode === "collection"
+        ? { preferredProviders: ["anthropic" as const] }
+        : {}),
     };
 
     // Add a dynamic tool in collection phases. Anthropic strict tool use
