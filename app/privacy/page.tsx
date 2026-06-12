@@ -317,6 +317,27 @@ export default async function PrivacyPage({
             </section>
           ))}
         </div>
+
+        <div className="mt-10 pt-6 space-y-2" style={{ borderTop: "1px solid var(--line)" }}>
+          <p className="text-sm">
+            <Link
+              href={`/terms?lang=${lang}`}
+              className="underline"
+              style={{ color: "var(--primary-2)" }}
+            >
+              {lang === "ca" ? "Termes i condicions d'ús" : lang === "es" ? "Términos y condiciones de uso" : lang === "fr" ? "Conditions d'utilisation" : lang === "ar" ? "شروط وأحكام الاستخدام" : "Terms and conditions"}
+            </Link>
+          </p>
+          <p className="text-sm">
+            <a
+              href="/pathfinder-dossier.pdf"
+              className="underline"
+              style={{ color: "var(--primary-2)" }}
+            >
+              {lang === "ca" ? "Dossier institucional (PDF)" : lang === "es" ? "Dossier institucional (PDF)" : lang === "fr" ? "Dossier institutionnel (PDF)" : lang === "ar" ? "الملف التعريفي المؤسسي (PDF)" : "Institutional dossier (PDF)"}
+            </a>
+          </p>
+        </div>
       </main>
     </div>
   );

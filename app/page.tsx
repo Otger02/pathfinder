@@ -522,10 +522,20 @@ export default function OnboardingPage() {
             Violencia de género: 016
           </a>
         </div>
-        <div className="mt-2 text-xs text-text-muted">
+        <div className="mt-2 text-xs text-text-muted flex justify-center items-center gap-2 flex-wrap">
           <a href="/privacy" className="hover:underline">
-            Privacitat i avís legal · Assistent d&apos;IA, no advocat
+            Privacitat
           </a>
+          <span className="text-border">|</span>
+          <a href="/terms" className="hover:underline">
+            Termes i condicions
+          </a>
+          <span className="text-border">|</span>
+          <a href="/pathfinder-dossier.pdf" className="hover:underline">
+            Dossier (PDF)
+          </a>
+          <span className="text-border">|</span>
+          <span>Assistent d&apos;IA, no advocat</span>
         </div>
       </footer>
 
