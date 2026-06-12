@@ -16,7 +16,7 @@ const MAX_BASE64_CHARS = 4_000_000;
 
 const VisionRequestSchema = z.object({
   image_base64: z.string().min(100).max(MAX_BASE64_CHARS),
-  media_type: z.enum(["image/jpeg", "image/png", "image/webp"]),
+  media_type: z.enum(["image/jpeg", "image/png", "image/webp", "application/pdf"]),
   conversation_id: z.string().uuid().optional(),
   idioma: z.enum(["ca", "es", "en", "fr", "ar"]).optional(),
 });

@@ -23,7 +23,11 @@ const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const VISION_MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 1500;
 
-export type VisionMediaType = "image/jpeg" | "image/png" | "image/webp";
+export type VisionMediaType =
+  | "image/jpeg"
+  | "image/png"
+  | "image/webp"
+  | "application/pdf";
 
 export interface DocumentDeadline {
   /** ISO date if the document states one, otherwise null */
@@ -62,7 +66,7 @@ const ANALYZE_TOOL = {
       fields: {
         type: "object",
         description:
-          "Personal data fields read VERBATIM from the document. Keys (use only those that are clearly legible): pasaporte, nie, nombre, primerApellido, segundoApellido, fechaNacimiento (YYYY-MM-DD), lugarNacimiento, paisNacimiento, nacionalidad, sexo (H/M/X), estadoCivil, domicilio, numeroDomicilio, pisoDomicilio, localidad, codigoPostal, provincia, telefono, email, nombrePadre, nombreMadre. NEVER guess or infer a value that is not printed on the document — omit the key instead.",
+          "Data fields read VERBATIM from the document. Personal keys (use only those clearly legible): pasaporte, nie, nombre, primerApellido, segundoApellido, fechaNacimiento (YYYY-MM-DD), lugarNacimiento, paisNacimiento, nacionalidad, sexo (H/M/X), estadoCivil (soltero/casado/viudo/divorciado/separado/pareja_hecho), domicilio, numeroDomicilio, pisoDomicilio, localidad, codigoPostal, provincia, telefono, email, nombrePadre, nombreMadre. If the document is a WORK CONTRACT or employer paperwork, also extract the employer block: empleador_nombre, empleador_nifNie, empleador_actividad, empleador_domicilio, empleador_numero, empleador_localidad, empleador_codigoPostal, empleador_provincia, empleador_telefono, empleador_email, empleador_repNombre, empleador_repDniNie. If it is a TRAINING enrollment: formacio_entitat, formacio_nifCif, formacio_nom, formacio_duracio. NEVER guess or infer a value that is not printed on the document — omit the key instead.",
         additionalProperties: true,
       },
       explanation: {
@@ -139,14 +143,25 @@ Crida SEMPRE l'eina analyze_document exactament un cop.`;
         {
           role: "user",
           content: [
-            {
-              type: "image",
-              source: {
-                type: "base64",
-                media_type: options.mediaType,
-                data: options.imageBase64,
-              },
-            },
+            // PDFs go as a document block (Claude reads them natively,
+            // including multi-page letters); photos go as an image block.
+            options.mediaType === "application/pdf"
+              ? {
+                  type: "document",
+                  source: {
+                    type: "base64",
+                    media_type: "application/pdf",
+                    data: options.imageBase64,
+                  },
+                }
+              : {
+                  type: "image",
+                  source: {
+                    type: "base64",
+                    media_type: options.mediaType,
+                    data: options.imageBase64,
+                  },
+                },
             {
               type: "text",
               text: "Analitza aquest document.",

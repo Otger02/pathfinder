@@ -31,7 +31,7 @@ import FormPhase from "./components/FormPhase";
 import ConsentModal from "./components/ConsentModal";
 import SosOverlay from "./components/SosOverlay";
 import SaveProgressBanner from "./components/SaveProgressBanner";
-import { compressImageFile } from "./lib/compress-image";
+import { fileToUploadPayload } from "./lib/compress-image";
 import { RecordingEngine } from "@/lib/recording-engine";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
@@ -608,7 +608,7 @@ function ChatPageInner() {
       };
 
       try {
-        const compressed = await compressImageFile(file);
+        const compressed = await fileToUploadPayload(file);
         if (!compressed) {
           replaceLastAssistant(t(labels.documentTooLarge, lang));
           return;

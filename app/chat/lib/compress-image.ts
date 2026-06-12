@@ -15,7 +15,29 @@ const MAX_BASE64_CHARS = 3_900_000;
 
 export interface CompressedImage {
   base64: string; // raw base64, no data: prefix
-  mediaType: "image/jpeg";
+  mediaType: "image/jpeg" | "application/pdf";
+}
+
+/**
+ * PDFs can't go through canvas — read them as base64 directly, with the
+ * same size cap. Official letters are usually well under 1 MB.
+ */
+export async function pdfFileToBase64(file: File): Promise<CompressedImage | null> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("pdf read failed"));
+    reader.readAsDataURL(file);
+  });
+  const base64 = dataUrl.split(",")[1] ?? "";
+  if (!base64 || base64.length > MAX_BASE64_CHARS) return null;
+  return { base64, mediaType: "application/pdf" };
+}
+
+/** Dispatch by file type: PDFs raw, images compressed via canvas. */
+export async function fileToUploadPayload(file: File): Promise<CompressedImage | null> {
+  if (file.type === "application/pdf") return pdfFileToBase64(file);
+  return compressImageFile(file);
 }
 
 export async function compressImageFile(
