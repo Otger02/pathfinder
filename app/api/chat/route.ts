@@ -260,7 +260,14 @@ export async function POST(req: NextRequest) {
       tree_node_text,
       tree_node_note,
       tree_path,
+      pending_extracted,
     } = parsed.data;
+
+    // Vision fields uploaded before the conversation/consent existed.
+    // Normalized through the same validator as the chat tool.
+    const pendingExtracted = normalizeCollectedPersonalDataInput(
+      pending_extracted ?? {}
+    );
 
     const voyageKey = process.env.VOYAGE_API_KEY;
     if (!voyageKey) {
@@ -318,10 +325,12 @@ export async function POST(req: NextRequest) {
     if (tree_node_id) treeMeta._tree_node_id = tree_node_id;
     if (tree_node_text) treeMeta._tree_node_text = tree_node_text;
 
+    let usedRememberedData = false;
     if (!convId) {
       let rememberedCollectedData: Partial<PersonalData> = {};
       if (userId && mode === "collection") {
         rememberedCollectedData = await loadRememberedCollectedData(supabase, userId);
+        usedRememberedData = Object.keys(rememberedCollectedData).length > 0;
       }
 
       const insertData: Record<string, unknown> = {
@@ -363,6 +372,21 @@ export async function POST(req: NextRequest) {
         collectedData = (conv.collected_data as Partial<PersonalData>) || {};
         chatSubPhase = (conv.chat_sub_phase as ChatSubPhase) || "conversa";
         consentGiven = conv.consent_given || false;
+        // Apply vision fields that were extracted before the conversation
+        // (or before consent) existed. Consent-gated: pre-consent uploads
+        // only persist once the user has accepted; the client re-sends
+        // them until then. Existing values win over OCR.
+        if (consentGiven && Object.keys(pendingExtracted).length > 0) {
+          collectedData = mergeExtractedData(pendingExtracted, collectedData);
+          await supabase
+            .from("conversations")
+            .update({ collected_data: collectedData })
+            .eq("id", convId);
+          debug(
+            "[chat] applied pending vision fields:",
+            Object.keys(pendingExtracted).join(", ")
+          );
+        }
         // Backfill tree meta for legacy conversations created before we
         // started persisting it. Existing fields take precedence so we
         // never overwrite a known-good _tree_node_id.
@@ -514,6 +538,14 @@ export async function POST(req: NextRequest) {
             return `[P${index + 1}] ${note.severity.toUpperCase()} | ${note.scope}\n${text}${legal}${source}`;
           })
           .join("\n\n---\n\n");
+    }
+
+    if (usedRememberedData) {
+      // Guard against stale carry-over (e.g. yesterday's tests): the
+      // model must confirm remembered identity data, never greet the
+      // user by an unconfirmed name.
+      contextBlock +=
+        "\n\nNOTA SOBRE DADES PRECARREGADES: algunes dades personals d'aquesta conversa provenen d'una conversa anterior recent de l'usuari i PODEN NO SER SEVES o estar desactualitzades. NO saludis l'usuari pel nom ni donis cap dada per bona sense confirmar-la primer (\"Tinc registrat que... és correcte?\"). Si l'usuari les desmenteix, descarta-les i recull-les de nou.";
     }
 
     // ── 5. Conversation history (last 6 messages) ───────────────

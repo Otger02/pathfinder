@@ -115,6 +115,10 @@ function ChatPageInner() {
   const [collectedData, setCollectedData] = useState<Record<string, string>>({});
   const [completionPct, setCompletionPct] = useState(0);
   const collectedDataRef = useRef<Record<string, string>>({});
+  // Vision-extracted fields the server couldn't persist yet (no
+  // conversation or no consent at upload time). Sent with every chat
+  // message until the server applies them post-consent.
+  const pendingVisionFieldsRef = useRef<Record<string, string>>({});
   const [generatedDocs, setGeneratedDocs] = useState<Array<{ name: string; url: string }>>([]);
 
   // SOS state
@@ -380,6 +384,10 @@ function ChatPageInner() {
           tree_node_text: currentNode?.text ?? null,
           tree_node_note: currentNode?.note ?? null,
           tree_path: path,
+          pending_extracted:
+            Object.keys(pendingVisionFieldsRef.current).length > 0
+              ? pendingVisionFieldsRef.current
+              : undefined,
         }),
         signal: abortRef.current.signal,
       });
@@ -448,6 +456,9 @@ function ChatPageInner() {
               setCollectedData(event.collected);
               setCompletionPct(event.completionPct);
               collectedDataRef.current = event.collected;
+              // Server-confirmed state: any pending vision fields have
+              // been applied (or superseded) by now.
+              pendingVisionFieldsRef.current = {};
               // Live-update the doc checklist card if documents_obtained changed
               const newObtained = (event.collected.documents_obtained as string[]) ?? [];
               setMessages((prev) =>
@@ -653,6 +664,13 @@ function ChatPageInner() {
             for (const [k, v] of fieldEntries) next[k] = String(v);
             return next;
           });
+          // If the server couldn't persist (no conversation / no consent
+          // yet), retry the fields with every chat message until applied.
+          if (!data.persisted) {
+            for (const [k, v] of fieldEntries) {
+              pendingVisionFieldsRef.current[k] = String(v);
+            }
+          }
         }
 
         if (data.deadlines?.length > 0) {

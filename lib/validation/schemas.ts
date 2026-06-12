@@ -34,6 +34,11 @@ export const ChatRequestSchema = z.object({
   tree_node_text: z.string().max(1000).nullable().optional(),
   tree_node_note: z.string().max(2000).nullable().optional(),
   tree_path: z.array(z.string().max(120)).max(50).optional(),
+  // Fields extracted by /api/vision BEFORE a conversation existed (the
+  // user uploaded a document pre-consent). The client retries them on
+  // each message until the server confirms persistence; the route only
+  // applies them once consent_given is true.
+  pending_extracted: z.record(z.string(), z.unknown()).optional(),
 });
 export type ChatRequest = z.infer<typeof ChatRequestSchema>;
 
