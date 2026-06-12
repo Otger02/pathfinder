@@ -342,7 +342,7 @@ export default async function TermsPage({
           </p>
           <p className="text-sm">
             <a
-              href="/pathfinder-dossier.pdf"
+              href={lang === "ca" ? "/pathfinder-dossier-ca.pdf" : "/pathfinder-dossier.pdf"}
               className="underline"
               style={{ color: "var(--primary-2)" }}
             >

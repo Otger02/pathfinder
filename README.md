@@ -54,3 +54,29 @@ TBD
 ## Contributing
 
 TBD
+
+## Documents institucionals (dossiers PDF)
+
+Els dossiers públics de `public/` **no s'actualitzen sols** — regenera'ls
+quan canviï el producte, la cobertura legal o el marc de compliment:
+
+```bash
+# Dossier en castellà (text)
+npx tsx scripts/generate-dossier.ts
+
+# Dossier en català (visual, amb captures reals de l'app)
+npm run dev                                # terminal 1
+npx tsx scripts/capture-screenshots.ts     # terminal 2
+npx tsx scripts/generate-dossier-ca.ts
+```
+
+Sortides: `public/pathfinder-dossier.pdf` i `public/pathfinder-dossier-ca.pdf`
+(enllaçats des del footer, /privacy i /terms). Committeja els PDFs regenerats.
+
+### Espècimens de prova (visió)
+
+Documents ficticis per provar la lectura de documents (📎 al chat):
+`public/especimen-passaport.png` + `public/especimen-contracte.pdf`
+(persona fictícia consistent entre tots dos). Regenerar amb
+`npx tsx scripts/generate-test-specimens.ts`; validar amb
+`npx tsx scripts/test-vision-specimens.ts` (crides reals a l'API).

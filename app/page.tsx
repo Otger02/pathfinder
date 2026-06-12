@@ -531,7 +531,7 @@ export default function OnboardingPage() {
             Termes i condicions
           </a>
           <span className="text-border">|</span>
-          <a href="/pathfinder-dossier.pdf" className="hover:underline">
+          <a href="/pathfinder-dossier-ca.pdf" className="hover:underline">
             Dossier (PDF)
           </a>
           <span className="text-border">|</span>
