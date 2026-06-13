@@ -32,7 +32,8 @@ import ConsentModal from "./components/ConsentModal";
 import SosOverlay from "./components/SosOverlay";
 import SaveProgressBanner from "./components/SaveProgressBanner";
 import { fileToUploadPayload } from "./lib/compress-image";
-import { RecordingEngine } from "@/lib/recording-engine";
+import { RecordingEngine, uploadChunkToServer } from "@/lib/recording-engine";
+import { flushQueue } from "@/lib/recording-offline-queue";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 
@@ -133,6 +134,8 @@ function ChatPageInner() {
   const [recordingChunks, setRecordingChunks] = useState(0);
   const [recordingAudioOnly, setRecordingAudioOnly] = useState(false);
   const [recordingElapsed, setRecordingElapsed] = useState(0);
+  const [recordingStarting, setRecordingStarting] = useState(false);
+  const [recordingError, setRecordingError] = useState(false);
   const recordingEngineRef = useRef<RecordingEngine | null>(null);
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -198,9 +201,20 @@ function ChatPageInner() {
     };
   }, []);
 
+  // Recover any SOS chunks left on the device by a previous session (app
+  // killed, battery died, or no signal mid-recording). Re-uploads them as soon
+  // as the app opens with a connection. This is the only retry path on iOS,
+  // which lacks Background Sync.
+  useEffect(() => {
+    flushQueue(uploadChunkToServer).catch(() => {});
+  }, []);
+
   // Recording handlers
   const handleStartRecording = useCallback(async (sosEventId?: string) => {
     if (recordingEngineRef.current?.getSession()?.status === "recording") return;
+
+    setRecordingError(false);
+    setRecordingStarting(true);
 
     const engine = new RecordingEngine();
     recordingEngineRef.current = engine;
@@ -209,19 +223,32 @@ function ChatPageInner() {
       setIsRecording(state.status === "recording");
       setRecordingAudioOnly(state.audioOnly);
       setRecordingChunks(state.chunksUploaded);
+      if (state.status === "failed") {
+        setRecordingStarting(false);
+        setRecordingError(true);
+      }
     });
 
     engine.setOnChunkUploaded((_idx, total) => {
       setRecordingChunks(total);
     });
 
+    engine.setOnError(() => {
+      setRecordingStarting(false);
+      setRecordingError(true);
+    });
+
     const started = await engine.start(sosEventId);
+    setRecordingStarting(false);
     if (started) {
       setIsRecording(true);
+      setRecordingError(false);
       setRecordingElapsed(0);
       recordingTimerRef.current = setInterval(() => {
         setRecordingElapsed((prev) => prev + 1);
       }, 1000);
+    } else {
+      setRecordingError(true);
     }
   }, []);
 
@@ -1112,8 +1139,11 @@ function ChatPageInner() {
         chunksUploaded={recordingChunks}
         elapsedSeconds={recordingElapsed}
         audioOnly={recordingAudioOnly}
+        starting={recordingStarting}
+        recordingError={recordingError}
         onClose={() => {
           setSosActive(false);
+          setRecordingError(false);
           sosButtonRef.current?.focus();
         }}
         onViewChange={setSosView}

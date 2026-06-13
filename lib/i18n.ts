@@ -585,6 +585,27 @@ export const labels = {
     fr: "Enregistrer les preuves",
     ca: "Gravar evidència",
   },
+  dangerNow: {
+    es: "ESTOY EN PELIGRO AHORA",
+    en: "I'M IN DANGER NOW",
+    ar: "أنا في خطر الآن",
+    fr: "JE SUIS EN DANGER MAINTENANT",
+    ca: "ESTIC EN PERILL ARA",
+  },
+  dangerNowSub: {
+    es: "Me están deteniendo o me siento amenazado. Pulsa para abrir la cámara y el micrófono y enviar la grabación a un servidor seguro como prueba.",
+    en: "I'm being detained or threatened. Tap to open the camera and microphone and send the recording to a secure server as evidence.",
+    ar: "يتم احتجازي أو أشعر بالتهديد. اضغط لفتح الكاميرا والميكروفون وإرسال التسجيل إلى خادم آمن كدليل.",
+    fr: "On me détient ou je me sens menacé. Appuyez pour ouvrir la caméra et le microphone et envoyer l'enregistrement à un serveur sécurisé comme preuve.",
+    ca: "M'estan deturant o em sento amenaçat. Prem per obrir la càmera i el micròfon i enviar la gravació a un servidor segur com a prova.",
+  },
+  recordingCannotStart: {
+    es: "No se pudo iniciar la grabación. Da permiso a la cámara y al micrófono en tu navegador y vuelve a intentarlo.",
+    en: "Could not start recording. Allow camera and microphone access in your browser and try again.",
+    ar: "تعذر بدء التسجيل. اسمح بالوصول إلى الكاميرا والميكروفون في متصفحك وحاول مرة أخرى.",
+    fr: "Impossible de démarrer l'enregistrement. Autorisez l'accès à la caméra et au microphone dans votre navigateur et réessayez.",
+    ca: "No s'ha pogut iniciar la gravació. Dona permís a la càmera i al micròfon al teu navegador i torna-ho a provar.",
+  },
   chunksUploaded: {
     es: "fragmentos subidos",
     en: "chunks uploaded",

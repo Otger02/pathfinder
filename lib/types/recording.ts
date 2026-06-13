@@ -35,7 +35,9 @@ export interface ChunkUploadPayload {
 }
 
 export interface RecordingConfig {
-  /** Chunk interval in ms (default 5000 = 5 seconds) */
+  /** Chunk interval in ms (default 3000 = 3 seconds). Shorter = less footage
+   *  lost if the device is destroyed mid-recording, at the cost of more
+   *  upload requests. */
   chunkIntervalMs: number;
   /** Video bitrate in bps (default 500000 = 500kbps) */
   videoBitsPerSecond: number;
@@ -48,7 +50,7 @@ export interface RecordingConfig {
 }
 
 export const DEFAULT_RECORDING_CONFIG: RecordingConfig = {
-  chunkIntervalMs: 5000,
+  chunkIntervalMs: 3000,
   videoBitsPerSecond: 500_000,
   audioBitsPerSecond: 64_000,
   maxDurationMs: 30 * 60 * 1000,

@@ -24,6 +24,8 @@ export default function SosOverlay({
   chunksUploaded,
   elapsedSeconds,
   audioOnly,
+  starting,
+  recordingError,
   onClose,
   onViewChange,
   onStartRecording,
@@ -38,6 +40,8 @@ export default function SosOverlay({
   chunksUploaded: number;
   elapsedSeconds: number;
   audioOnly: boolean;
+  starting: boolean;
+  recordingError: boolean;
   onClose: () => void;
   onViewChange: (v: "emergency" | "rights" | "police") => void;
   onStartRecording: () => void;
@@ -170,18 +174,36 @@ export default function SosOverlay({
               {t(labels.emergencyResources, lang)}
             </div>
 
-            {/* Record evidence button */}
+            {/* Imminent-danger trigger — opens camera/mic and uploads to our server */}
             {!recording && (
-              <button
-                onClick={onStartRecording}
-                className="w-full px-4 py-4 mb-4 text-lg font-bold bg-[#b71c1c] text-white rounded-lg flex items-center justify-center gap-3 hover:bg-[#c62828] transition-colors"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <circle cx="12" cy="12" r="4" fill="currentColor" />
-                </svg>
-                {t(labels.startRecording, lang)}
-              </button>
+              <div className="mb-4">
+                <button
+                  onClick={onStartRecording}
+                  disabled={starting}
+                  className="w-full px-4 py-5 text-xl font-extrabold bg-[#b71c1c] text-white rounded-xl flex items-center justify-center gap-3 hover:bg-[#c62828] transition-colors shadow-lg disabled:opacity-70 disabled:cursor-wait animate-[pulse_2s_ease-in-out_infinite]"
+                >
+                  {starting ? (
+                    <span className="w-6 h-6 border-[3px] border-white/40 border-t-white rounded-full animate-spin flex-shrink-0" />
+                  ) : (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="flex-shrink-0">
+                      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                  )}
+                  <span className="leading-tight">
+                    {starting ? t(labels.recordingStarting, lang) : t(labels.dangerNow, lang)}
+                  </span>
+                </button>
+                <p className="text-xs text-text-muted leading-relaxed mt-2 px-1 text-center">
+                  {t(labels.dangerNowSub, lang)}
+                </p>
+                {recordingError && (
+                  <div className="mt-2 bg-red-50 border border-red-200 text-red-800 px-3 py-2 rounded-lg text-sm leading-relaxed">
+                    {t(labels.recordingCannotStart, lang)}
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Tree-specific resources first */}

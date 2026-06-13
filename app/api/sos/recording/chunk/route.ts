@@ -23,17 +23,39 @@ export async function POST(req: Request) {
     const supabase = createServiceClient();
 
     // Look up recording by session_id
-    const { data: recording, error: lookupErr } = await supabase
+    const { data: recording } = await supabase
       .from("sos_recordings")
       .select("id")
       .eq("session_id", sessionId)
       .single();
 
-    if (lookupErr || !recording) {
-      return Response.json({ error: "Recording not found" }, { status: 404 });
-    }
+    let recordingId = recording?.id as string | undefined;
 
-    const recordingId = recording.id;
+    // Orphan recovery: a chunk re-uploaded by a later session (app was killed
+    // before /start succeeded, then the device came back online) may have no
+    // parent row. Create a minimal one so the footage is never lost.
+    if (!recordingId) {
+      const { data: created, error: createErr } = await supabase
+        .from("sos_recordings")
+        .insert({
+          session_id: sessionId,
+          user_code: "web-anonymous",
+          device_info: { recovered: true },
+          gps_lat: gpsLat,
+          gps_lon: gpsLon,
+          status: "recording",
+        })
+        .select("id")
+        .single();
+
+      if (createErr || !created) {
+        return Response.json(
+          { error: `Could not create recording: ${createErr?.message ?? "unknown"}` },
+          { status: 500 }
+        );
+      }
+      recordingId = created.id;
+    }
 
     // Read blob and verify SHA-256 server-side
     const arrayBuffer = await file.arrayBuffer();

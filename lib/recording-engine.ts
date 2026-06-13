@@ -2,8 +2,9 @@
  * SOS Recording Engine.
  *
  * Captures video+audio (or audio-only fallback) via MediaRecorder,
- * splits into 5-second chunks, computes SHA-256 hash chains for
- * tamper detection, and uploads each chunk to the server.
+ * splits into short chunks (default 3s), computes SHA-256 hash chains for
+ * tamper detection, persists each chunk to the device, and streams it to
+ * the server — deleting the local copy only once delivery is confirmed.
  *
  * Client-side only.
  */
@@ -16,7 +17,7 @@ import type {
 import { DEFAULT_RECORDING_CONFIG } from "./types/recording";
 import { requestMediaPermissions, getPreferredMimeType } from "./media-permissions";
 import { computeSha256, computeChainHash } from "./crypto/hash-chain";
-import { enqueueChunk } from "./recording-offline-queue";
+import { enqueueChunk, deleteChunkByKey } from "./recording-offline-queue";
 
 type StateCallback = (state: RecordingSession) => void;
 type ChunkCallback = (chunkIndex: number, uploaded: number) => void;
@@ -229,44 +230,25 @@ export class RecordingEngine {
         gpsLon: this.session.gpsLon ?? undefined,
       };
 
-      // Try to upload
-      const success = await this.uploadChunk(payload);
+      // Write-ahead: persist to the device FIRST, before attempting upload.
+      // The chunk stays on disk until the server confirms receipt, so it
+      // survives a crash / dead battery / no signal and is re-sent later.
+      const localKey = await enqueueChunk(payload);
+
+      // Then try to upload immediately (streaming off the device).
+      const success = await uploadChunkToServer(payload);
       if (success) {
+        // Delivered — safe to drop the local copy.
+        await deleteChunkByKey(localKey);
         this.session.chunksUploaded++;
         this.onChunkUploaded?.(chunkIndex, this.session.chunksUploaded);
-      } else {
-        // Queue for offline retry
-        await enqueueChunk(payload);
       }
+      // On failure the chunk stays queued; Background Sync (Chrome/Android) or
+      // the next-app-open flush (all browsers) will retry it.
 
       this.emitState();
     } catch (err) {
       this.onError?.(err instanceof Error ? err.message : "Chunk processing failed");
-    }
-  }
-
-  /** Upload a single chunk to the server. Returns true on success. */
-  private async uploadChunk(payload: ChunkUploadPayload): Promise<boolean> {
-    try {
-      const formData = new FormData();
-      formData.append("file", payload.blob);
-      formData.append("sessionId", payload.sessionId);
-      formData.append("chunkIndex", String(payload.chunkIndex));
-      formData.append("sha256", payload.sha256);
-      formData.append("chainHash", payload.chainHash);
-      formData.append("durationMs", String(payload.durationMs));
-      formData.append("timestamp", payload.timestamp);
-      if (payload.gpsLat !== undefined) formData.append("gpsLat", String(payload.gpsLat));
-      if (payload.gpsLon !== undefined) formData.append("gpsLon", String(payload.gpsLon));
-
-      const resp = await fetch("/api/sos/recording/chunk", {
-        method: "POST",
-        body: formData,
-      });
-
-      return resp.ok;
-    } catch {
-      return false;
     }
   }
 
@@ -310,5 +292,35 @@ export class RecordingEngine {
     if (this.session && this.onStateChange) {
       this.onStateChange({ ...this.session });
     }
+  }
+}
+
+/**
+ * Upload a single chunk to the server. Returns true on success.
+ *
+ * Exported (module-level) so both the live recorder and the offline-queue
+ * flush (on app open) share the exact same upload logic.
+ */
+export async function uploadChunkToServer(payload: ChunkUploadPayload): Promise<boolean> {
+  try {
+    const formData = new FormData();
+    formData.append("file", payload.blob);
+    formData.append("sessionId", payload.sessionId);
+    formData.append("chunkIndex", String(payload.chunkIndex));
+    formData.append("sha256", payload.sha256);
+    formData.append("chainHash", payload.chainHash);
+    formData.append("durationMs", String(payload.durationMs));
+    formData.append("timestamp", payload.timestamp);
+    if (payload.gpsLat !== undefined) formData.append("gpsLat", String(payload.gpsLat));
+    if (payload.gpsLon !== undefined) formData.append("gpsLon", String(payload.gpsLon));
+
+    const resp = await fetch("/api/sos/recording/chunk", {
+      method: "POST",
+      body: formData,
+    });
+
+    return resp.ok;
+  } catch {
+    return false;
   }
 }

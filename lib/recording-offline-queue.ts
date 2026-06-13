@@ -25,13 +25,19 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 /**
- * Store a failed chunk upload for later retry.
+ * Persist a chunk to disk (IndexedDB) and return its key.
+ *
+ * Called for EVERY chunk before upload as a write-ahead log: the chunk lives
+ * on the device until the server confirms receipt, at which point it is removed
+ * via deleteChunkByKey(). If the app is killed, the battery dies, or there is
+ * no signal, the chunk survives and is re-sent on the next app open (flushQueue)
+ * or via Background Sync.
  */
-export async function enqueueChunk(payload: ChunkUploadPayload): Promise<void> {
+export async function enqueueChunk(payload: ChunkUploadPayload): Promise<IDBValidKey> {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, "readwrite");
-    tx.objectStore(STORE_NAME).add({
+    const req = tx.objectStore(STORE_NAME).add({
       sessionId: payload.sessionId,
       chunkIndex: payload.chunkIndex,
       blob: payload.blob,
@@ -42,15 +48,32 @@ export async function enqueueChunk(payload: ChunkUploadPayload): Promise<void> {
       gpsLat: payload.gpsLat,
       gpsLon: payload.gpsLon,
     });
+    let key: IDBValidKey;
+    req.onsuccess = () => {
+      key = req.result;
+    };
     tx.oncomplete = () => {
-      // Request Background Sync if available
+      // Request Background Sync if available (Chrome/Android; not iOS Safari)
       if ("serviceWorker" in navigator && "SyncManager" in window) {
         navigator.serviceWorker.ready
           .then((reg) => (reg as unknown as { sync: { register: (tag: string) => Promise<void> } }).sync.register("sos-chunk-upload"))
           .catch(() => {});
       }
-      resolve();
+      resolve(key);
     };
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+/**
+ * Remove a single chunk once the server has confirmed receipt.
+ */
+export async function deleteChunkByKey(key: IDBValidKey): Promise<void> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    tx.objectStore(STORE_NAME).delete(key);
+    tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
 }
