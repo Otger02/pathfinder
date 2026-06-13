@@ -15,7 +15,7 @@
  * - Background Sync: retries failed SOS chunk uploads (see bottom).
  */
 
-const VERSION = "v2";
+const VERSION = "v3";
 const PRECACHE = `pathfinder-precache-${VERSION}`;
 const RUNTIME = `pathfinder-runtime-${VERSION}`;
 
