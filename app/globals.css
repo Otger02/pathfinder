@@ -424,7 +424,8 @@ button, a, input, select, textarea { min-height: 44px; }
   /* ── SOS SCREEN ─────────────────────────────────────── */
   .sos-screen {
     position: fixed; inset: 0;
-    background: #FFFFFF;
+    background: var(--bg);
+    color: var(--ink);
     z-index: 9999;
     overflow-y: auto;
   }

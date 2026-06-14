@@ -101,7 +101,8 @@ const SOS_CATEGORIES: SosCategory[] = [
     id: "trafficking",
     keywords: {
       es: [
-        "trata", "me explotan", "explotación", "explotacion", "trabajo forzado",
+        "trata de personas", "trata de blancas", "victima de trata", "red de trata",
+        "me explotan", "explotación", "explotacion", "trabajo forzado",
         "no me dejan salir", "me quitaron el pasaporte", "me retienen el pasaporte",
         "esclavitud", "prostitución", "prostitucion", "proxeneta",
         "me obligan a trabajar", "no me pagan",
@@ -121,7 +122,8 @@ const SOS_CATEGORIES: SosCategory[] = [
         "ne me laissent pas sortir", "proxénétisme",
       ],
       ca: [
-        "tracta", "tràfic", "m'exploten", "explotació", "treball forçat",
+        "tracta de persones", "víctima de tràfic", "tràfic de persones", "xarxa de tracta",
+        "m'exploten", "explotació", "treball forçat",
         "no em deixen sortir", "em van prendre el passaport", "em retenen el passaport",
         "esclavitud", "prostitució", "proxeneta",
         "m'obliguen a treballar", "no em paguen",
@@ -183,7 +185,7 @@ const SOS_CATEGORIES: SosCategory[] = [
         "aidez-moi", "je ne sais pas quoi faire",
       ],
       ca: [
-        "socors", "ajuda", "emergència", "perill", "em mataran",
+        "socors", "emergència", "perill", "em mataran",
         "necessito ajuda urgent", "estic desesperat", "estic desesperada",
         "vull morir", "suïcidi",
         "em persegueixen", "em segueixen", "estic amagat", "estic amagada",
@@ -204,6 +206,20 @@ function normalize(text: string): string {
     .replace(/[\u064B-\u065F\u0670]/g, ""); // strip Arabic tashkeel
 }
 
+/**
+ * Normalize AND collapse to space-delimited tokens, padded with a leading and
+ * trailing space. Matching ` keyword ` against this gives whole-word / whole-
+ * phrase matching instead of naive substring matching \u2014 so "gr\u00E0cies" no longer
+ * matches "cie", and "nosotros" no longer matches "sos".
+ */
+function tokenize(text: string): string {
+  const cleaned = normalize(text)
+    .replace(/[^a-z0-9\u0600-\u06FF]+/g, " ") // keep latin alnum + Arabic block
+    .replace(/\s+/g, " ")
+    .trim();
+  return ` ${cleaned} `;
+}
+
 export interface SosResult {
   detected: boolean;
   categories: string[];
@@ -211,16 +227,18 @@ export interface SosResult {
 }
 
 export function detectSos(text: string): SosResult {
-  const normalized = normalize(text);
+  const haystack = tokenize(text);
   const categories: string[] = [];
   const matchedTerms: string[] = [];
 
   for (const cat of SOS_CATEGORIES) {
     let found = false;
-    // Check ALL languages, not just the active one
-    for (const lang of ["es", "en", "ar", "fr"] as Lang[]) {
+    // Check ALL languages, not just the active one.
+    for (const lang of ["es", "en", "ar", "fr", "ca"] as Lang[]) {
       for (const kw of cat.keywords[lang]) {
-        if (normalized.includes(normalize(kw))) {
+        // Whole-word / whole-phrase match (not substring) so common words
+        // like "gràcies" or "se trata de" don't trip the alert.
+        if (haystack.includes(tokenize(kw))) {
           if (!found) {
             categories.push(cat.id);
             found = true;
